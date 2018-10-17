@@ -103,6 +103,11 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout"))
 <div class="copyright">
 	<div class="container">
 		<p>© <?php echo date("Y",time());?> Leazzer. All rights reserved</p>
+		<p>
+		<?php
+      echo ("<a href=/global_footer.php>Privacy Policy and Terms of use</a>");
+    ?>
+    </p>
 	</div>
 </div>
 <script src="js/jquery.min.js"></script>
@@ -222,9 +227,7 @@ var input = document.getElementById('searchTextField');
       var autocomplete = new google.maps.places.Autocomplete(input);
 </script>
 
-
-
-
 <!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script> -->
 </body>
 </html>
+

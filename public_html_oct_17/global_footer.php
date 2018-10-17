@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Leazzer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
+<meta name="keywords" content="Leazzer" />
+<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all">
+<link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" media="all">
+<link href="css/owl.carousel.css" rel="stylesheet">
+<link rel="stylesheet" href="css/jquery-ui.css" />
+<link rel="stylesheet" href="css/chocolat.css" type="text/css">
+<link href="facility/css/style.css" rel="stylesheet" type="text/css" media="all"/>
+<link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
+<link href="fonts/fonts.css" rel="stylesheet">
+
+</head>
+<body>
+<div class="container">
+<?php
+session_start();
+include('sql.php');
+
+function fetch_footer(){
+	global $conn;
+	$ret = "";
+			
+	$res = mysqli_query($conn,"select * from admin_configuration where name='ppterms'");
+	if(mysqli_num_rows($res) > 0){
+		$arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
+		$ret .= $arr['data_value'];	
+	}
+	else{
+		$ret = "TODO: Add policy terms through admin panel...";
+	}
+	return $ret;
+}
+
+echo fetch_footer();
+?>
+
+</div>
+
+<!--scrolling js-->
+		<script src="js/jquery.nicescroll.js"></script>
+		<script src="js/scripts.js"></script>
+<!--//scrolling js-->
+<script src="js/bootstrap.js"> </script>
+
+</body>
+</html>
+
