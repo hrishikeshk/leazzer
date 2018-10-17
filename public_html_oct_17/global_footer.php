@@ -16,6 +16,18 @@
 
 </head>
 <body>
+<nav class="navbar navbar-default">
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+
+ 	  <a href="index.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/>
+ 	  </a>
+ 	  <h1 style="float: right">Privacy policy and terms of use (Revised October 2018)</h1>
+ 	</div>
+	</div>
+</nav>
+
 <div class="container">
 <?php
 session_start();
