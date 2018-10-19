@@ -1,0 +1,28 @@
+Notes on App development -
+
+1/ Android/Apple takes from few hours to maximum up to 2 days to accept published app after their review. Google reviews are probably automated but Apple is manual.
+2/ We can consider publishing the app through different marketplaces not just Google play.
+3/ To publish to the app, we need -
+ — Title (* decided already)
+ — Short Desc
+ — Full Desc
+ — App Screenshots(JPEG or 24-bit PNG (no alpha))(Min-2,Max-8)(Min-320px,Max-3840px)
+ — Hi-res icon(512 x 512)(32-bit PNG (with alpha))
+ — Feature Graphic(1024 w x 500 h)(JPG or 24-bit PNG (no alpha))
+ — App Type
+ — Category (* Should be Finance/Business)
+ — Content Rating (* Should be Everyone)
+ — Developer/Company Email (* Known)
+ — Privacy Policy Url (* already created)
+ — And some other details like if the app is paid or free...(* Should be free).
+
+4/ Signing the app with a key. Was this key shared to you for the first app ?
+
+To keep the app under the review radar, 
+- Best to adjust the description as well as screenshots and create fresh icons for each app. 
+- For providing the required screenshots, using different pages to showcase the app should be sufficient. 
+- For the icons, we have to build each individually.
+- Apps are typically searched for by users by key words and app types.
+- Why android 5 and above only ?
+- Overall, gathering and creating images is a specialized job - takes specific skills !
+
