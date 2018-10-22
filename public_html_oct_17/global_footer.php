@@ -31,11 +31,13 @@
 <?php
 session_start();
 include('sql.php');
+
 function fetch_footer(){
 	global $conn;
 	$ret = "";
 			
 	$res = mysqli_query($conn,"select * from admin_configuration where name='privacypolicy'");
+
 	if(mysqli_num_rows($res) > 0){
 		$arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
 		$ret .= $arr['data_value'];	
@@ -45,6 +47,7 @@ function fetch_footer(){
 	}
 	return $ret;
 }
+
 echo fetch_footer();
 ?>
 
