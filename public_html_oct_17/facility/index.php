@@ -81,9 +81,7 @@ mysqli_close($conn);
 		<!--//scrolling js-->
 <script src="js/bootstrap.js"> </script>
 <!-- mother grid end here-->
-</body>
-</html>
+<?php
+include('footer.php');
+?>
 
-
-                      
-						
