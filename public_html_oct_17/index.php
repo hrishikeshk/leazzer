@@ -71,26 +71,24 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout"))
 <img src="images/llogo.png" height=120px>
 <h2 style="margin:0;">Reserve Selfstorage For Free</h2>
 <!-- Search-->
-<div class="w3l_banser" style="margin-top: 20px;">
-	<div id="search_form" class="search_top">
+  <div class="w3l_banser" style="margin-top: 20px;">
+	  <div id="search_form" class="search_top">
 		<form action="search.php" method="post">
 
-		<div id="pac-card">
+	  	<div id="pac-card">
 
-			<input class="text" name="search" id="searchTextField" type="text" placeholder="Zip or City" required="">
+			  <input class="text" name="search" id="searchTextField" type="text" placeholder="Zip or City" required="">
 				<input type="submit" value="Find Storage" style="margin-left: 10px;">
-				<div class="clearfix"></div>
-				<br><a href="helpmechoose.php" style="color:#000;text-shadow: 1px 1px 1px #555;">Help me choose units</a><br><br>
-				<p>Search And Compare Selfstorage Near You</p>
-				<div class="clearfix"></div>
+				  <div class="clearfix"></div>
+	  			<br><a href="helpmechoose.php" style="color:#000;text-shadow: 1px 1px 1px #555;">Help me choose units</a><br><br>
+	  			<p>Search And Compare Selfstorage Near You</p>
+				  <div class="clearfix"></div>
 			</div>
-
-
-		</form>
-	</div>
-	</div>
+		  </form>
+	  </div>
+  </div>
 <!--/Search-->
-</div>
+  </div>
 </div>
 <!-- /Banner-->
 <div class="inner-block" style="padding:2em;">
@@ -102,7 +100,8 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout"))
 </div>
 <div class="copyright">
 	<div class="container">
-		<p>© <?php echo date("Y",time());?> Leazzer. All rights reserved</p>
+		<p>© <?php echo date("Y",time());?> Leazzer. All rights reserved | <a href="/global_footer.php">Privacy Policy</a> | <a href="/global_footer_tu.php">Terms of use</a>
+    </p>
 	</div>
 </div>
 <script src="js/jquery.min.js"></script>
@@ -222,9 +221,7 @@ var input = document.getElementById('searchTextField');
       var autocomplete = new google.maps.places.Autocomplete(input);
 </script>
 
-
-
-
 <!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script> -->
 </body>
 </html>
+

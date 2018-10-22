@@ -1,6 +1,7 @@
 <!--copy rights start here-->
-<div class="copyrights">
-	 <p>&#169; <?php echo date('Y',time());?> Leazzer, All Rights Reserved.</p>
+<div class="copyright" style="background-color:#000000;text-align:center;display:block;color:#fff">
+		<p>© <?php echo date("Y",time());?> Leazzer. All rights reserved | <a href="/global_footer.php">Privacy Policy</a> | <a href="/global_footer_tu.php">Terms of use</a>
+    </p>
 </div>	
 <!--COPY rights end here-->
 </div>

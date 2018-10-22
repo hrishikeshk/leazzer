@@ -261,6 +261,14 @@ window.onbeforeunload = function(e){
       </div>
 </div>
 <!--inner block end here-->
+
+<!--copy rights start here-->
+<div class="copyright" style="background-color:#000000;text-align:center;display:block;color:#fff">
+		<p>© <?php echo date("Y",time());?> Leazzer. All rights reserved | <a href="../global_footer.php">Privacy Policy</a> | <a href="../global_footer_tu.php">Terms of use</a>
+    </p>
+</div>	
+<!--COPY rights end here-->
+
 <!--scrolling js-->
 		<script src="js/jquery.nicescroll.js"></script>
 		<script src="js/scripts.js"></script>
