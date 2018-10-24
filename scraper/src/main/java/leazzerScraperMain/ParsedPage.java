@@ -44,6 +44,17 @@ class Facility {
     FacilityImage[] images;
     double lowestPrice;
     String[] facilityAmenities;
+
+    public void printTest(){
+        System.out.println("id: " + id);
+        System.out.println("name: " + name);
+        System.out.println("url: " + url);
+        System.out.println("distance: " + distance);
+        System.out.println("location.region: " + location.addressRegion);
+        System.out.println("location.postalCode: " + location.postalCode);
+        System.out.println("location.addressLocality: " + location.addressLocality);
+        System.out.println("location.streetAddress: " + location.streetAddress);
+    }
 }
 
 public class ParsedPage{

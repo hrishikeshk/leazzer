@@ -24,36 +24,41 @@ individual facility -
 <div id="facility-203235" class="facility facility--in-network search-result-listing " data-facility-id="203235" data-index="0">
     <a class="facility-photo link--facility ga-segment-track" data-segment-category="facility interactions" data-segment-label="thumbnail image" data-options="{&quot;facilityId&quot;: 203235 }" href="/self-storage/texas/rowlett/advantage-storage-rowlett-east-203235/" target="_parent">
  
-       <img src="//images.selfstorage.com/medium-compress/203235594ae63552fe6.jpg" alt="Photo of Advantage Storage - Rowlett East" data-pagespeed-url-hash="810469141" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
+         <img src="//images.selfstorage.com/medium-compress/203235594ae63552fe6.jpg" alt="Photo of Advantage Storage - Rowlett East" data-pagespeed-url-hash="810469141" onload="pagespeed.CriticalImages.checkImageForCriticality(this);">
 
-        <span class="more-photos">5 more photos</span>
+          <span class="more-photos">5 more photos</span>
 
     </a>
-<div class="facility-details">
-    <div itemscope="" itemtype="http://schema.org/LocalBusiness" class="cl-address">
-        <h3 class="facility-name">
-            <a class="link--facility ga-segment-track" data-segment-category="facility interactions" data-segment-label="title" data-options="{&quot;facilityId&quot;: 203235 }" href="/self-storage/texas/rowlett/advantage-storage-rowlett-east-203235/" target="_parent">
-            <span itemprop="name" class="fn org">Advantage Storage - Rowlett East</span>
 
-            </a>
-        </h3>
-     <div class="facility-location">
-        <span itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress" class="address adr">
-                <span itemprop="streetAddress" class="street street-address hidden">7301 Lakeview Parkway</span>
-                <span itemprop="addressLocality" class="city locality">Rowlett</span>
-                <span itemprop="addressRegion" class="state region">TX</span>
-                <span itemprop="postalCode" class="zip postal-code">75088</span>
-        </span>
-        <span class="facility-distance">7.6 miles away</span>
-        </div>
-        <div class="facility-phone">
+		<div class="facility-details">
+
+	    	<div itemscope="" itemtype="http://schema.org/LocalBusiness" class="cl-address">
+		        <h3 class="facility-name">
+   		         <a class="link--facility ga-segment-track" data-segment-category="facility interactions" data-segment-label="title" data-options="{&quot;facilityId&quot;: 203235 }" href="/self-storage/texas/rowlett/advantage-storage-rowlett-east-203235/" target="_parent">
+     				       <span itemprop="name" class="fn org">Advantage Storage - Rowlett East</span>
+
+         		   </a>
+        		</h3>
+
+        		<div class="facility-location">
+           				<span itemprop="address" itemscope="" itemtype="http://schema.org/PostalAddress" class="address adr">
+		                <span itemprop="streetAddress" class="street street-address hidden">7301 Lakeview Parkway</span>
+   		             <span itemprop="addressLocality" class="city locality">Rowlett</span>
+     		           <span itemprop="addressRegion" class="state region">TX</span>
+       		         <span itemprop="postalCode" class="zip postal-code">75088</span>
+         				  </span>
+
+           				<span class="facility-distance">7.6 miles away</span>
+        		</div>
+        		<div class="facility-phone">
                 <a class="js-click-to-call ga-segment-track" data-segment-category="facility interactions" data-segment-label="click-to-call" data-options="{&quot;facilityId&quot;: 203235 }">
                         <i class="icon icon--phone"></i>
                                 Call to Book
-                        </a>
+                </a>
+        		</div>
         </div>
-     </div>
-    <div class="facility-lowest-price">Starting at <a class="link--facility price ga-segment-track" data-segment-category="facility interactions" data-segment-label="starting at price" data-options="{&quot;facilityId&quot;: 203235 }" href="/self-storage/texas/rowlett/advantage-storage-rowlett-east-203235/" target="_parent">$92.00</a></div>
+    	  <div class="facility-lowest-price">Starting at <a class="link--facility price ga-segment-track" data-segment-category="facility interactions" data-segment-label="starting at price" data-options="{&quot;facilityId&quot;: 203235 }" href="/self-storage/texas/rowlett/advantage-storage-rowlett-east-203235/" target="_parent">$92.00</a>
+			  </div>
 
     </div>
 
@@ -103,16 +108,16 @@ individual facility -
     </p>
     </div>
 </div>
-<div class="unit-price">
-    <a href="https://www.selfstorage.com/self-storage/texas/rowlett/advantage-storage-rowlett-east-203235/reserve/19803450/" target="_parent" rel="nofollow" class="link--unit-details ga-segment-track" data-segment-category="facility interactions" data-segment-label="price" data-options="{ &quot;facilityId&quot;: 203235, &quot;unitId&quot;: &quot;19803450&quot;, &quot;unitSize&quot;: &quot;10 x 10&quot;, &quot;unitPrice&quot;: &quot;165.00&quot; }">
-    <span class="effective-price">$165.00</span>
-    <span class="icon icon--next"></span>
-    </a>
-    </div>
-</div>
-    <a class="link--facility link--view-more-units ga-segment-track" data-segment-category="facility interactions" data-segment-label="compare units at this facility" data-options="{&quot;facilityId&quot;: 203235 }" href="/self-storage/texas/rowlett/advantage-storage-rowlett-east-203235/#units" target="_parent">
-Compare <strong>15</strong> units at this facility »
-    </a>
+							<div class="unit-price">
+    												<a href="https://www.selfstorage.com/self-storage/texas/rowlett/advantage-storage-rowlett-east-203235/reserve/19803450/" target="_parent" rel="nofollow" class="link--unit-details ga-segment-track" data-segment-category="facility interactions" data-segment-label="price" data-options="{ &quot;facilityId&quot;: 203235, &quot;unitId&quot;: &quot;19803450&quot;, &quot;unitSize&quot;: &quot;10 x 10&quot;, &quot;unitPrice&quot;: &quot;165.00&quot; }">
+    												<span class="effective-price">$165.00</span>
+    												<span class="icon icon--next"></span>
+    								</a>
+    				</div>
+				</div>
+    		 <a class="link--facility link--view-more-units ga-segment-track" data-segment-category="facility interactions" data-segment-label="compare units at this facility" data-options="{&quot;facilityId&quot;: 203235 }" href="/self-storage/texas/rowlett/advantage-storage-rowlett-east-203235/#units" target="_parent">
+					Compare <strong>15</strong> units at this facility »
+    		</a>
     </div>
 </div>
 

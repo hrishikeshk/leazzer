@@ -8,10 +8,11 @@ public class WebClientConfig {
         WebClientOptions wco = wc.getOptions();
         wco.setCssEnabled(false);
         wco.setGeolocationEnabled(false);
-        wco.setDownloadImages(false);
+        wco.setDownloadImages(true);
         wco.setJavaScriptEnabled(false);
         wco.setThrowExceptionOnScriptError(false);
         wco.setThrowExceptionOnFailingStatusCode(true);
+        wco.setPopupBlockerEnabled(true);
 
         return wc;
     }
