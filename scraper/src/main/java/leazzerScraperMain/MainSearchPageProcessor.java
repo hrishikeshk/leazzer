@@ -9,6 +9,10 @@ import com.google.gson.reflect.TypeToken;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -115,7 +119,7 @@ public class MainSearchPageProcessor {
             while(iter.hasNext()){
                 DomElement elem = iter.next();
                 FacilityImage fi = new FacilityImage();
-                fi.urlThumbnail = elem.getAttribute("data-thumb").substring(1);
+                fi.urlThumbnail = elem.getAttribute("data-thumb");
                 fi.urlFullSize = fi.urlThumbnail;
                 imgList.add(fi);
             }
@@ -144,7 +148,7 @@ public class MainSearchPageProcessor {
             }
             DomNode priceNode = dn.querySelector(".unit-price");
             if(priceNode != null){
-                unitArr[i].price = Double.parseDouble(priceNode.getTextContent());
+                unitArr[i].price = Double.parseDouble(priceNode.getTextContent().substring(1));
                 DomNode freqNode = dn.querySelector(".unit-price-frequency");
                 if(freqNode != null){
                     unitArr[i].priceFreq = freqNode.getTextContent();
@@ -160,8 +164,36 @@ public class MainSearchPageProcessor {
             WebResponse wr = page.getWebResponse();
             if(wr != null){
                 String json = wr.getContentAsString();
-                Map<String, String> map = new Gson().fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
-                System.out.println(map.get(f.id));
+                //Map<String, String> map = new Gson().fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
+                System.out.println(json);
+            }
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+            System.out.println("Caught exception: " + ex.getMessage());
+        }
+    }
+
+    static byte[] inputStreamToByteArray(InputStream is) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[16384];
+        while ((nRead = is.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        buffer.flush();
+        return buffer.toByteArray();
+    }
+
+    static void downloadImages(String imgUrl, WebClient wc){
+        try{
+            Page page = wc.getPage(new URL("https:" + imgUrl));
+            WebResponse wr = page.getWebResponse();
+            if(wr != null){
+                String contentType = wr.getContentType();
+                InputStream is = wr.getContentAsStream();
+                byte[] ba = inputStreamToByteArray(is);
+                System.out.println(ba.length);
             }
         }
         catch(Exception ex){
@@ -181,6 +213,8 @@ public class MainSearchPageProcessor {
 
             extractImageUrls(body, f);
 
+            extractUnitDetails(body, f);
+            downloadImages(f.images[0].urlFullSize, wc);
             extractFacilityReviews(f, wc);
         }
         catch(Exception ex){

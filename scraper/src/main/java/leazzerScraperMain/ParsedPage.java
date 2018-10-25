@@ -89,6 +89,15 @@ class Facility {
     }
 }
 
+class ReviewsJson{
+
+}
+
+class ReviewsResponse{
+    Boolean success;
+    ReviewsJson reviews;
+}
+
 public class ParsedPage{
     Facility[] facilities;
     Pagination pagination;
