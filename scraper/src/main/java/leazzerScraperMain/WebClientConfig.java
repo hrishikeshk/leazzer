@@ -14,6 +14,8 @@ public class WebClientConfig {
         wco.setThrowExceptionOnFailingStatusCode(true);
         wco.setPopupBlockerEnabled(true);
 
+        wco.setUseInsecureSSL(true);
+
         return wc;
     }
 }

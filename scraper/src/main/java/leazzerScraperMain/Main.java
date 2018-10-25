@@ -67,6 +67,7 @@ public class Main {
     static void processArgs(String[] va){
         try{
             WebClient wc = new WebClient(BrowserVersion.CHROME);
+            wc.getCookieManager().setCookiesEnabled(true);
             wc = new WebClientConfig().setIgnoreMost(wc);
             for(int i = 0; i < va.length; ++i){
                 processOneArgMain(va[i], wc, 1, -1);

@@ -1,15 +1,19 @@
 package leazzerScraperMain;
 
+import com.gargoylesoftware.htmlunit.Page;
 import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.DomNode;
-import com.gargoylesoftware.htmlunit.html.DomNodeList;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlElement;
+import com.gargoylesoftware.htmlunit.WebResponse;
+import com.gargoylesoftware.htmlunit.html.*;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 public class MainSearchPageProcessor {
 
@@ -102,7 +106,94 @@ public class MainSearchPageProcessor {
         return pp;
     }
 
-    public static void fetchDetailsAndPersist(String location, WebClient wc, ParsedPage pp){
+    static void extractImageUrls(HtmlElement body, Facility f){
+        HtmlElement galleryNode = body.querySelector(".gallery");
+        if(galleryNode != null){
+            Iterable<DomElement> imgs = galleryNode.getChildElements();
+            Iterator<DomElement> iter = imgs.iterator();
+            List<FacilityImage> imgList = new ArrayList<FacilityImage>();
+            while(iter.hasNext()){
+                DomElement elem = iter.next();
+                FacilityImage fi = new FacilityImage();
+                fi.urlThumbnail = elem.getAttribute("data-thumb").substring(1);
+                fi.urlFullSize = fi.urlThumbnail;
+                imgList.add(fi);
+            }
+            f.images = imgList.toArray(new FacilityImage[imgList.size()]);
+        }
+    }
 
+    static void extractUnitDetails(HtmlElement body, Facility f){
+        DomNodeList<DomNode> units = body.querySelectorAll(".facility-unit-with-form");
+        FacilityUnit[] unitArr = new FacilityUnit[units.size()];
+        for(int i = 0; i < units.size(); ++i){
+            DomNode dn = units.get(i);
+            DomNode unitNodeInner = dn.querySelector(".facility-unit");
+            if(unitNodeInner != null){
+                NamedNodeMap m = unitNodeInner.getAttributes();
+                if(m != null){
+                    unitArr[i] = new FacilityUnit();
+                    Node sizeNode = m.getNamedItem("data-size");
+                    if(sizeNode != null)
+                        unitArr[i].size = sizeNode.getNodeValue();
+                    Node amenitiesNode = m.getNamedItem("data-amenities");
+                    if(amenitiesNode != null){
+                        unitArr[i].amenities = amenitiesNode.getNodeValue().split(",");
+                    }
+                }
+            }
+            DomNode priceNode = dn.querySelector(".unit-price");
+            if(priceNode != null){
+                unitArr[i].price = Double.parseDouble(priceNode.getTextContent());
+                DomNode freqNode = dn.querySelector(".unit-price-frequency");
+                if(freqNode != null){
+                    unitArr[i].priceFreq = freqNode.getTextContent();
+                }
+            }
+        }
+        f.units = unitArr;
+    }
+
+    static void extractFacilityReviews(Facility f, WebClient wc){
+        try{
+            Page page = wc.getPage(new URL("https://www.selfstorage.com/search/reviews?facilityIds[]=" + f.id));
+            WebResponse wr = page.getWebResponse();
+            if(wr != null){
+                String json = wr.getContentAsString();
+                Map<String, String> map = new Gson().fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
+                System.out.println(map.get(f.id));
+            }
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+            System.out.println("Caught exception: " + ex.getMessage());
+        }
+    }
+
+    static void processOneFacilityDetail(Facility f, WebClient wc){
+        try{
+            HtmlPage hp = wc.getPage(new URL("https://www.selfstorage.com" + f.url));
+            HtmlElement body = hp.getBody();
+
+            HtmlElement aboutNode = body.querySelector(".facility-description");
+            if(aboutNode != null)
+                f.about = aboutNode.getTextContent();
+
+            extractImageUrls(body, f);
+
+            extractFacilityReviews(f, wc);
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+            System.out.println("Caught exception: " + ex.getMessage());
+        }
+    }
+
+    public static void fetchDetailsAndPersist(String location, WebClient wc, ParsedPage pp){
+        Facility[] facs = pp.facilities;
+        for(int i = 0; i < facs.length; ++i){
+            Facility f = facs[i];
+            processOneFacilityDetail(f, wc);
+        }
     }
 }
