@@ -1,6 +1,9 @@
 package leazzerScraperMain;
 
-class Review{
+import java.util.List;
+import java.util.Map;
+
+/*class Review{
     Double rating;
     String description;
     String title;
@@ -8,6 +11,23 @@ class Review{
     public void printTest(){
         System.out.println("rating: " + rating);
         System.out.println("description: " + description);
+        System.out.println("title: " + title);
+        System.out.println("excerpt: " + excerpt);
+    }
+}*/
+
+class ReviewEntry{
+    String listing_avail_id;
+    double rating;
+    String title;
+    String message;
+    String excerpt;
+    String nickname;
+    String timestamp;
+    String stars;
+    public void printTest(){
+        System.out.println("rating: " + rating);
+        System.out.println("description: " + message);
         System.out.println("title: " + title);
         System.out.println("excerpt: " + excerpt);
     }
@@ -63,7 +83,7 @@ class Facility {
     String about;
     String url;
     double distance;
-    Review[] reviews;
+    ReviewEntry[] reviews;
     FacilityLocation location;
     FacilityUnit[] units;
     FacilityImage[] images;
@@ -89,13 +109,10 @@ class Facility {
     }
 }
 
-class ReviewsJson{
-
-}
-
 class ReviewsResponse{
     Boolean success;
-    ReviewsJson reviews;
+    Map<String, List<ReviewEntry>> reviews;
+    String message;
 }
 
 public class ParsedPage{

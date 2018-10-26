@@ -160,43 +160,19 @@ public class MainSearchPageProcessor {
 
     static void extractFacilityReviews(Facility f, WebClient wc){
         try{
+            System.out.println("Fetching facility reviews: " + f.url);
+            //Page page = wc.getPage(new URL("https://www.selfstorage.com/search/reviews?facilityIds[]=206354"));
             Page page = wc.getPage(new URL("https://www.selfstorage.com/search/reviews?facilityIds[]=" + f.id));
             WebResponse wr = page.getWebResponse();
             if(wr != null){
                 String json = wr.getContentAsString();
-                //Map<String, String> map = new Gson().fromJson(json, new TypeToken<Map<String, String>>() {}.getType());
-                System.out.println(json);
+                ReviewsResponse map = new Gson().fromJson(json, ReviewsResponse.class);
+                // new TypeToken<ReviewsResponse>() {}.getType()
+                f.reviews = map.reviews.get(f.id).toArray(new ReviewEntry[map.reviews.size()]);
             }
         }
         catch(Exception ex){
-            ex.printStackTrace();
-            System.out.println("Caught exception: " + ex.getMessage());
-        }
-    }
-
-    static byte[] inputStreamToByteArray(InputStream is) throws IOException {
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int nRead;
-        byte[] data = new byte[16384];
-        while ((nRead = is.read(data, 0, data.length)) != -1) {
-            buffer.write(data, 0, nRead);
-        }
-        buffer.flush();
-        return buffer.toByteArray();
-    }
-
-    static void downloadImages(String imgUrl, WebClient wc){
-        try{
-            Page page = wc.getPage(new URL("https:" + imgUrl));
-            WebResponse wr = page.getWebResponse();
-            if(wr != null){
-                String contentType = wr.getContentType();
-                InputStream is = wr.getContentAsStream();
-                byte[] ba = inputStreamToByteArray(is);
-                System.out.println(ba.length);
-            }
-        }
-        catch(Exception ex){
+            System.out.println("ERROR: FAILED fetching facility reviews: " + f.url);
             ex.printStackTrace();
             System.out.println("Caught exception: " + ex.getMessage());
         }
@@ -204,6 +180,7 @@ public class MainSearchPageProcessor {
 
     static void processOneFacilityDetail(Facility f, WebClient wc){
         try{
+            System.out.println("Fetching facility detail: " + f.url);
             HtmlPage hp = wc.getPage(new URL("https://www.selfstorage.com" + f.url));
             HtmlElement body = hp.getBody();
 
@@ -212,12 +189,16 @@ public class MainSearchPageProcessor {
                 f.about = aboutNode.getTextContent();
 
             extractImageUrls(body, f);
-
             extractUnitDetails(body, f);
-            downloadImages(f.images[0].urlFullSize, wc);
             extractFacilityReviews(f, wc);
+            System.out.println("Finished fetching facility with details, now persisting ... " + f.id);
+
+            Persistence.persist(wc, f);
+
+            System.out.println("Finished persisting facility with details... " + f.id);
         }
         catch(Exception ex){
+            System.out.println("ERROR: Failed fetching facility detail: " + f.url);
             ex.printStackTrace();
             System.out.println("Caught exception: " + ex.getMessage());
         }
