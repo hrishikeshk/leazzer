@@ -11,8 +11,19 @@ import java.net.URL;
 
 public class Persistence {
 
-    static void postFacilityFeilds(WebClient wc, Facility f){
+    static Boolean postFacilityFields(WebClient wc, Facility f){
+        Boolean success = false;
+        try{
 
+            success = true;
+        }
+        catch(Exception ex){
+            System.out.println("ERROR: Failed to post facility field details... " + f.id);
+            ex.printStackTrace();
+            System.out.println("Caught exception: " + ex.getMessage());
+            success = false;
+        }
+        return success;
     }
 
     static byte[] inputStreamToByteArray(InputStream is) throws IOException {
@@ -26,14 +37,14 @@ public class Persistence {
         return buffer.toByteArray();
     }
 
-    static byte[] downloadImages(String imgUrl, WebClient wc){
+    static byte[] downloadImage(String imgUrl, WebClient wc){
         byte[] ba = null;
         try{
             System.out.println("Fetching facility Image: " + imgUrl);
             Page page = wc.getPage(new URL("https:" + imgUrl));
             WebResponse wr = page.getWebResponse();
             if(wr != null){
-                String contentType = wr.getContentType();
+                //String contentType = wr.getContentType();
                 InputStream is = wr.getContentAsStream();
                 ba = inputStreamToByteArray(is);
             }
@@ -46,11 +57,21 @@ public class Persistence {
         return ba;
     }
 
-    static void postFacilityImages(WebClient wc, Facility f){
-        downloadImages("", wc);
+    static void postFacilityImage(WebClient wc, Facility f, byte[] ba){
+
     }
 
     public static void persist(WebClient wc, Facility f){
-
+        Boolean success = postFacilityFields(wc, f);
+        if(success){
+            FacilityImage[] imgs = f.images;
+            for(int i = 0; i < imgs.length; ++i){
+                byte[] ba = downloadImage(imgs[i].urlFullSize, wc);
+                postFacilityImage(wc, f, ba);
+            }
+        }
+        else{
+            System.out.println("ERROR: Failed to persist Facility Details..." + f.id);
+        }
     }
 }
