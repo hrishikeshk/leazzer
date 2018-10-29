@@ -161,14 +161,15 @@ public class MainSearchPageProcessor {
     static void extractFacilityReviews(Facility f, WebClient wc){
         try{
             System.out.println("Fetching facility reviews: " + f.url);
-            //Page page = wc.getPage(new URL("https://www.selfstorage.com/search/reviews?facilityIds[]=206354"));
-            Page page = wc.getPage(new URL("https://www.selfstorage.com/search/reviews?facilityIds[]=" + f.id));
+            Page page = wc.getPage(new URL("https://www.selfstorage.com/search/reviews?facilityIds[]=206354"));
+            ////Page page = wc.getPage(new URL("https://www.selfstorage.com/search/reviews?facilityIds[]=" + f.id));
             WebResponse wr = page.getWebResponse();
             if(wr != null){
                 String json = wr.getContentAsString();
                 ReviewsResponse map = new Gson().fromJson(json, ReviewsResponse.class);
                 // new TypeToken<ReviewsResponse>() {}.getType()
-                f.reviews = map.reviews.get(f.id).toArray(new ReviewEntry[map.reviews.size()]);
+                ////f.reviews = map.reviews.get(f.id).toArray(new ReviewEntry[map.reviews.size()]);
+                f.reviews = map.reviews.get("206354").toArray(new ReviewEntry[map.reviews.size()]);
             }
         }
         catch(Exception ex){

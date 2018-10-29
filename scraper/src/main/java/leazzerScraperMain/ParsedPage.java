@@ -115,6 +115,15 @@ class ReviewsResponse{
     String message;
 }
 
+class ImageDetail{
+    byte[] ba;
+    String mimeType;
+    ImageDetail(byte[] a, String m){
+        ba = a;
+        mimeType = m;
+    }
+}
+
 public class ParsedPage{
     Facility[] facilities;
     Pagination pagination;
