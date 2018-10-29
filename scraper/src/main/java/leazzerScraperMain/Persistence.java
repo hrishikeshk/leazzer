@@ -51,7 +51,7 @@ public class Persistence {
         listKV.add(new NameValuePair("unit" + String.valueOf(unitIter) + "num_amenities", String.valueOf(num_unit_amenities)));
 
         for(int j = 0; j < num_unit_amenities; ++j){
-            String genName = "unit" + String.valueOf(unitIter) + "." + String.valueOf(j) + "amenity";
+            String genName = "unit" + String.valueOf(unitIter) + "_" + String.valueOf(j) + "amenity";
             listKV.add(new NameValuePair(genName, f.units[unitIter].amenities[j]));
         }
     }

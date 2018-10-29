@@ -3,19 +3,6 @@ package leazzerScraperMain;
 import java.util.List;
 import java.util.Map;
 
-/*class Review{
-    Double rating;
-    String description;
-    String title;
-    String excerpt;
-    public void printTest(){
-        System.out.println("rating: " + rating);
-        System.out.println("description: " + description);
-        System.out.println("title: " + title);
-        System.out.println("excerpt: " + excerpt);
-    }
-}*/
-
 class ReviewEntry{
     String listing_avail_id;
     double rating;

@@ -139,7 +139,7 @@ function persist_unit_amenities($id, $unit_id, $unit_iter){
   }
 
   for($i=0; $i < $num_unit_amenities; $i++){
-    $amenity = mysqli_real_escape_string($conn, $_POST["unit".$unit_iter.".".$i."amenity"]);
+    $amenity = mysqli_real_escape_string($conn, $_POST["unit".$unit_iter."_".$i."amenity"]);
     $res = mysqli_query($conn, "insert into unit_amenity(unit_id, amenity) values('".$unit_id."','".$amenity."')") OR die('Failed to insert unit amenity: ' . $unit_id.mysqli_error($conn));
   }
 }
