@@ -14,66 +14,97 @@ function facility_exists($id){
 	  return false;
 }
 
+function get_unit_id($id, $size, $price, $description, $promo, $price_freq){
+  global $conn;
+  $res = mysqli_query($conn, "SELECT * FROM unit WHERE facility_id='" . $id. "' and size='".$size."' and price='".$price."' and description='".$description."' and promo='".$promo."' and price_freq='".$price_freq."'") OR die('Failed to check inserted unit by facility id: '.$id.mysqli_error($conn));
+	if(mysqli_num_rows($res)!=0){
+		$arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
+		return $arr['auto_id'];
+	}
+	else
+	  return false;
+}
+
 function facility_delete($id){
   global $conn;
-  $res = mysqli_query($conn, "delete FROM facility_master WHERE id='" . $id. "'") OR die('Failed to delete existing facility by id: '.$id);
+  $res = mysqli_query($conn, "delete FROM facility_master WHERE id='" . $id. "'") OR die('Failed to delete existing facility by id: '.$id.mysqli_error($conn));
+}
+
+function image_delete($id){
+  global $conn;
+  $res = mysqli_query($conn, "delete FROM image WHERE facility_id='" . $id. "'") OR die('Failed to delete existing image by id: '.$id.mysqli_error($conn));
 }
 
 function unit_delete($id){
   global $conn;
-  $res = mysqli_query($conn, "delete FROM unit WHERE facility_id='" . $id. "'") OR die('Failed to delete existing unit by id: '.$id);
+  $res = mysqli_query($conn, "delete FROM unit WHERE facility_id='" . $id. "'") OR die('Failed to delete existing unit by id: '.$id.mysqli_error($conn));
 }
 
 function review_delete($id){
   global $conn;
-  $res = mysqli_query($conn, "delete FROM review WHERE facility_id='" . $id. "'") OR die('Failed to delete existing review by id: '.$id);
+  $res = mysqli_query($conn, "delete FROM review WHERE facility_id='" . $id. "'") OR die('Failed to delete existing review by id: '.$id.mysqli_error($conn));
 }
 
 function unit_amenities_delete($id){
   global $conn;
-    $res = mysqli_query($conn, "delete FROM unit_amenity WHERE unit_id in (select auto_id from unit where facility_id='".$id."')") OR die('Failed to delete existing unit amenities by id: '.$id);
+    $res = mysqli_query($conn, "delete FROM unit_amenity WHERE unit_id in (select auto_id from unit where facility_id='".$id."')") OR die('Failed to delete existing unit amenities by id: '.$id.mysqli_error($conn));
 }
 
 function facility_amenities_delete($id){
   global $conn;
-    $res = mysqli_query($conn, "delete FROM facility_amenity WHERE facility_id='" . $id. "'") OR die('Failed to delete existing facility amenities by id: '.$id);
+    $res = mysqli_query($conn, "delete FROM facility_amenity WHERE facility_id='" . $id. "'") OR die('Failed to delete existing facility amenities by id: '.$id.mysqli_error($conn));
 }
 
 function persist_reviews($id){
   global $conn;
   
   $num_reviews =$_POST['num_reviews'];
-  if(num_reviews > 100){
+  if($num_reviews > 100){
     $num_reviews = 100;
   }
   
   for($i=0; $i < $num_reviews; $i++){
     $listing_avail_id = $_POST["review".$i."listing_avail_id"];
     $rating = $_POST["review".$i."rating"];
-    $title = $_POST["review".$i."title"];
-    $message = $_POST["review".$i."message"];
-    $excerpt = $_POST["review".$i."excerpt"];
-    $nickname = $_POST["review".$i."nickname"];
-    $timestamp = $_POST["review".$i."timestamp"];
-    $stars = $_POST["review".$i."stars"];
+    $title = mysqli_real_escape_string($conn, $_POST["review".$i."title"]);
+    $message = mysqli_real_escape_string($conn, $_POST["review".$i."message"]);
+    $excerpt = mysqli_real_escape_string($conn, $_POST["review".$i."excerpt"]);
+    $nickname = mysqli_real_escape_string($conn, $_POST["review".$i."nickname"]);
+    $timestamp = mysqli_real_escape_string($conn, $_POST["review".$i."timestamp"]);
+    $stars = mysqli_real_escape_string($conn, $_POST["review".$i."stars"]);
     
-    $res = mysqli_query($conn, "insert into review(facility_id, listing_avail_id, rating, title, message, excerpt, nickname, timestamp, stars) values('".$id."','".$listing_avail_id."','".$rating."','".$title."','".$message."','".$excerpt."','".$nickname."','".$timestamp."','".$stars."'")) OR die('Failed to insert facility review: ' . $id);
+    $res = mysqli_query($conn, "insert into review(facility_id, listing_avail_id, rating, title, message, excerpt, nickname, timestamp, stars) values('".$id."','".$listing_avail_id."','".$rating."','".$title."','".$message."','".$excerpt."','".$nickname."','".$timestamp."','".$stars."')") OR die('Failed to insert facility review: ' . $id.mysqli_error($conn));
   }
 }
 
 function persist_facility_amenities($id){
   global $conn;
   
-  $num_facility_amenities =$_POST["facility".$id."num_amenities"];
-  if(num_facility_amenities > 10){
+  $num_facility_amenities =$_POST["num_amenities"];
+  if($num_facility_amenities > 10){
     $num_facility_amenities = 10;
   }
 
   for($i=0; $i < $num_facility_amenities; $i++){
-    $facility_id = $_POST[$id];
-    $amenity = $_POST["facility".$i."amenity"];
+    $amenity = mysqli_real_escape_string($conn, $_POST["facility".$i."amenity"]);
     
-    $res = mysqli_query($conn, "insert into facility_amenity(facility_id, amenity) values('".$id."','".$amenity."'")) OR die('Failed to insert facility amenity: ' . $id);
+    $res = mysqli_query($conn, "insert into facility_amenity(facility_id, amenity) values('".$id."','".$amenity."')") OR die('Failed to insert facility amenity: ' . $id.mysqli_error($conn));
+  }
+}
+
+function persist_image_paths($id){
+  global $conn;
+  
+  $num_facility_images =$_POST["num_images"];
+  if($num_facility_images > 100){
+    $num_facility_images = 100;
+  }
+
+  for($i=0; $i < $num_facility_images; $i++){
+    $full_url = mysqli_real_escape_string($conn, $_POST["facility".$i."image_full_url"]);
+    $tn_url = mysqli_real_escape_string($conn, $_POST["facility".$i."image_tn_url"]);
+    
+    $res = mysqli_query($conn, "insert into image(facility_id, url_fullsize, url_thumbsize) values('".$id."','".$full_url."','".$tn_url."')") OR die('Failed to insert facility amenity: ' . $id.mysqli_error($conn));
   }
 }
 
@@ -81,37 +112,35 @@ function persist_units($id){
   global $conn;
   
   $num_units =$_POST['num_units'];
-  if(num_units > 100){
+  if($num_units > 100){
     $num_units = 100;
   }
   
   for($i=0; $i < $num_units; $i++){
-    $size = $_POST["unit".$i."size"];
+    $size = mysqli_real_escape_string($conn, $_POST["unit".$i."size"]);
     $price = $_POST["unit".$i."price"];
-    $description = $_POST["unit".$i."description"];
-    $promo = $_POST["unit".$i."promo"];
-    $price_freq = $_POST["unit".$i."price_freq"];
+    $description = mysqli_real_escape_string($conn, $_POST["unit".$i."description"]);
+    $promo = mysqli_real_escape_string($conn, $_POST["unit".$i."promo"]);
+    $price_freq = mysqli_real_escape_string($conn, $_POST["unit".$i."price_freq"]);
     
-    $res = mysqli_query($conn, "insert into unit(facility_id, size, price, description, promo, price_freq) values('".$id."','".$size."','".$price."','".$description."','".$promo."','".$price_freq."'")) OR die('Failed to insert unit for facility: ' . $id);
+    $res = mysqli_query($conn, "insert into unit(facility_id, size, price, description, promo, price_freq) values('".$id."','".$size."','".$price."','".$description."','".$promo."','".$price_freq."')") OR die('Failed to insert unit for facility: ' . $id.mysqli_error($conn));
     
     $unit_id = get_unit_id($id, $size, $price, $description, $promo, $price_freq);
     persist_unit_amenities($id, $unit_id, $i);
   }
 }
 
-function persist_unit_amenities($id, $unit_id, $facility_iter){
+function persist_unit_amenities($id, $unit_id, $unit_iter){
   global $conn;
   
-  $num_unit_amenities =$_POST["unit".$unit_id."num_amenities"];
-  if(num_unit_amenities > 10){
-    $num_unit_amenities = 10;
+  $num_unit_amenities =$_POST["unit".$unit_iter."num_amenities"];
+  if($num_unit_amenities > 100){
+    $num_unit_amenities = 100;
   }
 
   for($i=0; $i < $num_unit_amenities; $i++){
-    $unit_id = $_POST[$unit_id];
-    $amenity = $_POST["unit".$facility_iter.".".$i."amenity"];
-    
-    $res = mysqli_query($conn, "insert into unit_amenity(unit_id, amenity) values('".$unit_id."','".$amenity."'")) OR die('Failed to insert unit amenity: ' . $unit_id);
+    $amenity = mysqli_real_escape_string($conn, $_POST["unit".$unit_iter.".".$i."amenity"]);
+    $res = mysqli_query($conn, "insert into unit_amenity(unit_id, amenity) values('".$unit_id."','".$amenity."')") OR die('Failed to insert unit amenity: ' . $unit_id.mysqli_error($conn));
   }
 }
 
@@ -120,28 +149,31 @@ function handle_insert_update(){
   global $conn;
   
   $id = $_POST['id'];
-  $name = $_POST['name'];
-  $about = $_POST['about'];
-  $url = $_POST['url'];
+  $name = mysqli_real_escape_string($conn, $_POST['name']);
+  $about = mysqli_real_escape_string($conn, $_POST['about']);
+  $url = mysqli_real_escape_string($conn, $_POST['url']);
   $distance = $_POST['distance'];
-  $street = $_POST['street'];
-  $locality = $_POST['locality'];
-  $region = $_POST['region'];
-  $zip = $_POST['zip'];
+  $street = mysqli_real_escape_string($conn, $_POST['street']);
+  $locality = mysqli_real_escape_string($conn, $_POST['locality']);
+  $region = mysqli_real_escape_string($conn, $_POST['region']);
+  $zip = mysqli_real_escape_string($conn, $_POST['zip']);
   $lowest_price = $_POST['lowest_price'];
   
   $existing_facility = facility_exists($id);
-  if($existing_faciity != false){
+  if($existing_facility != false){
     facility_amenities_delete($id);
+    image_delete($id);
     review_delete($id);
     unit_amenities_delete($id);
     unit_delete($id);
     facility_delete($id);
   }
   
-  $res = mysqli_query($conn, "insert into facility_master(id, title, description, url, distance, street, locality, region, zip, lowest_price) values('".$id."','".$name."','".$about."','".$url."','".$distance."','".$street."','".$locality."','".$region."','".$zip."','".$lowest_price."'")) OR die('Failed to insert facility: ' . $id);
+  $res = mysqli_query($conn, "insert into facility_master(id, title, description, url, distance, street, locality, region, zip, lowest_price) values('".$id."','".$name."','".$about."','".$url."','".$distance."','".$street."','".$locality."','".$region."','".$zip."','".$lowest_price."')") OR die('Failed to insert facility: ' . $id.mysqli_error($conn));
   
   persist_facility_amenities($id);
+
+  persist_image_paths($id);
 
   persist_reviews($id);
 
@@ -151,7 +183,10 @@ function handle_insert_update(){
 }
 
 function upload_image($facility_id){
-  $target_dir = "../images/" . $facility_id . "/";
+  $target_dir = $dirpath = realpath(dirname(getcwd())) . "/images/" . $facility_id . "/";
+  if(!file_exists($target_dir)){
+    mkdir($target_dir, 0755, false);
+  }
   $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
   $uploadOk = 1;
   $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
@@ -172,6 +207,7 @@ function upload_image($facility_id){
 
   if (file_exists($target_file)) {
     echo "File already exists. Overwriting ... ";
+    unlink($target_file);
   }
 
   if ($_FILES["fileToUpload"]["size"] > 1024 * 1024) {

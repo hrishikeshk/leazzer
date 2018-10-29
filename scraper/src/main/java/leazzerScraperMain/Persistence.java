@@ -131,7 +131,7 @@ public class Persistence {
             Page p = wc.getPage(wr);
             WebResponse wrp = p.getWebResponse();
             String responseString = wrp.getContentAsString();
-            System.out.println(responseString);
+            //System.out.println(responseString);
             success = true;
         }
         catch(Exception ex){
@@ -207,7 +207,7 @@ public class Persistence {
             Page p = wc.getPage(wr);
             WebResponse wrp = p.getWebResponse();
             String responseString = wrp.getContentAsString();
-            System.out.println(responseString);
+            //System.out.println(responseString);
             success = true;
         }
         catch(Exception ex){
@@ -223,12 +223,14 @@ public class Persistence {
         Boolean success = postFacilityFields(wc, f);
         if(success){
             FacilityImage[] imgs = f.images;
-            for(int i = 0; i < imgs.length; ++i){
-                String imgUrl = imgs[i].urlFullSize;
-                ImageDetail id = downloadImage(imgUrl, wc);
-                int lastSlash = imgUrl.lastIndexOf("/");
-                String fileName = imgUrl.substring(lastSlash + 1);
-                postFacilityImage(wc, f, id, fileName);
+            if(imgs != null){
+                for(int i = 0; i < imgs.length; ++i){
+                    String imgUrl = imgs[i].urlFullSize;
+                    ImageDetail id = downloadImage(imgUrl, wc);
+                    int lastSlash = imgUrl.lastIndexOf("/");
+                    String fileName = imgUrl.substring(lastSlash + 1);
+                    postFacilityImage(wc, f, id, fileName);
+                }
             }
         }
         else{
