@@ -3,10 +3,8 @@ package leazzerScraperMain;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.google.gson.Gson;
 
 import java.net.URL;
-import java.util.Map;
 
 public class Main {
 
@@ -18,7 +16,7 @@ public class Main {
         for(int i = 0; i < args.length; ++i){
             va[i] = new String();
             va[i] = args[i].replace("\"", "");
-            System.out.println("Received request to fetch: " + va[i]);
+            Logger.println("Received request to fetch: " + va[i]);
         }
         return va;
     }
@@ -36,24 +34,24 @@ public class Main {
 
         Facility[] facs = pp.facilities;
         for(int i = 0; i < facs.length; ++i){
-            System.out.println(" ---- facility INFO ... ");
+            Logger.println(" ---- facility INFO ... ");
             facs[i].printTest();
         }
     }
 
     static void processOneArgMain(String arg, WebClient wc, int pagenum, int maxPages){
         try{
-            System.out.println("Fetching now page# " + pagenum + "... " + arg);
+            Logger.println("Fetching now page# " + pagenum + "... " + arg);
             HtmlPage hp = wc.getPage(new URL(consSearchURL(arg, pagenum)));
             ParsedPage pp = MainSearchPageProcessor.extractFacilities(hp, pagenum == 1);
             if(pagenum == 1){
-                System.out.println("Num pages found for " + arg + ": " + pp.pagination.numPages);
-                System.out.println("Num facilities found for " + arg + ": " + pp.pagination.numFacilities);
+                Logger.println("Num pages found for " + arg + ": " + pp.pagination.numPages);
+                Logger.println("Num facilities found for " + arg + ": " + pp.pagination.numFacilities);
             }
             MainSearchPageProcessor.fetchDetailsAndPersist(arg, wc, pp);
             //printTestFacility(pp);
 
-            System.out.println("Finished processing page# " + pagenum + "... for " + arg);
+            Logger.println("Finished processing page# " + pagenum + "... for " + arg);
             if(maxPages == -1) {
                 Pagination pageInfo = pp.pagination;
                 int numPages = pageInfo.numPages;
@@ -66,7 +64,7 @@ public class Main {
         }
         catch(Exception ex){
             ex.printStackTrace();
-            System.out.println("Caught exception: " + ex.getMessage());
+            Logger.println("Caught exception: " + ex.getMessage());
         }
     }
 
@@ -80,17 +78,25 @@ public class Main {
             }
         }
         catch(Exception ex){
-            System.out.println("Caught exception: " + ex.getMessage());
+            Logger.println("Caught exception: " + ex.getMessage());
         }
     }
 
     public static void main(String[] args){
         try{
+            new Logger();
+
+            Logger.println("Starting scraper www.selfstorage.com ... ");
+
             String[] va = validateArgs(args);
             processArgs(va);
+
+            Logger.println("Finished scraper www.selfstorage.com");
+            Logger.fclose();
         }
         catch(Exception ex){
             System.out.println("Caught exception: " + ex.getMessage());
+            Logger.fclose();
         }
     }
 }

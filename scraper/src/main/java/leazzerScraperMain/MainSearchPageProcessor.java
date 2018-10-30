@@ -5,19 +5,14 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.WebResponse;
 import com.gargoylesoftware.htmlunit.html.*;
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class MainSearchPageProcessor {
 
@@ -160,7 +155,7 @@ public class MainSearchPageProcessor {
 
     static void extractFacilityReviews(Facility f, WebClient wc){
         try{
-            System.out.println("Fetching facility reviews: " + f.url);
+            Logger.println("Fetching facility reviews: " + f.url);
             //Page page = wc.getPage(new URL("https://www.selfstorage.com/search/reviews?facilityIds[]=206354"));
             Page page = wc.getPage(new URL("https://www.selfstorage.com/search/reviews?facilityIds[]=" + f.id));
             WebResponse wr = page.getWebResponse();
@@ -168,20 +163,25 @@ public class MainSearchPageProcessor {
                 String json = wr.getContentAsString();
                 ReviewsResponse map = new Gson().fromJson(json, ReviewsResponse.class);
                 // new TypeToken<ReviewsResponse>() {}.getType()
-                f.reviews = map.reviews.get(f.id).toArray(new ReviewEntry[map.reviews.size()]);
-                //f.reviews = map.reviews.get("206354").toArray(new ReviewEntry[map.reviews.size()]);
+                if(map != null && map.reviews != null){
+                    List<ReviewEntry> la = map.reviews.get(f.id);
+                    if(la != null && la.size() > 0){
+                        f.reviews = map.reviews.get(f.id).toArray(new ReviewEntry[map.reviews.size()]);
+                        //f.reviews = map.reviews.get("206354").toArray(new ReviewEntry[map.reviews.size()]);
+                    }
+                }
             }
         }
         catch(Exception ex){
-            System.out.println("ERROR: FAILED fetching facility reviews: " + f.url);
+            Logger.println("ERROR: FAILED fetching facility reviews: " + f.url);
             ex.printStackTrace();
-            System.out.println("Caught exception: " + ex.getMessage());
+            Logger.println("Caught exception: " + ex.getMessage());
         }
     }
 
     static void processOneFacilityDetail(Facility f, WebClient wc){
         try{
-            System.out.println("Fetching facility detail: " + f.url);
+            Logger.println("Fetching facility detail: " + f.url);
             HtmlPage hp = wc.getPage(new URL("https://www.selfstorage.com" + f.url));
             HtmlElement body = hp.getBody();
 
@@ -192,16 +192,16 @@ public class MainSearchPageProcessor {
             extractImageUrls(body, f);
             extractUnitDetails(body, f);
             extractFacilityReviews(f, wc);
-            System.out.println("Finished fetching facility with details, now persisting ... " + f.id);
+            Logger.println("Finished fetching facility with details, now persisting ... " + f.id);
 
             Persistence.persist(wc, f);
 
-            System.out.println("Finished persisting facility with details... " + f.id);
+            Logger.println("Finished persisting facility with details... " + f.id);
         }
         catch(Exception ex){
-            System.out.println("ERROR: Failed fetching facility detail: " + f.url);
+            Logger.println("ERROR: Failed fetching facility detail: " + f.url);
             ex.printStackTrace();
-            System.out.println("Caught exception: " + ex.getMessage());
+            Logger.println("Caught exception: " + ex.getMessage());
         }
     }
 

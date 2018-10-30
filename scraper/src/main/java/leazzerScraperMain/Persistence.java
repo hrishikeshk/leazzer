@@ -129,15 +129,15 @@ public class Persistence {
 
             wr.setRequestParameters(listKV);
             Page p = wc.getPage(wr);
-            WebResponse wrp = p.getWebResponse();
-            String responseString = wrp.getContentAsString();
+            //WebResponse wrp = p.getWebResponse();
+            //String responseString = wrp.getContentAsString();
             //System.out.println(responseString);
             success = true;
         }
         catch(Exception ex){
-            System.out.println("ERROR: Failed to post facility field details... " + f.id);
+            Logger.println("ERROR: Failed to post facility field details... " + f.id);
             ex.printStackTrace();
-            System.out.println("Caught exception: " + ex.getMessage());
+            Logger.println("Caught exception: " + ex.getMessage());
             success = false;
         }
         return success;
@@ -158,7 +158,7 @@ public class Persistence {
         byte[] ba = null;
         String contentType = null;
         try{
-            System.out.println("Fetching facility Image: " + imgUrl);
+            Logger.println("Fetching facility Image: " + imgUrl);
             Page page = wc.getPage(new URL("https:" + imgUrl));
             WebResponse wr = page.getWebResponse();
             if(wr != null){
@@ -168,9 +168,9 @@ public class Persistence {
             }
         }
         catch(Exception ex){
-            System.out.println("ERROR: Failed fetching facility image: " + imgUrl);
+            Logger.println("ERROR: Failed fetching facility image: " + imgUrl);
             ex.printStackTrace();
-            System.out.println("Caught exception: " + ex.getMessage());
+            Logger.println("Caught exception: " + ex.getMessage());
         }
         return new ImageDetail(ba, contentType);
     }
@@ -205,15 +205,15 @@ public class Persistence {
 
             wr.setRequestParameters(listKV);
             Page p = wc.getPage(wr);
-            WebResponse wrp = p.getWebResponse();
-            String responseString = wrp.getContentAsString();
+            //WebResponse wrp = p.getWebResponse();
+            //String responseString = wrp.getContentAsString();
             //System.out.println(responseString);
             success = true;
         }
         catch(Exception ex){
-            System.out.println("ERROR: Failed to post facility field details... " + f.id);
+            Logger.println("ERROR: Failed to post facility images... " + f.id);
             ex.printStackTrace();
-            System.out.println("Caught exception: " + ex.getMessage());
+            Logger.println("Caught exception: " + ex.getMessage());
             success = false;
         }
         return success;
@@ -234,7 +234,7 @@ public class Persistence {
             }
         }
         else{
-            System.out.println("ERROR: Failed to persist Facility Details..." + f.id);
+            Logger.println("ERROR: Failed to persist Facility Details..." + f.id);
         }
     }
 }
