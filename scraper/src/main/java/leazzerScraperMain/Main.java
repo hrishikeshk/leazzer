@@ -9,14 +9,16 @@ import java.net.URL;
 public class Main {
 
     static String[] validateArgs(String[] args) throws Exception{
-        if(args.length < 1){
-            throw new Exception("No command line arguments passed. Pass at least one city name or zip code...");
+        if(args.length < 3){
+            throw new Exception("Incorrect number of command line arguments passed. Pass admin user/pass and at least one city name or zip code...");
         }
-        String[] va = new String[args.length];
-        for(int i = 0; i < args.length; ++i){
-            va[i] = new String();
-            va[i] = args[i].replace("\"", "");
-            Logger.println("Received request to fetch: " + va[i]);
+        Persistence.adminUser = args[0].replace("\"", "");
+        Persistence.adminPass = args[1].replace("\"", "");
+        String[] va = new String[args.length - 2];
+        for(int i = 2; i < args.length; ++i){
+            va[i - 2] = new String();
+            va[i - 2] = args[i].replace("\"", "");
+            Logger.println("Received request to fetch: " + va[i - 2]);
         }
         return va;
     }

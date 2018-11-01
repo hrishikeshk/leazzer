@@ -231,7 +231,7 @@ return $data;
     		//print_r($result['results'][0]['geometry']['location']['lat']);
     		$lat = $result['results'][0]['geometry']['location']['lat'];
     		$lng = $result['results'][0]['geometry']['location']['lng'];
-    		$query = "select *,(6371 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as distance from facility having distance < 10000 and searchable=1 order by distance limit 100";
+    		$query = "select *,(6371 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as distance from facility where searchable=1 having distance < 10000 order by distance limit 100";
 			}
 			else if(strpos((isset($_POST['search'])?trim($_POST['search']):""),",") !== false)
 			{
@@ -239,11 +239,11 @@ return $data;
 				/*if(count($searchArr) > 1)
 					$query = "select * from facility where searchable=1 and companyname LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[1])?trim($searchArr[1]):"")."%'   ".($filter==""?"":$filter)." LIMIT 100";
 				else*/
-					$query = "select * from facility where searchable=1 and companyname LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%'   ".($filter==""?"":$filter)." LIMIT 100";
+					$query = "select * from facility where searchable=1 and (companyname LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%')   ".($filter==""?"":$filter)." LIMIT 100";
 			}
 			else
 			{
-				$query = "select * from facility where searchable=1 and companyname LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%'   ".($filter==""?"":$filter)." order by companyname LIMIT 100";
+				$query = "select * from facility where searchable=1 and (companyname LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%')   ".($filter==""?"":$filter)." order by companyname LIMIT 100";
 			}
 			
 			$res = mysqli_query($conn,$query);

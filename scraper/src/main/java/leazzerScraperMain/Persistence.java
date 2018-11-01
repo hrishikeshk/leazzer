@@ -12,6 +12,9 @@ import java.util.List;
 
 public class Persistence {
 
+    static String adminUser;
+    static String adminPass;
+
     static void appendFacilityAmenities(Facility f, List<NameValuePair> listKV){
         int num_amenities = 0;
         if(f.facilityAmenities != null){
@@ -117,8 +120,8 @@ public class Persistence {
             WebRequest wr = new WebRequest(new URL(leazzerAdminUrl));
             wr.setHttpMethod(HttpMethod.POST);
             wr.setEncodingType(FormEncodingType.URL_ENCODED);
-            NameValuePair username = new NameValuePair("username", "admin");
-            NameValuePair password = new NameValuePair("password", "admin");
+            NameValuePair username = new NameValuePair("username", adminUser);
+            NameValuePair password = new NameValuePair("password", adminPass);
             NameValuePair action = new NameValuePair("action", "insertupdate");
             List<NameValuePair> listKV = new ArrayList<NameValuePair>();
             listKV.add(username);
@@ -182,8 +185,8 @@ public class Persistence {
             WebRequest wr = new WebRequest(new URL(leazzerAdminUrl));
             wr.setHttpMethod(HttpMethod.POST);
             wr.setEncodingType(FormEncodingType.MULTIPART);
-            NameValuePair username = new NameValuePair("username", "admin");
-            NameValuePair password = new NameValuePair("password", "admin");
+            NameValuePair username = new NameValuePair("username", adminUser);
+            NameValuePair password = new NameValuePair("password", adminPass);
             NameValuePair action = new NameValuePair("action", "uploadimage");
             List<NameValuePair> listKV = new ArrayList<NameValuePair>();
             listKV.add(username);
