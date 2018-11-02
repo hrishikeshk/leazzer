@@ -143,7 +143,7 @@ public class MainSearchPageProcessor {
             }
             DomNode priceNode = dn.querySelector(".unit-price");
             if(priceNode != null){
-                unitArr[i].price = Double.parseDouble(priceNode.getTextContent().substring(1));
+                unitArr[i].price = Double.parseDouble(priceNode.getTextContent().substring(1).replaceAll(",", ""));
                 DomNode freqNode = dn.querySelector(".unit-price-frequency");
                 if(freqNode != null){
                     unitArr[i].priceFreq = freqNode.getTextContent();

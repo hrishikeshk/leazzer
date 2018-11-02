@@ -113,10 +113,41 @@ public class Persistence {
         appendUnits(f, listKV);
     }
 
+    static Boolean postWithRetry(WebClient wc, WebRequest wr, Facility f, int attempt){
+        Boolean success = false;
+        try{
+            wc.getPage(wr);
+            //WebResponse wrp = p.getWebResponse();
+            //String responseString = wrp.getContentAsString();
+            //System.out.println(responseString);
+            success = true;
+        }
+        catch(FailingHttpStatusCodeException fh){
+            Logger.println("Empty web response: " + fh.getStatusCode() + " : " + fh.getStatusCode() + " : " + fh.getResponse().getContentAsString());
+            if(attempt < 3){
+                Logger.println("Network related problems: re-attempting ... attempt # " + (attempt + 1) + " : facility # " + f.id);
+                success = postWithRetry(wc, wr, f, attempt + 1);
+            }
+            else{
+                Logger.println("ERROR: Failed to post facility field details... " + f.id);
+                fh.printStackTrace();
+                Logger.println("Caught exception: " + fh.getMessage());
+                success = false;
+            }
+        }
+        catch(Exception ex){
+            Logger.println("ERROR: Failed to post facility field details... " + f.id);
+            ex.printStackTrace();
+            Logger.println("Caught exception: " + ex.getMessage());
+            success = false;
+        }
+        return success;
+    }
+
     static Boolean postFacilityFields(WebClient wc, Facility f){
         Boolean success = false;
         String leazzerAdminUrl = "https://www.leazzer.com/admin/facility_detail.php";
-        try{
+        try {
             WebRequest wr = new WebRequest(new URL(leazzerAdminUrl));
             wr.setHttpMethod(HttpMethod.POST);
             wr.setEncodingType(FormEncodingType.URL_ENCODED);
@@ -131,11 +162,8 @@ public class Persistence {
             appendFacilityFields(f, listKV);
 
             wr.setRequestParameters(listKV);
-            Page p = wc.getPage(wr);
-            //WebResponse wrp = p.getWebResponse();
-            //String responseString = wrp.getContentAsString();
-            //System.out.println(responseString);
-            success = true;
+
+            success = postWithRetry(wc, wr, f, 1);
         }
         catch(Exception ex){
             Logger.println("ERROR: Failed to post facility field details... " + f.id);
@@ -181,7 +209,7 @@ public class Persistence {
     static Boolean postFacilityImage(WebClient wc, Facility f, ImageDetail id, String fileName){
         Boolean success = false;
         String leazzerAdminUrl = "https://www.leazzer.com/admin/facility_detail.php";
-        try{
+        try {
             WebRequest wr = new WebRequest(new URL(leazzerAdminUrl));
             wr.setHttpMethod(HttpMethod.POST);
             wr.setEncodingType(FormEncodingType.MULTIPART);
@@ -207,14 +235,11 @@ public class Persistence {
             listKV.add(imgKV);
 
             wr.setRequestParameters(listKV);
-            Page p = wc.getPage(wr);
-            //WebResponse wrp = p.getWebResponse();
-            //String responseString = wrp.getContentAsString();
-            //System.out.println(responseString);
-            success = true;
+
+            success = postWithRetry(wc, wr, f, 1);
         }
         catch(Exception ex){
-            Logger.println("ERROR: Failed to post facility images... " + f.id);
+            Logger.println("ERROR: Failed to post facility image ... " + f.id);
             ex.printStackTrace();
             Logger.println("Caught exception: " + ex.getMessage());
             success = false;

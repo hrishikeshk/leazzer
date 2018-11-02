@@ -5,7 +5,7 @@ import java.io.PrintWriter;
 import java.util.Date;
 
 public class Logger {
-    static File logFile = new File("execScraper" + new Date().toString() + ".log");
+    static File logFile = new File("execScraper" + new Date().toString().replaceAll(" ", "") + ".log");
     static PrintWriter pw;
     Logger(){
         try {
