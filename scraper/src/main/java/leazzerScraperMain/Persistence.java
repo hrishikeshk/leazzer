@@ -124,8 +124,14 @@ public class Persistence {
         }
         catch(FailingHttpStatusCodeException fh){
             Logger.println("Empty web response: " + fh.getStatusCode() + " : " + fh.getStatusCode() + " : " + fh.getResponse().getContentAsString());
-            if(attempt < 3){
+            if(attempt < 10){
                 Logger.println("Network related problems: re-attempting ... attempt # " + (attempt + 1) + " : facility # " + f.id);
+                try{
+                    Thread.sleep(10000 * attempt);
+                }
+                catch(Exception e){
+                    Logger.println("Interrupted sleep, proceeding anyway...");
+                }
                 success = postWithRetry(wc, wr, f, attempt + 1);
             }
             else{
