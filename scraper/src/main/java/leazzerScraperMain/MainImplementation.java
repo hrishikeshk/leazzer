@@ -6,7 +6,11 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 
 import java.net.URL;
 
-public class MainImplementation {
+public class MainImplementation implements Runnable {
+
+    public String[] cmdArgs;
+    public Boolean enableLogFile;
+
     static String[] validateArgs(String[] args) throws Exception{
         if(args.length < 3){
             throw new Exception("Incorrect number of command line arguments passed. Pass admin user/pass and at least one city name or zip code...");
@@ -45,7 +49,7 @@ public class MainImplementation {
             Logger.println("Fetching now page# " + pagenum + "... " + arg);
             HtmlPage hp = wc.getPage(new URL(consSearchURL(arg, pagenum)));
             ParsedPage pp = MainSearchPageProcessor.extractFacilities(hp, pagenum == 1);
-            if(pagenum == 1){
+            if(pagenum == 1 && pp.pagination != null){
                 Logger.println("Num pages found for " + arg + ": " + pp.pagination.numPages);
                 Logger.println("Num facilities found for " + arg + ": " + pp.pagination.numFacilities);
             }
@@ -54,6 +58,10 @@ public class MainImplementation {
 
             Logger.println("Finished processing page# " + pagenum + "... for " + arg);
             if(maxPages == -1) {
+                if(pp.pagination == null){
+                    Logger.println("Error: Did not find pages information in page. Persisted first page and now exiting...");
+                    return;
+                }
                 Pagination pageInfo = pp.pagination;
                 int numPages = pageInfo.numPages;
                 if(pagenum < numPages)
@@ -69,7 +77,7 @@ public class MainImplementation {
         }
     }
 
-    static void processArgs(String[] va){
+    static int processArgs(String[] va){
         try{
             WebClient wc = new WebClient(BrowserVersion.CHROME);
             wc.getCookieManager().setCookiesEnabled(true);
@@ -80,7 +88,9 @@ public class MainImplementation {
         }
         catch(Exception ex){
             Logger.println("Caught exception: " + ex.getMessage());
+            return 1;
         }
+        return 0;
     }
 
     public static void mainImpl(String[] args, Boolean elf){
@@ -99,5 +109,9 @@ public class MainImplementation {
             System.out.println("Caught exception: " + ex.getMessage());
             Logger.fclose();
         }
+    }
+
+    public void run(){
+        mainImpl(cmdArgs, enableLogFile);
     }
 }

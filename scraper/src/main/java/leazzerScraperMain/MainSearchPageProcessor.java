@@ -21,8 +21,11 @@ public class MainSearchPageProcessor {
         if (isFirstPage) {
             HtmlElement he = hp.getBody();
             DomNode dn = he.getFirstByXPath("/html/body/main/div[2]");
-
+            if(dn == null)
+                return null;
             String[] splitStr = dn.asText().split(" ");
+            if(splitStr.length < 4)
+                return null;
             String infoStrPages = splitStr[3];
             String infoStrNumFacilities = splitStr[4].substring(1);
             int numPages = Integer.parseInt(infoStrPages);

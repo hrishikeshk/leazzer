@@ -8,10 +8,12 @@
   <component name="ChangeListManager">
     <list default="true" id="eeba8341-1b9c-4263-a7cf-f99eaff0da44" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../apps/iOS/Leazzer" beforeDir="false" afterPath="$PROJECT_DIR$/../apps/iOS/Leazzer" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/artifacts/scraper_jar.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Logger.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Logger.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/META-INF/MANIFEST.MF" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainImplementation.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainImplementation.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/SwingMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/SwingMain.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -25,7 +27,7 @@
     <session id="-1863538299">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="19" />
+          <entry key="project.closed" value="23" />
           <entry key="project.open.time.1" value="2" />
           <entry key="project.open.time.13" value="1" />
           <entry key="project.open.time.14" value="1" />
@@ -35,42 +37,45 @@
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.23" value="1" />
           <entry key="project.open.time.29" value="1" />
+          <entry key="project.open.time.30" value="1" />
           <entry key="project.open.time.33" value="1" />
-          <entry key="project.open.time.36" value="1" />
+          <entry key="project.open.time.36" value="2" />
           <entry key="project.open.time.37" value="2" />
-          <entry key="project.open.time.38" value="1" />
+          <entry key="project.open.time.38" value="2" />
           <entry key="project.open.time.39" value="1" />
           <entry key="project.open.time.41" value="2" />
           <entry key="project.open.time.46" value="1" />
           <entry key="project.open.time.49" value="1" />
-          <entry key="project.opened" value="21" />
+          <entry key="project.opened" value="24" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="MF" value="2" />
+          <entry key="MF" value="9" />
           <entry key="class" value="12" />
-          <entry key="java" value="18" />
+          <entry key="java" value="20" />
+          <entry key="log" value="3" />
           <entry key="xml" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CLASS" value="12" />
-          <entry key="JAVA" value="18" />
-          <entry key="Manifest" value="2" />
+          <entry key="JAVA" value="20" />
+          <entry key="Manifest" value="9" />
+          <entry key="PLAIN_TEXT" value="3" />
           <entry key="XML" value="3" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="15507" />
+          <entry key="java" value="17501" />
           <entry key="xml" value="33" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="15507" />
+          <entry key="JAVA" value="17501" />
           <entry key="XML" value="33" />
         </counts>
       </usages-collector>
@@ -82,8 +87,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Main.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-517">
-              <caret line="37" column="45" lean-forward="true" selection-start-line="37" selection-start-column="45" selection-end-line="37" selection-end-column="45" />
+            <state relative-caret-position="90">
+              <caret line="8" selection-start-line="8" selection-end-line="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/SwingMain.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="157">
+              <caret line="69" column="25" selection-start-line="69" selection-start-column="25" selection-end-line="69" selection-end-column="25" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -92,10 +106,38 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/META-INF/MANIFEST.MF">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="45">
+              <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainImplementation.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1665">
+              <caret line="117" selection-start-line="117" selection-end-line="117" />
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#4148#4149#0" expanded="true" />
+                <element signature="e#4196#4197#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Logger.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="75">
-              <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
+            <state relative-caret-position="465">
+              <caret line="33" column="1" selection-start-line="33" selection-start-column="1" selection-end-line="33" selection-end-column="1" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -120,20 +162,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="146" column="77" lean-forward="true" selection-start-line="146" selection-start-column="77" selection-end-line="146" selection-end-column="77" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="242">
-              <caret line="129" selection-start-line="129" selection-end-line="129" />
+            <state relative-caret-position="1455">
+              <caret line="109" selection-start-line="109" selection-end-line="109" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -142,10 +172,13 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/WebClientConfig.java">
+        <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="17" selection-start-line="17" selection-end-line="17" />
+            <state relative-caret-position="1890">
+              <caret line="134" column="64" selection-start-line="134" selection-start-column="64" selection-end-line="134" selection-end-column="64" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -163,11 +196,13 @@
     <findStrings>
       <find>Review</find>
       <find>extractOneFacility</find>
-      <find>extractFacilities</find>
       <find>String.</find>
       <find>fileToUpload</find>
       <find>toarray</find>
       <find>leazzer</find>
+      <find>pageInfo</find>
+      <find>consPagination</find>
+      <find>extractFacilities</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -186,10 +221,12 @@
         <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/ParsedPage.java" />
         <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/WebClientConfig.java" />
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java" />
+        <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Logger.java" />
         <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Main.java" />
         <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java" />
-        <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Logger.java" />
-        <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java" />
+        <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainImplementation.java" />
+        <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/SwingMain.java" />
       </list>
     </option>
   </component>
@@ -207,12 +244,32 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
               <item name="scraper" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
+              <item name="scraper" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
+              <item name="scraper" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
+              <item name="scraper" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
+              <item name="scraper_jar" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
@@ -271,24 +328,23 @@
             </path>
             <path>
               <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
+              <item name="scraper" type="462c0819:PsiDirectoryNode" />
+              <item name="target" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541161381773" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541410338987" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/out/artifacts/scraper_jar/scraper.jar" />
     <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
     <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
-    <property name="settings.editor.selected.configurable" value="com.intellij.jarRepository.settings.RemoteRepositoriesConfigurable" />
+    <property name="settings.editor.selected.configurable" value="reference.projectsettings.compiler.javacompiler" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -316,16 +372,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="scraper" type="JarApplication" factoryName="JAR Application">
+    <configuration name="scraper.jar" type="JarApplication" factoryName="JAR Application">
       <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/scraper_jar/scraper.jar" />
-      <option name="PROGRAM_PARAMETERS" value="&quot;admin&quot; &quot;Bundy123&quot; &quot;Anchorage&quot;" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH" />
       <method v="2" />
     </configuration>
     <list>
       <item itemvalue="Application.LeazzerScraper" />
-      <item itemvalue="JAR Application.scraper" />
+      <item itemvalue="JAR Application.scraper.jar" />
     </list>
   </component>
   <component name="SvnConfiguration">
@@ -354,7 +409,7 @@
     <frame x="64" y="-11" width="1303" height="780" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.18486056" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.1944223" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -363,7 +418,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.5590062" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.24068323" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39906833" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -390,13 +445,13 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java</url>
-          <line>147</line>
+          <line>153</line>
           <properties />
           <option name="timeStamp" value="31" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java</url>
-          <line>209</line>
+          <line>215</line>
           <properties />
           <option name="timeStamp" value="32" />
         </line-breakpoint>
@@ -414,21 +469,9 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java</url>
-          <line>165</line>
+          <line>171</line>
           <properties />
           <option name="timeStamp" value="42" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Main.java</url>
-          <line>92</line>
-          <properties />
-          <option name="timeStamp" value="44" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Main.java</url>
-          <line>11</line>
-          <properties />
-          <option name="timeStamp" value="45" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -490,17 +533,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="345">
           <caret line="23" selection-start-line="23" selection-end-line="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/WebClientConfig.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/execScraperMonNov0512:01:10IST2018.log" />
+    <entry file="file://$PROJECT_DIR$/execScraperMonNov0514:43:15IST2018.log" />
+    <entry file="file://$PROJECT_DIR$/out/artifacts/scraper_jar/hs_err_pid16855.log" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainImplementation.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1665">
+          <caret line="117" selection-start-line="117" selection-end-line="117" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#4148#4149#0" expanded="true" />
+            <element signature="e#4196#4197#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Logger.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="465">
+          <caret line="33" column="1" selection-start-line="33" selection-start-column="1" selection-end-line="33" selection-end-column="1" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -516,37 +584,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/WebClientConfig.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="17" selection-start-line="17" selection-end-line="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Main.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-517">
-          <caret line="37" column="45" lean-forward="true" selection-start-line="37" selection-start-column="45" selection-end-line="37" selection-end-column="45" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Logger.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="5" lean-forward="true" selection-start-line="5" selection-end-line="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="146" column="77" lean-forward="true" selection-start-line="146" selection-start-column="77" selection-end-line="146" selection-end-column="77" />
+        <state relative-caret-position="1455">
+          <caret line="109" selection-start-line="109" selection-end-line="109" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
@@ -555,11 +596,38 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="129" selection-start-line="129" selection-end-line="129" />
+        <state relative-caret-position="1890">
+          <caret line="134" column="64" selection-start-line="134" selection-start-column="64" selection-end-line="134" selection-end-column="64" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Main.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="8" selection-start-line="8" selection-end-line="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/SwingMain.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="157">
+          <caret line="69" column="25" selection-start-line="69" selection-start-column="25" selection-end-line="69" selection-end-column="25" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/META-INF/MANIFEST.MF">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" lean-forward="true" selection-start-line="3" selection-end-line="3" />
         </state>
       </provider>
     </entry>
