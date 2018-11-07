@@ -83,6 +83,10 @@ public class MainSearchPageProcessor {
             if(locationNode != null){
                 extractLocation(locationNode, f);
             }
+            HtmlElement promoNode = detailsNode.querySelector(".promo-text");
+            if(promoNode != null){
+                f.facilityPromo = promoNode.getTextContent();
+            }
         }
         return f;
     }
@@ -90,6 +94,8 @@ public class MainSearchPageProcessor {
     public static ParsedPage extractFacilities(HtmlPage hp, Boolean isFirstPage){
         Pagination pageInfo = consPagination(hp, isFirstPage);
         HtmlElement body = hp.getBody();
+        if(body == null)
+            return null;
 
         HtmlElement dn = body.getFirstByXPath("//*[@id=\"facilities-list\"]");
         DomNodeList<DomNode> dnList = dn.querySelectorAll(".facility");
@@ -142,6 +148,10 @@ public class MainSearchPageProcessor {
                     if(amenitiesNode != null){
                         unitArr[i].amenities = amenitiesNode.getNodeValue().split(",");
                     }
+                    DomNode promoNode = unitNodeInner.querySelector(".unit-promo");
+                    if(promoNode != null){
+                        unitArr[i].promo = promoNode.getTextContent();
+                    }
                 }
             }
             DomNode priceNode = dn.querySelector(".unit-price");
@@ -182,15 +192,46 @@ public class MainSearchPageProcessor {
         }
     }
 
+    static String extractFacilityPhone(HtmlElement body){
+        HtmlElement phoneOuter = body.querySelector(".facility-phone");
+        if(phoneOuter != null){
+            DomElement aph = phoneOuter.getFirstElementChild();
+            if(aph != null){
+                DomElement span = aph.getFirstElementChild();
+                if(span != null){
+                    return span.getTextContent();
+                }
+            }
+        }
+        return null;
+    }
+
     static void processOneFacilityDetail(Facility f, WebClient wc){
         try{
             Logger.println("Fetching facility detail: " + f.url);
             HtmlPage hp = wc.getPage(new URL("https://www.selfstorage.com" + f.url));
             HtmlElement body = hp.getBody();
 
+            if(body == null)
+                return;
+
             HtmlElement aboutNode = body.querySelector(".facility-description");
             if(aboutNode != null)
                 f.about = aboutNode.getTextContent();
+
+            HtmlElement cityNode = body.querySelector(".city");
+            if(cityNode != null && f.location != null){
+                f.location.city = cityNode.getTextContent();
+            }
+
+            HtmlElement stateNode = body.querySelector(".state");
+            if(stateNode != null && f.location != null){
+                f.location.state = stateNode.getTextContent();
+            }
+
+            if(f.location != null){
+                f.location.phoneNumber = extractFacilityPhone(body);
+            }
 
             extractImageUrls(body, f);
             extractUnitDetails(body, f);

@@ -144,6 +144,29 @@ function persist_unit_amenities($id, $unit_id, $unit_iter){
   }
 }
 
+function file_get_contents_curl($url) {
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_HEADER, 0);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //Set curl to return the data instead of printing it to the browser.
+  curl_setopt($ch, CURLOPT_URL, $url);
+  $data = curl_exec($ch);
+  curl_close($ch);
+  return $data;
+}
+
+function get_lat_lng_from_zip($zip){
+  $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".$zip."&sensor=false";
+	$result_string = file_get_contents_curl($url);
+  $result = json_decode($result_string, true);
+  
+  $lat = $result['results'][0]['geometry']['location']['lat'];
+  $lng = $result['results'][0]['geometry']['location']['lng'];
+  if(is_numeric($lat) && is_numeric($lng))
+    return array($lat, $lng);
+  else
+    return array(0.0, 0.0);
+}
+
 function handle_insert_update(){
 
   global $conn;
@@ -156,7 +179,18 @@ function handle_insert_update(){
   $street = mysqli_real_escape_string($conn, $_POST['street']);
   $locality = mysqli_real_escape_string($conn, $_POST['locality']);
   $region = mysqli_real_escape_string($conn, $_POST['region']);
+  
+  $phone = mysqli_real_escape_string($conn, $_POST['phone_number']);
+  $city = mysqli_real_escape_string($conn, $_POST['city']);
+  $state = mysqli_real_escape_string($conn, $_POST['state']);
+  $facility_promo = mysqli_real_escape_string($conn, $_POST['facility_promo']);
+  
   $zip = mysqli_real_escape_string($conn, $_POST['zip']);
+  $lat_lng_arr = array(0.0, 0.0);
+  if(!empty($zip)){
+    $lat_lng_arr = get_lat_lng_from_zip($zip);
+  }
+
   $lowest_price = $_POST['lowest_price'];
   
   $existing_facility = facility_exists($id);
@@ -169,7 +203,7 @@ function handle_insert_update(){
     facility_delete($id);
   }
   
-  $res = mysqli_query($conn, "insert into facility_master(id, title, description, url, distance, street, locality, region, zip, lowest_price) values('".$id."','".$name."','".$about."','".$url."','".$distance."','".$street."','".$locality."','".$region."','".$zip."','".$lowest_price."')") OR die('Failed to insert facility: ' . $id.mysqli_error($conn));
+  $res = mysqli_query($conn, "insert into facility_master(id, title, description, url, distance, street, locality, region, zip, lowest_price, city, state, phone, facility_promo, lat, lng) values('".$id."','".$name."','".$about."','".$url."','".$distance."','".$street."','".$locality."','".$region."','".$zip."','".$lowest_price."','".$city."','".$state."','".$phone."','".$facility_promo."','".$lat_lng_arr[0]."','".$lat_lng_arr[1]."')") OR die('Failed to insert facility: ' . $id.mysqli_error($conn));
   
   persist_facility_amenities($id);
 

@@ -25,11 +25,18 @@ class FacilityLocation{
     String addressLocality;
     String addressRegion;
     String postalCode;
+    String phoneNumber;
+    String city;
+    String state;
+
     public void printTest(){
         Logger.println("location.region: " + addressRegion);
         Logger.println("location.postalCode: " + postalCode);
         Logger.println("location.addressLocality: " + addressLocality);
         Logger.println("location.streetAddress: " + streetAddress);
+        Logger.println("location.city: " + city);
+        Logger.println("location.state: " + state);
+        Logger.println("location.phoneNumber: " + phoneNumber);
     }
 }
 
@@ -76,6 +83,7 @@ class Facility {
     FacilityImage[] images;
     double lowestPrice;
     String[] facilityAmenities;
+    String facilityPromo;
 
     public void printTest(){
         Logger.println("id: " + id);
@@ -83,6 +91,8 @@ class Facility {
         Logger.println("url: " + url);
         Logger.println("distance: " + distance);
         Logger.println("about: " + about);
+        Logger.println("facilityPromo: " + facilityPromo);
+
         location.printTest();
         for(int i = 0; i < reviews.length; ++i){
             reviews[i].printTest();
