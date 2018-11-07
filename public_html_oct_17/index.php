@@ -33,7 +33,7 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout"))
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
 <link href="fonts/fonts.css" rel="stylesheet">
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCvc_18HEgG7qB9nWPE9KlxVOFW0r4RJPM&libraries=places"
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
         async defer></script>
 
 <!-- <script src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places&language=gb"></script> -->
@@ -221,7 +221,14 @@ var input = document.getElementById('searchTextField');
       var autocomplete = new google.maps.places.Autocomplete(input);
 </script>
 
-<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script> -->
+<!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script> 
+leazzer2018 - AIzaSyDP-JrlGW5feBEicUQUa8xhrHxRygBvsfE
+
+facilities dashboard - AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA
+
+existing - AIzaSyCvc_18HEgG7qB9nWPE9KlxVOFW0r4RJPM
+
+-->
 
 <!-- Start of HubSpot Embed Code -->
 <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/5051579.js"></script>

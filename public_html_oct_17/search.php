@@ -225,7 +225,7 @@ return $data;
 			if(is_numeric(isset($_POST['search'])?trim($_POST['search']):""))
 			{
 				//$query = "select * from facility where searchable=1 and  zipcode >= '".(isset($_POST['search'])?trim($_POST['search']):"0")."' ".($filter==""?"":$filter)." order by zipcode LIMIT 100";
-				$url = "https://maps.googleapis.com/maps/api/geocode/json?address=".trim($_POST['search'])."&sensor=false";
+				$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".trim($_POST['search'])."&sensor=false";
 				$result_string = file_get_contents_curl($url);
     		$result = json_decode($result_string, true);
     		//print_r($result['results'][0]['geometry']['location']['lat']);
@@ -419,4 +419,5 @@ function ajaxcall(datastring)
 <script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/5051579.js"></script>
 <!-- End of HubSpot Embed Code -->
 </body>
-</html>                        
+</html>
+
