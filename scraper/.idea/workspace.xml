@@ -8,11 +8,8 @@
   <component name="ChangeListManager">
     <list default="true" id="eeba8341-1b9c-4263-a7cf-f99eaff0da44" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/../apps/iOS/Leazzer" beforeDir="false" afterPath="$PROJECT_DIR$/../apps/iOS/Leazzer" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../public_html_oct_17/admin/facility_detail.php" beforeDir="false" afterPath="$PROJECT_DIR$/../public_html_oct_17/admin/facility_detail.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/ParsedPage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/ParsedPage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -26,7 +23,7 @@
     <session id="-1863538299">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="24" />
+          <entry key="project.closed" value="26" />
           <entry key="project.open.time.1" value="2" />
           <entry key="project.open.time.13" value="1" />
           <entry key="project.open.time.14" value="1" />
@@ -41,20 +38,20 @@
           <entry key="project.open.time.36" value="2" />
           <entry key="project.open.time.37" value="2" />
           <entry key="project.open.time.38" value="2" />
-          <entry key="project.open.time.39" value="1" />
+          <entry key="project.open.time.39" value="2" />
           <entry key="project.open.time.41" value="2" />
           <entry key="project.open.time.44" value="1" />
           <entry key="project.open.time.46" value="1" />
           <entry key="project.open.time.49" value="1" />
           <entry key="project.open.time.64" value="1" />
-          <entry key="project.opened" value="26" />
+          <entry key="project.opened" value="27" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="MF" value="9" />
           <entry key="class" value="12" />
-          <entry key="java" value="21" />
+          <entry key="java" value="24" />
           <entry key="log" value="3" />
           <entry key="xml" value="3" />
         </counts>
@@ -62,7 +59,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="CLASS" value="12" />
-          <entry key="JAVA" value="21" />
+          <entry key="JAVA" value="24" />
           <entry key="Manifest" value="9" />
           <entry key="PLAIN_TEXT" value="3" />
           <entry key="XML" value="3" />
@@ -70,13 +67,13 @@
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="18387" />
+          <entry key="java" value="18625" />
           <entry key="xml" value="33" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="18387" />
+          <entry key="JAVA" value="18625" />
           <entry key="XML" value="33" />
         </counts>
       </usages-collector>
@@ -88,12 +85,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/ParsedPage.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="86" selection-start-line="86" selection-end-line="86" />
+            <state relative-caret-position="855">
+              <caret line="78" column="20" lean-forward="true" selection-start-line="78" selection-start-column="20" selection-end-line="78" selection-end-column="20" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1486#1487#0" expanded="true" />
-                <element signature="e#1583#1584#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -102,8 +97,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="276">
-              <caret line="234" lean-forward="true" selection-start-line="234" selection-end-line="234" />
+            <state relative-caret-position="261">
+              <caret line="203" lean-forward="true" selection-start-line="203" selection-end-line="203" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -114,12 +109,10 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="111">
-              <caret line="175" selection-start-line="175" selection-end-line="175" />
+            <state relative-caret-position="261">
+              <caret line="110" selection-start-line="110" selection-end-line="110" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#7303#7318#0" expanded="true" />
-                <element signature="e#9760#9775#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -151,6 +144,9 @@
       <find>promo</find>
       <find>facility_amenity</find>
       <find>num_amenities</find>
+      <find>getFirstElementChild</find>
+      <find>XPath</find>
+      <find>child</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -173,8 +169,8 @@
         <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainImplementation.java" />
         <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/SwingMain.java" />
         <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/ParsedPage.java" />
-        <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java" />
         <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java" />
+        <option value="$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java" />
       </list>
     </option>
   </component>
@@ -193,13 +189,30 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
               <item name="scraper" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
+              <item name="scraper" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
+              <item name="scraper" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
+              <item name="scraper" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="artifacts" type="462c0819:PsiDirectoryNode" />
+              <item name="scraper_jar" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
@@ -226,6 +239,15 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="leazzerScraperMain" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
+              <item name="scraper" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="main" type="462c0819:PsiDirectoryNode" />
+              <item name="java" type="462c0819:PsiDirectoryNode" />
+              <item name="leazzerScraperMain" type="462c0819:PsiDirectoryNode" />
+              <item name="ParsedPage.java" type="529ef68f:ClassesTreeStructureProvider$PsiClassOwnerTreeNode" />
             </path>
             <path>
               <item name="leazzerScraper" type="b2602c69:ProjectViewProjectNode" />
@@ -260,6 +282,7 @@
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -288,7 +311,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Application.LeazzerScraper">
+  <component name="RunManager" selected="JAR Application.scraper.jar">
     <configuration name="LeazzerScraper" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="leazzerScraperMain.Main" />
       <module name="scraper" />
@@ -330,10 +353,10 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="64" y="-11" width="1303" height="780" extended-state="7" />
+    <frame x="64" y="-11" width="1303" height="780" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20079681" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20398407" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Image Layers" order="2" />
       <window_info id="Designer" order="3" />
@@ -342,7 +365,7 @@
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.24068323" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.41614908" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39906833" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -368,10 +391,28 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java</url>
-          <line>85</line>
+          <url>file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java</url>
+          <line>110</line>
           <properties />
-          <option name="timeStamp" value="47" />
+          <option name="timeStamp" value="49" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java</url>
+          <line>231</line>
+          <properties />
+          <option name="timeStamp" value="50" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java</url>
+          <line>197</line>
+          <properties />
+          <option name="timeStamp" value="52" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java</url>
+          <line>199</line>
+          <properties />
+          <option name="timeStamp" value="55" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -487,18 +528,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/ParsedPage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="86" selection-start-line="86" selection-end-line="86" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1486#1487#0" expanded="true" />
-            <element signature="e#1583#1584#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainImplementation.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="938">
@@ -511,22 +540,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java">
+    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/ParsedPage.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="111">
-          <caret line="175" selection-start-line="175" selection-end-line="175" />
+        <state relative-caret-position="855">
+          <caret line="78" column="20" lean-forward="true" selection-start-line="78" selection-start-column="20" selection-end-line="78" selection-end-column="20" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#7303#7318#0" expanded="true" />
-            <element signature="e#9760#9775#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/Persistence.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="261">
+          <caret line="110" selection-start-line="110" selection-end-line="110" />
+          <folding>
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/leazzerScraperMain/MainSearchPageProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="234" lean-forward="true" selection-start-line="234" selection-end-line="234" />
+        <state relative-caret-position="261">
+          <caret line="203" lean-forward="true" selection-start-line="203" selection-end-line="203" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

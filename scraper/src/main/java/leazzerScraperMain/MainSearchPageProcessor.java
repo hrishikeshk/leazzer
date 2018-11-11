@@ -98,6 +98,8 @@ public class MainSearchPageProcessor {
             return null;
 
         HtmlElement dn = body.getFirstByXPath("//*[@id=\"facilities-list\"]");
+        if(dn == null)
+            return null;
         DomNodeList<DomNode> dnList = dn.querySelectorAll(".facility");
         Iterator<DomNode> iter = dnList.iterator();
         List<Facility> facilities = new ArrayList<Facility>();
@@ -193,15 +195,9 @@ public class MainSearchPageProcessor {
     }
 
     static String extractFacilityPhone(HtmlElement body){
-        HtmlElement phoneOuter = body.querySelector(".facility-phone");
+        HtmlElement phoneOuter = body.getFirstByXPath("//*[@id=\"facility-page\"]/div[1]/div[2]/div[1]/div[2]/a/span");
         if(phoneOuter != null){
-            DomElement aph = phoneOuter.getFirstElementChild();
-            if(aph != null){
-                DomElement span = aph.getFirstElementChild();
-                if(span != null){
-                    return span.getTextContent();
-                }
-            }
+            return phoneOuter.getTextContent();
         }
         return null;
     }

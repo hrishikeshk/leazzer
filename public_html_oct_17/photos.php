@@ -3,26 +3,22 @@ session_start();
 include('sql.php');
 $GError = "";
 $filter = "";
-if(isset($_GET['q']))
-{
-$q=$_GET['q'];
-$res_fac = mysqli_query($conn,"select * from facility_images where facility_id='$q'");
+if(isset($_GET['q'])){
+  $q=$_GET['q'];
+  $res_fac = mysqli_query($conn,"select * from image where facility_id='$q'");
 }
-if((!isset($_POST['search'])) && isset($_SESSION['search']))
-{
+
+if((!isset($_POST['search'])) && isset($_SESSION['search'])){
 	$_POST['search']= $_SESSION['search'];
 }
-else if(isset($_POST['search']))
-{
+else if(isset($_POST['search'])){
 	$_SESSION['search']= $_POST['search'];
 }
-if(isset($_GET['action']))
-{
-	if($_GET['action'] == "removefilter" && isset($_SESSION['filter']))
-	{		
+
+if(isset($_GET['action'])){
+	if($_GET['action'] == "removefilter" && isset($_SESSION['filter'])){
 		$newFilterArr = array();			
- 		for($i=0;$i<count($_SESSION['filter']);$i++)
- 		{
+ 		for($i=0;$i<count($_SESSION['filter']);$i++){
  			$filterArr = explode("[-]",$_SESSION['filter'][$i]);
  			if($filterArr[0] != $_GET['id'])
  				array_push($newFilterArr,$_SESSION['filter'][$i]);
@@ -30,15 +26,13 @@ if(isset($_GET['action']))
 		$_SESSION['filter'] = $newFilterArr;
 	}
 }
-if(isset($_POST['action']))
-{
-	if($_POST['action'] == "applyfilter")
-	{
+if(isset($_POST['action'])){
+	if($_POST['action'] == "applyfilter"){
 		$_SESSION['filter'] = $_POST['options'];
 	}
 }
-function showUnit($arr)
-{
+
+function showUnit($arr){
 	global $conn;
 	$unitIds="";
 	$unitPrice="";
@@ -557,4 +551,5 @@ function ajaxcall(datastring)
 <!-- End of HubSpot Embed Code -->
 
 </body>
-</html>                        
+</html>
+

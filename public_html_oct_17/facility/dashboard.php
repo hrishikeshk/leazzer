@@ -2,9 +2,7 @@
 include('header.php');
 $GInfo = "";
 
-
-function getBaseUrl() 
-{
+function getBaseUrl(){
     // output: /myproject/index.php
     $currentPath = $_SERVER['PHP_SELF']; 
     
@@ -22,17 +20,13 @@ function getBaseUrl()
 }
 
 
-if(isset($_POST['submit']))
-{
-	if($_POST['submit'] == "Save")
-	{
-	
-	
+if(isset($_POST['submit'])){
+	if($_POST['submit'] == "Save"){
 	/////////////////////////////////
 	// Count total files
 //$countfiles = count($_FILES['image']['name']);
-$ts = time();
-$imageFileName = ""; 
+  $ts = time();
+  $imageFileName = ""; 
  // Looping all files
  
   //$filename = $_FILES['image']['name']; var_dump($filename); exit;
@@ -50,12 +44,10 @@ $imageFileName = "";
 			
 			$targetFilePath = $targetDir . $fileName;
 			
-			if(!in_array($extension,$allowed_extensions))
-			{
+			if(!in_array($extension,$allowed_extensions)){
 				echo "<script>alert('Invalid format. Only jpg / jpeg/ png /gif format allowed');</script>";
 			}
-			else
-			{
+			else{
 				if(move_uploaded_file($_FILES["image"]["tmp_name"][$k], $targetFilePath)){
 					//insert to facility images
 					
@@ -67,8 +59,7 @@ $imageFileName = "";
 					}
 				}
 			}
-			
-			
+						
 		 // $imageFileName = time() . "_" . $filename;
 		  // Upload file
 		  //move_uploaded_file($_FILES['image']['tmp_name'],'../unitimages/'.$imageFileName);
@@ -77,30 +68,24 @@ $imageFileName = "";
 			//$location = '../unitimages/' .$_FILES['image']['name'];
 		endforeach;
 	}
-	
+
 	$location = '';
 
-		
-			$options ="";
-		if( isset($_POST['options']) && is_array($_POST['options']) ) 
-		{
-			 foreach($_POST['options'] as $option) 
-			 {
+	$options ="";
+		if( isset($_POST['options']) && is_array($_POST['options']) ){
+			 foreach($_POST['options'] as $option){
 			 	$options.= $option.",";	
 			 }
 		}		
 		$units ="";
-		if( isset($_POST['units']) && is_array($_POST['units']) ) 
-		{
-			 foreach($_POST['units'] as $unit) 
-			 {
+		if( isset($_POST['units']) && is_array($_POST['units']) ){
+			 foreach($_POST['units'] as $unit){
 			 	$units.= $unit."-".$_POST['unitval'.$unit].",";	
 			 }
 		}
-			
+
 		$res = mysqli_query($conn,"select * from facility where emailid='".$_POST['emailid']."'");	
-		if(mysqli_num_rows($res) >=  1)
-		{
+		if(mysqli_num_rows($res) >=  1){
 				
 			if($_SESSION['lfdata']['emailid'] != $_POST['emailid'])
 				$GInfo = "Info : Your Userid is ".$_POST['emailid']."<br>You will receive Reservation Confirmations on - ".$_POST['emailid'];
@@ -196,8 +181,6 @@ function generateState($state)
 	$ret .= '</select>';
 	return $ret;						
 }
-
-
 
 $res = mysqli_query($conn,"select * from facility where id=".$_SESSION['lfdata']['id']) or die("Error: " . mysqli_error($conn));;	
 $arrF = mysqli_fetch_array($res,MYSQLI_ASSOC);
@@ -326,8 +309,7 @@ if (mysqli_num_rows($image_select_result) > 0) {
 					<hr style="margin:5px 0px 5px 0px">
 					<?php
 					$res = mysqli_query($conn,"select * from options");
-					while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC))
-					{
+					while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
 						$checked = "";
 						if(strpos(",".$arrF['options'],",".$arr['id'].",") !== false)
 							$checked = "checked";
@@ -343,18 +325,16 @@ if (mysqli_num_rows($image_select_result) > 0) {
 			
     			<?php
     			$res = mysqli_query($conn,"select * from units order by standard DESC");
-    			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC))
-    			{
+    			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
     				$uvalue= $arr['price'];
     				$checked = "";
     				$pos = strpos(",".$arrF['units'],",".$arr['id']."-");
-    				if($pos !== false)
-    				{
+    				if($pos !== false){
     					$checked = "checked";
     					$endpos = strpos(substr(",".$arrF['units'],$pos+(strlen($arr['id'])+2)),",");
     					$uvalue=substr(",".$arrF['units'],$pos+(strlen($arr['id'])+2),$endpos);
-						if(substr($uvalue,0,1) == "$")
-							$uvalue=substr($uvalue,1);
+						  if(substr($uvalue,0,1) == "$")
+						  	$uvalue=substr($uvalue,1);
     				}
     			echo '<div class="col-md-6" style="width:50%;float:left;border:0px solid #000;padding:0;margin:0;">';
     			echo '<div class="col-md-3" style="width:70%;float:left;border:0px solid #000;padding:0;margin:0;">';
@@ -389,8 +369,7 @@ var map;
 var marker;
 var lat = "<?php echo $arrF['lat'];?>";
 var lng = "<?php echo $arrF['lng'];?>";
-function initMap() 
-{
+function initMap(){
   map = new google.maps.Map(document.getElementById('map'), 
   {
     center: new google.maps.LatLng(lat,lng),
@@ -410,14 +389,12 @@ function initMap()
    });
 }
 
-function getLatLng()
-{
+function getLatLng(){
 	var address = document.getElementById("address1").value;
 	var geocoder = new google.maps.Geocoder();
 	geocoder.geocode( { 'address': address}, function(results, status) 
 	{
-		if (status == google.maps.GeocoderStatus.OK) 
-	  {
+		if (status == google.maps.GeocoderStatus.OK){
 	  	document.getElementById("lat").value = parseFloat(results[0].geometry.location.lat()).toFixed(7);
 	  	document.getElementById("lng").value = parseFloat(results[0].geometry.location.lng()).toFixed(7);
 	    marker.setPosition(new google.maps.LatLng(results[0].geometry.location.lat(), results[0].geometry.location.lng()));
@@ -460,15 +437,6 @@ function getLatLng()
     width:100%;
     filter: alpha(opacity=0);
 }
-/*
-input[type=number]::-webkit-outer-spin-button { 
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    appearance: none;
-    margin: 0; 
-}
-input[type='number'] {
-    -moz-appearance:textfield;
-}*/
+
 </style>
 
