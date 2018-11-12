@@ -23,7 +23,7 @@ function insert_facility_owner($email){
 }
 
 function extract_image_name($ss_path){
-  // //images.selfstorage.com/large-compress/108715518314b760ec6.jpg
+  // eg- //images.selfstorage.com/large-compress/108715518314b760ec6.jpg
   $lpos = strrpos($ss_path, "/");
   return trim(substr($ss_path, $lpos + 1));
 }
@@ -33,6 +33,13 @@ function fetch_image_url($facility_id){
   $res = mysqli_query($conn,"select * from image where facility_id='".$facility_id."' limit 1");
   $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
   return $arr;
+}
+
+function fetch_review_count($facility_id){
+  global $conn;
+  $res = mysqli_query($conn,"select count(*) as rct from review where facility_id='".$facility_id."'");
+  $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
+  return $arr['rct'];
 }
 
 if(isset($_POST['action'])){
@@ -85,23 +92,28 @@ if(isset($_POST['action'])){
 			else
 			  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
 			echo '</td>';
-			echo '<td class="login-block" style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;"><b>'.$arr['title'].'</b>
-			<!-- <div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days
-			</div>-->
-			
-			<br>';
-			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br>';
-			
-			showOpt($arr);
 
-			//echo "<br>";
-			echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
+			echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
+			
+			echo '<table>';
+			
+			echo '<tr><td><b>'.$arr['title'].'</b><br>';
+			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br /></td></tr>';
+			
+			$unit_info_arr = fetch_units($facility_id);
+      $facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
+      show_amenities($facility_id, $facility_unit_amenities);
+      
+      echo '</table>';
+      
+      echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
+			
 			echo '<div id="dateday_'.$arr['id'].'" class="login-block" name="dateday_'.$arr['id'].'" style="margin:0px;text-align:left;padding:0;">';
 			echo '<p id="mdatemsg_'.$arr['id'].'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
 			echo '<input class="datepicker" id="mdate_'.$arr['id'].'" name="mdate_'.$arr['id'].'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div>';
 			echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
 
-			showUnit($arr['id']);
+			show_units($facility_id, $unit_info_arr);
 
 			echo'</td></tr></table>';
 		}			
@@ -281,32 +293,41 @@ function checkEmail($email, $cnt){
 	}
 }
 
-function showOpt($arr){
-	global $conn;
-	$opt = $arr['options'];
-	$pos = strpos($opt,",");
-	if($pos ==  0)
-		$opt = substr($opt,1,strlen($opt)-2);
-	else
-		$opt = substr($opt,0,strlen($opt)-1);
-	$resO = mysqli_query($conn,"select * from options where id in(".$opt.")");
-	if($resO)
-	{
-		echo '<p style="letter-spacing: 0px;text-align:left;font-size:.8em">';
-		while($arrO = mysqli_fetch_array($resO,MYSQLI_ASSOC))
-			echo $arrO['opt'].', ';
-		echo "</p>";
-	}
-}
-
-function showUnit($facility_id){
+function fetch_units($facility_id){
 	global $conn;
 	
 	$resFU = mysqli_query($conn, "SELECT A.auto_id as id, A.size as size, A.price as price, B.images as img FROM unit A, units B where A.size=B.units and A.facility_id='".$facility_id."'");
   
-	echo '<div id="unitstbl_'.$facility_id.'" style="width:100%">';
-
+  $unit_info_array = array();
+  
 	while($arrFU = mysqli_fetch_array($resFU, MYSQLI_ASSOC)){
+		$unit_info_array[] = $arrFU;
+	}
+	
+	return $unit_info_array;
+}
+
+function show_amenities($facility_id, $facility_unit_amenities){
+  $arr_len = count($facility_unit_amenities);
+  echo '<tr><td style="width:900px;padding-left:400px">';
+	for($i = 0; $i < $arr_len; $i++){
+	  $amenity = $facility_unit_amenities[$i];
+	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px">';
+		echo '  '.$amenity.'</br>';
+	}
+	if(fetch_review_count($facility_id) > 0){
+	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px">';
+	  echo '  <a href="reviews.php?facility_id='.$facility_id.'">Reviews</a> (* Based on reviews collected from third-party sites)</br>';
+	}
+	echo '</td></tr>';
+}
+
+function show_units($facility_id, $arr_arr_FU){
+
+  echo '<div id="unitstbl_'.$facility_id.'" style="width:100%">';
+  $arr_len = count($arr_arr_FU);
+	for($i = 0; $i < $arr_len; $i++){
+	  $arrFU = $arr_arr_FU[$i];
 		echo '<div class="col-md-1" style="text-align:center;padding:10px;border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
 		echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
 		echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
@@ -318,5 +339,39 @@ function showUnit($facility_id){
 	}
 	echo "</div>";
 }
+
+function fetch_consolidate_amenities($facility_id, $unit_info_arr){
+  global $conn;
+  $resFA = mysqli_query($conn, "SELECT amenity as fac_amenity FROM facility_amenity where facility_id='".$facility_id."'");
+  
+  $amenities = array();
+  
+  while($arrFA = mysqli_fetch_array($resFA, MYSQLI_ASSOC)){
+		$amenities[] = $arrFU['fac_amenity'];
+	}
+	
+	$unit_amenities = array();
+	for($i = 0; $i < count($unit_info_arr); $i++){
+	  $unit_id = $unit_info_arr[$i]['id'];
+	  
+	  $resUA = mysqli_query($conn, "SELECT amenity as unit_amenity FROM unit_amenity where unit_id='".$unit_id."'");
+	  if(mysqli_num_rows($resUA) == 0){
+	    continue;
+	  }
+	  $unit_amenities_spec_arr = mysqli_fetch_array($resUA, MYSQLI_ASSOC);
+	  $unit_amenities_spec = array($unit_amenities_spec_arr['unit_amenity']);
+	  while($ua = mysqli_fetch_array($resUA, MYSQLI_ASSOC)){
+	    $unit_amenities_spec[] = $ua['unit_amenity'];
+	  }
+	  if(count($unit_amenities) == 0){
+      $unit_amenities = $unit_amenities_spec;	  
+	  }
+	  else{
+	    $unit_amenities = array_intersect($unit_amenities, $unit_amenities_spec);
+	  }
+	}
+	return array_unique(array_merge($amenities, $unit_amenities));
+}
+
 ?>
 
