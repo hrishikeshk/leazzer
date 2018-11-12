@@ -14,12 +14,25 @@ function insert_facility_owner($email){
 	
 	$res = mysqli_query($conn,"select auto_id from facility_owner where emailid='".$email."'");	
 	if(mysqli_num_rows($res) > 0){
-	  $arr = mysqli_fetch_array($res, MYSQLI_ASSOC)
+	  $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
 		return $arr['auto_id'];
 	}
 	else{
 			return false;
 	}
+}
+
+function extract_image_name($ss_path){
+  // //images.selfstorage.com/large-compress/108715518314b760ec6.jpg
+  $lpos = strrpos($ss_path, "/");
+  return trim(substr($ss_path, $lpos + 1));
+}
+
+function fetch_image_url($facility_id){
+  global $conn;
+  $res = mysqli_query($conn,"select * from image where facility_id='".$facility_id."' limit 1");
+  $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
+  return $arr;
 }
 
 if(isset($_POST['action'])){
@@ -52,35 +65,44 @@ if(isset($_POST['action'])){
 	if($_POST['action'] == "nearlocation"){
 		$query = "";
 		if($_POST['lat'] == 0 || $_POST['lng'] == 0)
-			$query = "select *, 0 as distance from facility_master where searchable=1 limit 10";
+			$query = "select *, 0 as calc_distance from facility_master where searchable=1 and city is not null and state is not null limit 10";
 		else
-			$query = "select *,(6371 * acos(cos(radians(".$_POST['lat'].")) * cos(radians(lat)) * cos(radians(lng)- radians(".$_POST['lng'].")) + sin(radians(".$_POST['lat'].")) * sin(radians(lat)))) as distance from facility_master having distance < 10000 and searchable=1 order by distance limit 10";
-		
+			$query = "select *,(6371 * acos(cos(radians(".$_POST['lat'].")) * cos(radians(lat)) * cos(radians(lng)- radians(".$_POST['lng'].")) + sin(radians(".$_POST['lat'].")) * sin(radians(lat)))) as calc_distance from facility_master having calc_distance < 10000 and searchable=1  and city is not null and state is not null order by calc_distance limit 10";
+
 		$res = mysqli_query($conn,$query);
 		while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
+		  $facility_id = $arr['id'];
+		  $arr_imgs = fetch_image_url($facility_id);
+		  
 			echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
 			echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
-			if(file_exists("unitimages/".$arr['image']))
-				echo '<img src="unitimages/'.$arr['image'].'" style="min-height:120px;width:120px;">';
+			$image_file_name = extract_image_name($arr_imgs['url_thumbsize']);
+			$expected_image_path = "images/".$facility_id."/".$image_file_name;
+			if(file_exists($expected_image_path))
+				echo '<img src="'.$expected_image_path.'" style="min-height:120px;width:120px;">';
+			else if(strlen($arr_imgs['url_thumbsize']) > 0)
+				echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
 			else
-				echo '<img src="'.$arr['image'].'" style="min-height:120px;width:120px;">';
+			  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
 			echo '</td>';
-			echo '<td class="login-block" style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;"><b>'.$arr['companyname'].'</b><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div><br>';
-			echo $arr['city'].",".$arr['state']." ".$arr['zipcode'].'<br>';
+			echo '<td class="login-block" style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;"><b>'.$arr['title'].'</b>
+			<!-- <div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days
+			</div>-->
 			
-			if($arr['options']!=""){
-				showOpt($arr);
-			}
-			else
-				echo "<br>";
+			<br>';
+			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br>';
+			
+			showOpt($arr);
+
+			//echo "<br>";
 			echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
 			echo '<div id="dateday_'.$arr['id'].'" class="login-block" name="dateday_'.$arr['id'].'" style="margin:0px;text-align:left;padding:0;">';
 			echo '<p id="mdatemsg_'.$arr['id'].'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
 			echo '<input class="datepicker" id="mdate_'.$arr['id'].'" name="mdate_'.$arr['id'].'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div>';
 			echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
-			if($arr['units']!=""){
-				showUnit($arr);
-			}
+
+			showUnit($arr['id']);
+
 			echo'</td></tr></table>';
 		}			
 	}
@@ -180,7 +202,7 @@ function onReserveCustomerMail($custEmail, $custName, $unit, $price, $companyNam
 	$message .= 'Sincerely,<br>&mdash; Leazzer';
 	$message .= '</td></tr>';
 	$message .= '</table>';
-	
+
 	$mail = new PHPMailer(); // defaults to using php "mail()"
 	$mail->CharSet = 'UTF-8';
 	$mail->AddReplyTo($fromemail,"Leazzer"); 
@@ -277,39 +299,22 @@ function showOpt($arr){
 	}
 }
 
-function showUnit($arr){
+function showUnit($facility_id){
 	global $conn;
-	$unitIds="";
-	$unitPrice="";
 	
-	$unitArr = explode(",",$arr['units']);
-	for($i=0;$i<count($unitArr);$i++)
-	{
-		if(trim($unitArr[$i]) == "")
-		continue;
-		
-		$unitSubArr = explode("-",$unitArr[$i]);
-		$unitIds .= $unitSubArr[0].",";
-		$unitPrice.= $unitSubArr[1].",";
-	}
-	$unitIds = substr($unitIds,0,strlen($unitIds)-1);
-	$unitPrice = substr($unitPrice,0,strlen($unitPrice)-1);
-	$unitPriceArr = explode(",",$unitPrice);
-	$resU = mysqli_query($conn,"select * from units where id in(".$unitIds.")");
-	echo '<div id="unitstbl_'.$arr['id'].'" style="width:100%">';
-	$cnt = 0;
-	while($arrU = mysqli_fetch_array($resU,MYSQLI_ASSOC))
-	{
+	$resFU = mysqli_query($conn, "SELECT A.auto_id as id, A.size as size, A.price as price, B.images as img FROM unit A, units B where A.size=B.units and A.facility_id='".$facility_id."'");
+  
+	echo '<div id="unitstbl_'.$facility_id.'" style="width:100%">';
+
+	while($arrFU = mysqli_fetch_array($resFU, MYSQLI_ASSOC)){
 		echo '<div class="col-md-1" style="text-align:center;padding:10px;border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
-		echo '<img src="unitimages/'.($arrU['images']==""?"pna.jpg":$arrU['images']).'" style="vertical-align: top;width:50px;height:50px">';
-		echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrU['units'].'</b><br>$'.$unitPriceArr[$cnt].'</p>';
+		echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
+		echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
 		echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80px;display:inline;padding:0px;" onClick="onUnitClick(this,'.
 										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
-										$arr['id'].','.
-										$arr['reservationdays'].',\''.
-										urlencode($arrU['units']).'\',\''.
-										$unitPriceArr[$cnt].'\');">Reserve</button></div>';
-		$cnt++;
+										$arrFU['id'].',\'0\',\''.
+										urlencode($arrFU['size']).'\',\''.
+										$arrFU['price'].'\');">Reserve</button></div>';
 	}
 	echo "</div>";
 }
