@@ -199,14 +199,16 @@ function onReserveCustomerMail($custEmail, $custName, $unit, $price, $companyNam
 	$message .= '<br><br>Congratulations. A '.$unit.' unit reservation has been confirmed at '.$companyName.' for you from ';
 	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
 	
-	if($image!=""){
+	if(strlen($image) > 0){
 		if(file_exists("unitimages/".$image))
-			$message .= '<center><img src="https://www.leazzer.com/unitimages/'.$image.'" height="120px"></center><br>';
+			$message .= '<center><img src="https://www.leazzer.com/unitimages/'.$image.'" height="120px" width="125px" alt="uiLogo" title="uiLogo" style="display:block"></center><br>';
+		else if(stristr($image, 'images.selfstorage.com') === FALSE)
+		  $message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="120px" width="125px" alt="pnaLogo" title="pnaLogo" style="display:block"></center><br>';
 		else
-			$message .= '<center><img src="'.$image.'" height="120px"></center><br>';
+			$message .= '<center><img src="https:'.$image.'" height="120px" width="125px" alt="ssLogo" title="ssLogo" style="display:block"></center><br>';
 	}
 	else
-		$message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="120px"></center><br>';
+		$message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="120px" width="125px" alt="npnaLogo" title="npnaLogo" style="display:block"></center><br>';
 		
 	$message .= $fAddress;
 	$message .= '</td></tr>';
@@ -233,7 +235,7 @@ function onReserveOwnerMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$re
 	$toemail=$ownerEmail; 
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
-	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px"></center><br>';
+	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="125px" alt="Logo" title="Logo" style="display:block"></center><br>';
 	$message .= 'Hello <b>'.$ownerName.'</b>,';
 	$message .= '<br><br>A '.$unit.' unit has been reserved from ';
 	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
@@ -340,12 +342,44 @@ function show_units($facility_id, $arr_arr_FU){
 	echo "</div>";
 }
 
+function a_intersect($arr1, $arr2){
+  $res = array();
+  for($i = 0; $i < count($arr1); $i++){
+    for($j = 0; $j < count($arr2); $j++){
+      if($arr1[$i] == $arr2[$j])
+        $res[] = $arr1[$i];
+    }
+  }
+  return $res;
+}
+
+function a_merge($arr1, $arr2){
+  $res = $arr2;
+  for($i = 0; $i < count($arr1); $i++){
+    $res[] = $arr1[$i];
+  }
+  return $res;
+}
+
+function a_unique($arr){
+  $res = array();
+  for($i = 0; $i < count($arr); $i++){
+    $add = 1;
+    for($j = $i + 1; $j < count($arr); $j++){
+      if($arr[$i] == $arr[$j])
+        $add = 0;
+    }
+    if($add == 1)
+      $res[] = $arr[$i];
+  }
+  return $res;
+}
+
 function fetch_consolidate_amenities($facility_id, $unit_info_arr){
   global $conn;
   $resFA = mysqli_query($conn, "SELECT amenity as fac_amenity FROM facility_amenity where facility_id='".$facility_id."'");
   
   $amenities = array();
-  
   while($arrFA = mysqli_fetch_array($resFA, MYSQLI_ASSOC)){
 		$amenities[] = $arrFU['fac_amenity'];
 	}
@@ -361,16 +395,19 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 	  $unit_amenities_spec_arr = mysqli_fetch_array($resUA, MYSQLI_ASSOC);
 	  $unit_amenities_spec = array($unit_amenities_spec_arr['unit_amenity']);
 	  while($ua = mysqli_fetch_array($resUA, MYSQLI_ASSOC)){
-	    $unit_amenities_spec[] = $ua['unit_amenity'];
+	    $uas = $ua['unit_amenity'];
+	    $unit_amenities_spec[] = $uas;
+	    if(stristr($uas, 'climate') !== FALSE && strlen(trim($uas)) > 0)
+	      $amenities[] = $uas;
 	  }
 	  if(count($unit_amenities) == 0){
       $unit_amenities = $unit_amenities_spec;	  
 	  }
 	  else{
-	    $unit_amenities = array_intersect($unit_amenities, $unit_amenities_spec);
+	    $unit_amenities = a_intersect($unit_amenities, $unit_amenities_spec);
 	  }
 	}
-	return array_unique(array_merge($amenities, $unit_amenities));
+	return a_unique(a_merge($amenities, $unit_amenities));
 }
 
 ?>

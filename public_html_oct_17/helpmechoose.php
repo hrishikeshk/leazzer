@@ -97,8 +97,7 @@ include('sql.php');
     	<div class="blankpage-main" style="padding:1em 1em;text-align:center;">
 		<?php
 			$res = mysqli_query($conn,"select * from units where standard=1");
-			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC))
-			{
+			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
 				if($arr['units'] == "")
 					continue;
 				

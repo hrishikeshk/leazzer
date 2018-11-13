@@ -156,8 +156,8 @@ function onReserveOwnerText($toNumber,$message)
     ));
   //print_r($message);
 }
-function onReserveCustomerMail($custEmail,$custName,$unit,$price,$companyName,$resFromDate,$resToDate,$image,$fAddress)
-{
+
+function onReserveCustomerMail($custEmail,$custName,$unit,$price,$companyName,$resFromDate,$resToDate,$image,$fAddress){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	$toemail=$custEmail; 
@@ -167,16 +167,17 @@ function onReserveCustomerMail($custEmail,$custName,$unit,$price,$companyName,$r
 	$message .= '<br><br>Congratulations. A '.$unit.' unit reservation has been confirmed at '.$companyName.' for you from ';
 	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
 	
-	if($image!="")
-	{
+	if(strlen($image) > 0){
 		if(file_exists("unitimages/".$image))
-			$message .= '<center><img src="www.leazzer.com/unitimages/'.$image.'" height="120px"></center><br>';
+			$message .= '<center><img src="https://www.leazzer.com/unitimages/'.$image.'" height="120px" width="125px" alt="uiLogo" title="uiLogo" style="display:block"></center><br>';
+		else if(stristr($image, 'images.selfstorage.com') === FALSE)
+		  $message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="120px" width="125px" alt="pnaLogo" title="pnaLogo" style="display:block"></center><br>';
 		else
-			$message .= '<center><img src="'.$image.'" height="120px"></center><br>';
+			$message .= '<center><img src="https:'.$image.'" height="120px" width="125px" alt="ssLogo" title="ssLogo" style="display:block"></center><br>';
 	}
 	else
-		$message .= '<center><img src="www.leazzer.com/unitimages/pna.jpg" height="120px"></center><br>';
-		
+		$message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="120px" width="125px" alt="npnaLogo" title="npnaLogo" style="display:block"></center><br>';
+
 	$message .= $fAddress;
 	$message .= '</td></tr>';
 	$message .= '<tr><td><br><br>';
@@ -195,14 +196,14 @@ function onReserveCustomerMail($custEmail,$custName,$unit,$price,$companyName,$r
 	$mail->isHTML(true);
 	$ret = $mail->Send();
 }
-function onReserveOwnerMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$resToDate)
-{
+
+function onReserveOwnerMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$resToDate){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	$toemail=$ownerEmail; 
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
-	$message .= '<center><img src="leazzer.com/images/reservation.png" height="150px"></center><br>';
+	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="125px" alt="Logo" title="Logo" style="display:block"></center><br>';
 	$message .= 'Hello <b>'.$ownerName.'</b>,';
 	$message .= '<br><br>A '.$unit.' unit has been reserved from ';
 	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
