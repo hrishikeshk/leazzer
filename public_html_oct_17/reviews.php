@@ -8,6 +8,23 @@ function fetch_reviews($facility_id){
   return $res;
 }
 
+function show_stars($num_stars){
+  $i = 1;
+  while($i <= $num_stars){
+    echo '<img src="images/bstar.png" height=15px width=15px>';
+    $i++;
+  }
+  if($i - $num_stars < 1)
+    echo '<img src="images/bstar_partial.png" height=15px width=15px>';
+  
+}
+
+function color_text($txt){
+  echo '<b style="color:red">';
+  echo $txt;
+  echo '</b>';
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -54,17 +71,17 @@ function fetch_reviews($facility_id){
 <a href="index_n.php"><img src="images/llogo.png" height=120px></a>
 <h3 style="margin:0;">Reviews (* Based on reviews collected from third-party sites)</h3>
   <table style="font-size: .9em;margin-bottom: 50px;margin-left: 75px;width:80%;box-shadow: 5px 5px 5px #888888;">
-    <!-- tr>
+    <tr>
+      <td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px; width:100px">
+        <b>Rating</b>
+      </td>
       <td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
-        Rating
-      </td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
-      <td>
-        Title
-      </td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
-      <td>
-        Message
-      </td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
-      <td>
+        <b>Title</b>
+      </td>
+      <td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
+        <b>Message</b>
+      </td>
+      <!-- td>
         Excerpt
       </td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
       <td>
@@ -83,7 +100,7 @@ function fetch_reviews($facility_id){
         echo '<tr>';
         
         echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
-          echo 'Rated '.$arr['rating'];
+          show_stars($arr['rating']);
         echo '</td>';
         
         echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
@@ -91,7 +108,9 @@ function fetch_reviews($facility_id){
         echo '</td>';
         
         echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
-          echo $arr['nickname'].' ( '.$arr['timestamp'].' ): <br />'.$arr['message'];
+          echo $arr['nickname'].' ( ';
+          color_text($arr['timestamp']);
+          echo ' ): <br />'.$arr['message'];
         echo '</td>';
         
         //echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
@@ -116,7 +135,7 @@ function fetch_reviews($facility_id){
   </table>
 </div>
 
-<div class="copyright">
+<div class="copyright" style="position:absolute;bottom:0">
 	<div class="container">
 		<p>© <?php echo date("Y",time());?> Leazzer. All rights reserved | <a href="/global_footer.php">Privacy Policy</a> | <a href="/global_footer_tu.php">Terms of use</a>
     </p>
