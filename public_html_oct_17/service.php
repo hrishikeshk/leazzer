@@ -35,7 +35,7 @@ if(isset($_POST['action']))
 	{
 		$query = "";
 		if($_POST['lat'] == 0 || $_POST['lng'] == 0)
-			$query = "select *,0 as distance from facility where searchable=1 limit 10";
+			$query = "select *,0 as distance from facility where searchable=1 order by address1 limit 10";
 		else
 			$query = "select *,(6371 * acos(cos(radians(".$_POST['lat'].")) * cos(radians(lat)) * cos(radians(lng)- radians(".$_POST['lng'].")) + sin(radians(".$_POST['lat'].")) * sin(radians(lat)))) as distance from facility having distance < 10000 and searchable=1 order by distance limit 10";
 		

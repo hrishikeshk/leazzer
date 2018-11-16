@@ -19,11 +19,11 @@ function show_stars($num_stars){
   
 }
 
-function color_date($txt){
-  echo '<b style="color:green">';
+function reformat_date($txt){
+  //echo '<b style="color:green">';
   $dt_parsed = date_create_from_format('Y-m-d', $txt);
   echo date_format($dt_parsed, 'M-d-Y');
-  echo '</b>';
+  //echo '</b>';
 }
 
 ?>
@@ -71,69 +71,22 @@ function color_date($txt){
 <div class="w3_bannerinfo">
 <a href="index_n.php"><img src="images/llogo.png" height=120px></a>
 <h3 style="margin-left:100px;text-align:left">Customer Reviews*</h3>
-  <table style="font-size: .9em;margin-bottom: 5px;margin-left: 75px;width:80%;box-shadow: 5px 5px 5px #888888;">
-    <tr>
-      <td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px; width:100px">
-        <b>Rating</b>
-      </td>
-      <td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
-        <b>Title</b>
-      </td>
-      <td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
-        <b>Message</b>
-      </td>
-      <!-- td>
-        Excerpt
-      </td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
-      <td>
-        Nickname
-      </td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
-      <td>
-        Date
-      </td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
-      <td>
-        Stars
-      </td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">
-    </tr -->
     <?php
       $res = fetch_reviews($_GET['facility_id']);
       while($arr = mysqli_fetch_array($res, MYSQLI_ASSOC)){
-        echo '<tr>';
-        
-        echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
-          show_stars($arr['rating']);
-        echo '</td>';
-        
-        echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
-          echo $arr['title'];
-        echo '</td>';
-        
-        echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
-          echo $arr['nickname'].' ( ';
-          color_date($arr['timestamp']);
-          echo ' ): <br />'.$arr['message'];
-        echo '</td>';
-        
-        //echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
-          //echo $arr['Excerpt'];
-        //echo '</td>';
-        
-        //echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
-          //echo $arr['nickname'];
-        //echo '</td>';
-        
-        //echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
-          //echo $arr['timestamp'];
-        //echo '</td>';
-        
-        //echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
-          //echo $arr['stars'];
-        //echo '</td>';
-        
-        echo '</tr>';
+        echo '<table style="font-size: .9em;margin-bottom: 5px;margin-left: 75px;width:80%;box-shadow: 5px 5px 5px #888888;">';
+        echo '<tr style="margin-left:0px;text-align:left"><td>';
+        echo '<br /><br /><img src="images/anon.png" height=25px width=25px> '.$arr['nickname'].'<br />';
+        show_stars($arr['rating']);
+        echo $arr['title'].'<br />';
+        reformat_date($arr['timestamp']);
+        echo ' - <b style="color:green">Published on Leazzer.com</b><br />';
+        echo $arr['message'];
+        echo '</td></tr>';
+        echo '</table>';
       }
     ?>
-  </table>
+    
   <div style="font-size: .7em;margin-right:150px;text-align:right">*Based on reviews collected from third-party sites</div>
 </div>
 
