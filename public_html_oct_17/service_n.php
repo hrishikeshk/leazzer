@@ -196,8 +196,8 @@ function onReserveCustomerMail($custEmail, $custName, $unit, $price, $companyNam
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
 	$message .= 'Hello <b>'.$custName.'</b>,';
-	$message .= '<br><br>Congratulations. A '.$unit.' unit reservation has been confirmed at '.$companyName.' for you from ';
-	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
+	$message .= '<br><br>Congratulations. A '.$unit.' unit reservation has been confirmed at '.$companyName.' for you at the price of $'.$price.' per month. You must move in between dates '.$resFromDate.' to '.$resToDate;
+	//$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
 	
 	if(strlen($image) > 0){
 		if(file_exists("unitimages/".$image))
@@ -311,13 +311,14 @@ function fetch_units($facility_id){
 
 function show_amenities($facility_id, $facility_unit_amenities){
   $arr_len = count($facility_unit_amenities);
+  $review_count = fetch_review_count($facility_id);
   echo '<tr><td style="width:900px;padding-left:400px">';
 	for($i = 0; $i < $arr_len; $i++){
 	  $amenity = $facility_unit_amenities[$i];
 	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px">';
 		echo '  '.$amenity.'</br>';
 	}
-	if(fetch_review_count($facility_id) > 0){
+	if($review_count > 0){
 	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px">';
 	  echo '  <a href="reviews.php?facility_id='.$facility_id.'">Reviews</a> (* Based on reviews collected from third-party sites)</br>';
 	}
