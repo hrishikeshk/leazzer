@@ -1,3 +1,18 @@
+<script type="text/javascript">
+  function showMoreLessAmenities(facility_id){
+    var y = document.getElementById("unit_more_amenities" + facility_id);
+    var a_moreless = document.getElementById("switchMoreLess" + facility_id);
+    if(y.style.display == "none"){
+      y.style.display = "block";
+      a_moreless.innerHTML = "&lt;&lt; less";
+    }
+    else{
+      y.style.display = "none";
+      a_moreless.innerHTML = "more &gt;&gt;";
+    }
+  }
+</script>
+
 <?php
 session_start();
 require_once('mail/class.phpmailer.php');		
@@ -98,7 +113,11 @@ if(isset($_POST['action'])){
 			echo '<table>';
 			
 			echo '<tr><td><b>'.$arr['title'].'</b><br>';
-			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br /></td></tr>';
+			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br /></td>';
+//
+      echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div></td>';
+//
+			echo '</tr>';
 			
 			$unit_info_arr = fetch_units($facility_id);
       $facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
@@ -309,18 +328,36 @@ function fetch_units($facility_id){
 	return $unit_info_array;
 }
 
+function min_ints($a, $b){
+  if($a < $b)
+    return $a;
+  return $b;
+}
+
 function show_amenities($facility_id, $facility_unit_amenities){
   $arr_len = count($facility_unit_amenities);
   $review_count = fetch_review_count($facility_id);
   echo '<tr><td style="width:900px;padding-left:400px">';
-	for($i = 0; $i < $arr_len; $i++){
+  $show_upfront = 2;
+	for($i = 0; $i < min_ints($show_upfront, $arr_len); $i++){
 	  $amenity = $facility_unit_amenities[$i];
-	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px">';
+	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
 		echo '  '.$amenity.'</br>';
 	}
+	
+	echo '<div id="unit_more_amenities'.$facility_id.'" style="display:none">';
+	for($i = $show_upfront; $i < $arr_len; $i++){
+	  $amenity = $facility_unit_amenities[$i];
+	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px;" />  '.$amenity.'</br>';
+	}
+	echo '</div>';
 	if($review_count > 0){
-	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px">';
+	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
 	  echo '  <a href="reviews.php?facility_id='.$facility_id.'">Reviews</a> (* Based on reviews collected from third-party sites)</br>';
+	}
+	
+	if($arr_len > $show_upfront){
+	  echo '<a id="switchMoreLess'.$facility_id.'" href="javascript:showMoreLessAmenities('.$facility_id.')" style="display:block">more &gt;&gt;</a>';
 	}
 	echo '</td></tr>';
 }

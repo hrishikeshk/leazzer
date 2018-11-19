@@ -55,7 +55,7 @@ function reformat_date($txt){
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <h1 style="color:#68AE00;"><a href="index_n.php">LEAZZER</a></h1>
+      <a href="index_n.php"><h1 style="color:#68AE00;">LEAZZER</h1></a>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
