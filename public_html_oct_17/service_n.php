@@ -11,6 +11,19 @@
       a_moreless.innerHTML = "more &gt;&gt;";
     }
   }
+  
+  function showMoreLessUnits(facility_id){
+    var y = document.getElementById("unit_more_show" + facility_id);
+    var a_moreless = document.getElementById("switchMoreLessUnits" + facility_id);
+    if(y.style.display == "none"){
+      y.style.display = "block";
+      a_moreless.innerHTML = "&lt;&lt; less";
+    }
+    else{
+      y.style.display = "none";
+      a_moreless.innerHTML = "more &gt;&gt;";
+    }
+  }
 </script>
 
 <?php
@@ -364,9 +377,10 @@ function show_amenities($facility_id, $facility_unit_amenities){
 
 function show_units($facility_id, $arr_arr_FU){
 
+  $show_upfront = 5;
   echo '<div id="unitstbl_'.$facility_id.'" style="width:100%">';
   $arr_len = count($arr_arr_FU);
-	for($i = 0; $i < $arr_len; $i++){
+	for($i = 0; $i < min_ints($arr_len, $show_upfront); $i++){
 	  $arrFU = $arr_arr_FU[$i];
 		echo '<div class="col-md-1" style="text-align:center;padding:10px;border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
 		echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
@@ -377,7 +391,24 @@ function show_units($facility_id, $arr_arr_FU){
 										urlencode($arrFU['size']).'\',\''.
 										$arrFU['price'].'\');">Reserve</button></div>';
 	}
+	echo '<div id="unit_more_show'.$facility_id.'" style="display:none">';
+	for($i = $show_upfront; $i < $arr_len; $i++){
+	  $arrFU = $arr_arr_FU[$i];
+		echo '<div class="col-md-1" style="text-align:center;padding:10px;border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
+		echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
+		echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
+		echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80px;display:inline;padding:0px;" onClick="onUnitClick(this,'.
+										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
+										$arrFU['id'].',\'0\',\''.
+										urlencode($arrFU['size']).'\',\''.
+										$arrFU['price'].'\');">Reserve</button></div>';
+	}
+	echo '</div>';
+	
 	echo "</div>";
+	if($arr_len > $show_upfront){
+	  echo '<p> <a id="switchMoreLessUnits'.$facility_id.'" href="javascript:showMoreLessUnits('.$facility_id.')" style="display:block">more &gt;&gt;</a></p>';
+	}
 }
 
 function a_intersect($arr1, $arr2){
@@ -437,6 +468,10 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 	    $unit_amenities_spec[] = $uas;
 	    if(stristr($uas, 'climate') !== FALSE && strlen(trim($uas)) > 0)
 	      $amenities[] = $uas;
+	    else if(stristr($uas, 'security') !== FALSE && strlen(trim($uas)) > 0)
+	      $amenities[] = $uas;
+	    else if(stristr($uas, 'discount') !== FALSE && strlen(trim($uas)) > 0)
+	      $amenities[] = $uas;
 	  }
 	  if(count($unit_amenities) == 0){
       $unit_amenities = $unit_amenities_spec;	  
@@ -445,7 +480,7 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 	    $unit_amenities = a_intersect($unit_amenities, $unit_amenities_spec);
 	  }
 	}
-	return a_unique(a_merge($amenities, $unit_amenities));
+	return a_unique(a_merge($unit_amenities, $amenities));
 }
 
 ?>
