@@ -24,7 +24,47 @@
       a_moreless.innerHTML = "more &gt;&gt;";
     }
   }
+  
+  function ajaxcall_photos(datastring){
+    var res;
+    $.ajax
+    ({	
+    		type:"POST",
+    		url:"photos_n.php",
+    		data:datastring,
+    		cache:false,
+    		async:false,
+    		success: function(result){		
+   				 	res=result;
+   				 	var modal = document.getElementById('modalPhotos');
+   				 	modal.style.display = "block";
+   				 	var iht = document.getElementById('innerHTMLTarget');
+   				 	iht.innerHTML = res;
+   		 	}
+    });
+    return res;
+  }
+  
+  window.onclick = function(event) {
+    var modal = document.getElementById('modalPhotos');
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+  }
+  
+  function showMorePhotos(facility_id){
+    var res = ajaxcall_photos("facility_id="+facility_id);
+  }
 </script>
+
+<div id="modalPhotos" class="modal">
+
+  <!-- Modal content -->
+  <div class="modal-content">
+    <p id="innerHTMLTarget">Some text in the Modal..</p>
+  </div>
+
+</div>
 
 <?php
 session_start();
@@ -59,8 +99,10 @@ function extract_image_name($ss_path){
 function fetch_image_url($facility_id){
   global $conn;
   $res = mysqli_query($conn,"select * from image where facility_id='".$facility_id."' limit 1");
-  $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
-  return $arr;
+  if(mysqli_num_rows($res) > 0)
+    return mysqli_fetch_array($res, MYSQLI_ASSOC);
+  else
+    return false;
 }
 
 function fetch_review_count($facility_id){
@@ -68,6 +110,23 @@ function fetch_review_count($facility_id){
   $res = mysqli_query($conn,"select count(*) as rct from review where facility_id='".$facility_id."'");
   $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
   return $arr['rct'];
+}
+
+function calc_img_path($facility_id){
+  $img_path_remote = fetch_image_url($facility_id);
+  if($img_path_remote == FALSE)
+    return '';
+  return $img_path_remote;
+}
+
+function read_owner_data($resO, $facility_id){
+  if(mysqli_num_rows($resO) > 0){
+    $arrO = mysqli_fetch_array($resO, MYSQLI_ASSOC);
+    return array($arrO['firstname'], $arrO['lastname'], $arrO['emailid']);
+  }
+  else{
+    return array($facility_id.'@leazzer.com', $facility_id, $facility_id);
+  }  
 }
 
 if(isset($_POST['action'])){
@@ -119,6 +178,7 @@ if(isset($_POST['action'])){
 				echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
 			else
 			  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
+			echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More photos</a>';
 			echo '</td>';
 
 			echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
@@ -164,7 +224,7 @@ if(isset($_POST['action'])){
 		$reserveFromDate = mktime(0,0,0,$rdateArr[0],$rdateArr[1],$rdateArr[2]);
 		$reserveToDate = strtotime("+".$_POST['rdays']." days",$reserveFromDate); 
 
-		mysqli_query($conn,"insert into reserve(cid,fid,reservefromdate,reservetodate,units) values('".$_POST['cid']."','".
+		mysqli_query($conn,"insert into reserve(cid, fid, reservefromdate, reservetodate, units) values('".$_POST['cid']."','".
 										$_POST['fid']."','".
 										$reserveFromDate."','".
 										$reserveToDate."','".
@@ -172,27 +232,38 @@ if(isset($_POST['action'])){
 		
 		$resC = mysqli_query($conn,"select * from customer where id=".$_POST['cid']);
 		$resF = mysqli_query($conn,"select * from facility_master where id=".$_POST['fid']);
+    $resO = mysqli_query($conn,"select O.firstname as firstname, O.lastname as lastname, O.emailid as emailid from facility_owner O, facility_master M where M.id=".$_POST['fid']." and O.auto_id=M.facility_owner_id limit 1");
 		if((mysqli_num_rows($resC) > 0) && (mysqli_num_rows($resF) > 0)){
-			$arrC = mysqli_fetch_array($resC,MYSQLI_ASSOC);
+			$arrC = mysqli_fetch_array($resC, MYSQLI_ASSOC);
 			$arrF = mysqli_fetch_array($resF, MYSQLI_ASSOC);
-			onReserveCustomerMail($arrC['emailid'],
+			$arrO = read_owner_data($resO, $arrF['id']);
+			
+			$img_path = calc_img_path($arrF['id']);
+			
+			onReserveCustomerMail($arrF['id'], $arrC['emailid'],
 													$arrC['firstname']." ".$arrC['lastname'],
 													$_POST['unit'],
 													$_POST['price'],
-													$arrF['companyname'],
+													$arrF['title'],
 													date('m/d/Y', $reserveFromDate),
 													date('m/d/Y', $reserveToDate),
-													$arrF['image'],
+													$img_path,
 													$arrF['street']."<br>".($arrF['locality']==""?"":$arrF['region']."<br>").$arrF['city']." ".$arrF['state']." - ".$arrF['zip']);
-			onReserveOwnerMail($arrF['emailid'],
-													$arrF['firstname']." ".$arrF['lastname'],
+			onReserveOwnerMail($arrO[0],
+													$arrO[1]." ".$arrO[2],
 													$_POST['unit'],
 													$_POST['price'],
 													date('m/d/Y',$reserveFromDate),
 													date('m/d/Y',$reserveToDate));
-			if($arrF['receivereserve'] == "1"){
-				onReserveOwnerText($arrF['phone'],"Congratulations. A ".$_POST['unit']." unit reservation has been confirmed at ".$arrF['companyname']." for you from ".date('m/d/Y',$reserveFromDate)." to ".date('m/d/Y',$reserveFromDate)." for the price of ".$_POST['price']." per month.");
-			}
+			onReserveAdminMail($arrO[0],
+													$arrO[1]." ".$arrO[2],
+													$_POST['unit'],
+													$_POST['price'],
+													date('m/d/Y',$reserveFromDate),
+													date('m/d/Y',$reserveToDate));
+			/*if($arrF['receivereserve'] == "1"){
+				////
+			}*/
 		}
 		echo "success";
 	}
@@ -221,7 +292,7 @@ function onReserveOwnerText($toNumber, $message){
   //print_r($message);
 }
 
-function onReserveCustomerMail($custEmail, $custName, $unit, $price, $companyName, $resFromDate, $resToDate, $image, $fAddress){
+function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $price, $companyName, $resFromDate, $resToDate, $image, $fAddress){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	$toemail=$custEmail; 
@@ -229,10 +300,13 @@ function onReserveCustomerMail($custEmail, $custName, $unit, $price, $companyNam
 	$message .= '<tr><td>';
 	$message .= 'Hello <b>'.$custName.'</b>,';
 	$message .= '<br><br>Congratulations. A '.$unit.' unit reservation has been confirmed at '.$companyName.' for you at the price of $'.$price.' per month. You must move in between dates '.$resFromDate.' to '.$resToDate;
-	//$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
 	
 	if(strlen($image) > 0){
-		if(file_exists("unitimages/".$image))
+	  $image_name = extract_image_name($image);
+	  $expected_path = "images/".$facility_id.'/'.$image_name;
+	  if(strlen($image_name) > 0 && file_exists($expected_path))
+			$message .= '<center><img src="https://www.leazzer.com/images/'.$image_name.'" height="120px" width="125px" alt="uiLogo" title="uiLogo" style="display:block"></center><br>';
+		else if(file_exists("unitimages/".$image))
 			$message .= '<center><img src="https://www.leazzer.com/unitimages/'.$image.'" height="120px" width="125px" alt="uiLogo" title="uiLogo" style="display:block"></center><br>';
 		else if(stristr($image, 'images.selfstorage.com') === FALSE)
 		  $message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="120px" width="125px" alt="pnaLogo" title="pnaLogo" style="display:block"></center><br>';
@@ -283,6 +357,34 @@ function onReserveOwnerMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$re
 	$mail->SetFrom($fromemail, "Leazzer");
 	$mail->AddAddress($toemail, substr($toemail,0,strpos($toemail,"@")));
 	$mail->Subject    = "Your have a reservation";
+	$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; 
+	$mail->MsgHTML($message);
+	$mail->isHTML(true);
+	$ret = $mail->Send();
+}
+
+function onReserveAdminMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$resToDate){
+	global $conn,$GError;
+	$fromemail="no-reply@leazzer.com"; 
+	$toemail= 'admin@leazzer.com';
+	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
+	$message .= '<tr><td>';
+	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="125px" alt="Logo" title="Logo" style="display:block"></center><br>';
+	$message .= 'Hello Admin ! A reservation for facility owner: <b>'.$ownerName.' and email sent to owner at '.$ownerEmail.'</b>,';
+	$message .= '<br><br>A '.$unit.' unit has been reserved from ';
+	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
+	$message .= '</td></tr>';
+	$message .= '<tr><td><br><br>';
+	$message .= 'Sincerely,<br>&mdash; Leazzer';
+	$message .= '</td></tr>';
+	$message .= '</table>';
+	
+	$mail = new PHPMailer();
+	$mail->CharSet = 'UTF-8';
+	$mail->AddReplyTo($fromemail,"Leazzer"); 
+	$mail->SetFrom($fromemail, "Leazzer");
+	$mail->AddAddress($toemail, substr($toemail,0,strpos($toemail,"@")));
+	$mail->Subject    = "A reservation has been done";
 	$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; 
 	$mail->MsgHTML($message);
 	$mail->isHTML(true);
@@ -399,7 +501,7 @@ function show_units($facility_id, $arr_arr_FU){
 		echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
 		echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80px;display:inline;padding:0px;" onClick="onUnitClick(this,'.
 										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
-										$arrFU['id'].',\'0\',\''.
+										$facility_id.',\'0\',\''.
 										urlencode($arrFU['size']).'\',\''.
 										$arrFU['price'].'\');">Reserve</button></div>';
 	}

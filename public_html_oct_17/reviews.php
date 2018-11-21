@@ -26,6 +26,19 @@ function reformat_date($txt){
   //echo '</b>';
 }
 
+function obfuscate_name($name){
+  $tok = strtok($name, " ");
+  if($tok == false || strlen($tok) == 0)
+    return 'Anonymous';
+  $res = $tok;
+  $tok = strtok(" ");
+  if($tok == false || strlen($tok) == 0){
+    return substr($res, 1);
+  }
+  
+  return $res.'.'.strtoupper(substr($tok, 0, 1));
+}
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -76,7 +89,7 @@ function reformat_date($txt){
       while($arr = mysqli_fetch_array($res, MYSQLI_ASSOC)){
         echo '<table style="font-size: .9em;margin-bottom: 5px;margin-left: 75px;width:80%;box-shadow: 5px 5px 5px #888888;">';
         echo '<tr style="margin-left:0px;text-align:left"><td>';
-        echo '<br /><br /><img src="images/anon.png" height=25px width=25px> '.$arr['nickname'].'<br />';
+        echo '<br /><br /><img src="images/anon.png" height=25px width=25px> '.obfuscate_name($arr['nickname']).'<br />';
         show_stars($arr['rating']);
         echo $arr['title'].'<br />';
         reformat_date($arr['timestamp']);

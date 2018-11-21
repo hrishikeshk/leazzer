@@ -110,25 +110,23 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout"))
 <link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" />
 <script type="text/javascript" src="admin/js/bootstrap-datepicker.js"></script>
 <script>
-$(document).ready(function()
-{
-	if (navigator.geolocation) 
-	{
+$(document).ready(function(){
+	if (navigator.geolocation){
   	navigator.geolocation.getCurrentPosition(showPosition,showError);
   } 
 	else 
 		nearStorage(0,0);
 });
-function showPosition(position) 
-{
+
+function showPosition(position){
 	nearStorage(position.coords.latitude,position.coords.longitude);
 }
-function showError(error) 
-{
+
+function showError(error){
 	nearStorage(0,0);
 }
-function nearStorage(lat,lng)
-{
+
+function nearStorage(lat,lng){
 	var res = ajaxcall("action=nearlocation&lat="+lat+"&lng="+lng);
 	$('#searchmain').html(res);
 	$('.datepicker').datepicker({
@@ -138,10 +136,8 @@ function nearStorage(lat,lng)
     });
 }
 
-function onShowUnit(id)
-{
-	if($('#unitstbl_'+id).is(':hidden'))
-	{
+function onShowUnit(id){
+	if($('#unitstbl_'+id).is(':hidden')){
 		$('#unitstbl_'+id).show();
 		$("#dateday_"+id).css("display", "inline");	
 		$('#mdate_'+id).datepicker({
@@ -151,33 +147,28 @@ function onShowUnit(id)
     });
     
 	}
-	else
-	{
+	else{
 		$('#unitstbl_'+id).hide();
 		$('#dateday_'+id).hide();	
 	}
 }
-function onUnitClick(btn,cid,fid,rdays,unit,price)
-{
-	if($('#mdate_'+fid).val() == "")
-	{
+
+function onUnitClick(btn, cid, fid, rdays, unit, price){
+	if($('#mdate_'+fid).val() == ""){
 		$('#mdatemsg_'+fid).show();
 	}
-	else if(cid == 0)
-	{
+	else if(cid == 0){
 			var res = ajaxcall("action=sessionreserve&fid="+fid+
 									"&cid="+cid+
 									"&rdays="+rdays+
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price);
-			if(res == "success")
-			{
+			if(res !== false){
 				window.location.href='customer/index_n.php?action=search';
 			}
 	}
-	else
-	{		
+	else{
 			$('#mdatemsg_'+fid).hide();
 			var res = ajaxcall("action=reserve&fid="+fid+
 									"&cid="+cid+
@@ -188,7 +179,7 @@ function onUnitClick(btn,cid,fid,rdays,unit,price)
 			//if(res == "success")
 			{
 				btn.innerHTML = "<i class=\"fa fa-check\"></i>";
-				window.location.href = "thankyou.php?fid="+fid+
+				window.location.href = "thankyou_n.php?fid="+fid+
 									"&cid="+cid+
 									"&rdays="+rdays+
 									"&rdate="+$('#mdate_'+fid).val()+
@@ -197,8 +188,8 @@ function onUnitClick(btn,cid,fid,rdays,unit,price)
 			}
 	}
 }
-function ajaxcall(datastring)
-{
+
+function ajaxcall(datastring){
     var res;
     $.ajax
     ({	
@@ -207,13 +198,17 @@ function ajaxcall(datastring)
     		data:datastring,
     		cache:false,
     		async:false,
-    		success: function(result)
-    	 	{		
-   				 	res=result;
+    		success: function(result){		
+   				 	res = result;
+   		 	},
+   		 	error: function(err){
+   		 	    alert('Failed to invoke serverside function... Please try again in some time' + err);
+   		 	    res = false;
    		 	}
     });
     return res;
 }
+
 </script>
 
 <script>
