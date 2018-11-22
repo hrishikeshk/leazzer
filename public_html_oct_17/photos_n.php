@@ -1,102 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+* {box-sizing:border-box}
+
+/* Slideshow container */
+.slideshow-container {
+  max-width: 1000px;
+  max-height: 700px;
+  position: relative;
+  margin: auto;
+}
+
+.mySlides {
+  display: none;
+}
+
+/* Next & previous buttons */
+.prev, .next {
+  cursor: pointer;
+  position: absolute;
+  top: 50%;
+  width: auto;
+  margin-top: -22px;
+  padding: 16px;
+  color: white;
+  font-weight: bold;
+  font-size: 18px;
+  transition: 0.6s ease;
+  border-radius: 0 3px 3px 0;
+  user-select: none;
+}
+
+/* Position the "next button" to the right */
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+
+/* On hover, add a black background color with a little bit see-through */
+.prev:hover, .next:hover {
+  background-color: rgba(0,0,0,0.8);
+}
+
+/* Caption text */
+.text {
+  color: #f2f2f2;
+  font-size: 15px;
+  padding: 8px 12px;
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+}
+
+/* Number text (1/3 etc) */
+.numbertext {
+  color: #f2f2f2;
+  font-size: 12px;
+  padding: 8px 12px;
+  position: absolute;
+  top: 0;
+}
+
+/* The dots/bullets/indicators */
+.dot {
+  cursor: pointer;
+  height: 15px;
+  width: 15px;
+  margin: 0 2px;
+  background-color: #bbb;
+  border-radius: 50%;
+  display: inline-block;
+  transition: background-color 0.6s ease;
+}
+
+.active, .dot:hover {
+  background-color: #717171;
+}
+
+/* Fading animation */
+.fade {
+  -webkit-animation-name: fade;
+  -webkit-animation-duration: 1.5s;
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@-webkit-keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+
+@keyframes fade {
+  from {opacity: .4} 
+  to {opacity: 1}
+}
+</style>
+</head>
+<body>
+<script type="application/x-javascript">
+var slideIndex = 1;
+showSlides(slideIndex);
+
+// Next/previous controls
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+// Thumbnail image controls
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("dot");
+  if (n > slides.length) {slideIndex = 1} 
+  if (n < 1) {slideIndex = slides.length}
+  console.log('slideIndex = ' + slideIndex);
+  console.log('slide len = ' + slides.length);
+  console.log('dots len = ' + dots.length);
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none"; 
+  }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex - 1].style.display = "block"; 
+  dots[slideIndex - 1].className += " active";
+}
+</script>
+
+<!-- Slideshow container -->
+<div class="slideshow-container">
+
+  <!-- Full-width images with number and caption text -->
+  <div class="mySlides fade">
+    <div class="numbertext">1 / 3</div>
+    <img src="images/gtick.png" style="width:100%">
+    <div class="text">Caption Text 1</div>
+  </div>
+
+  <div class="mySlides fade">
+    <div class="numbertext">2 / 3</div>
+    <img src="images/anon.png" style="width:100%">
+    <div class="text">Caption Two 2</div>
+  </div>
+
+  <div class="mySlides fade">
+    <div class="numbertext">3 / 3</div>
+    <img src="images/bstar.png" style="width:100%">
+    <div class="text">Caption Three 3</div>
+  </div>
+
+  <!-- Next and previous buttons -->
+  <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+  <a class="next" onclick="plusSlides(1)">&#10095;</a>
+</div>
+<br>
+
+<!-- The dots/circles -->
+<div style="text-align:center">
+  <span class="dot" onclick="javascript:currentSlide(1)"></span> 
+  <span class="dot" onclick="javascript:currentSlide(2)"></span> 
+  <span class="dot" onclick="javascript:currentSlide(3)"></span> 
+</div>
+
 <?php
 session_start();
 include('sql.php');
-$GError = "";
-$filter = "";
 
-if(isset($_POST['facility_id'])){
-  echo "For facility : ".$_POST['facility_id'];
-}
-
-if(isset($_GET['q'])){
-  $q=$_GET['q'];
-  $res_fac = mysqli_query($conn,"select * from image where facility_id='$q'");
+if(isset($_GET['facility_id'])){
+  //echo "For facility : ".$_POST['facility_id'];
+  
 }
 
-if((!isset($_POST['search'])) && isset($_SESSION['search'])){
-	$_POST['search']= $_SESSION['search'];
-}
-else if(isset($_POST['search'])){
-	$_SESSION['search']= $_POST['search'];
-}
-
-if(isset($_GET['action'])){
-	if($_GET['action'] == "removefilter" && isset($_SESSION['filter'])){
-		$newFilterArr = array();			
- 		for($i=0;$i<count($_SESSION['filter']);$i++){
- 			$filterArr = explode("[-]",$_SESSION['filter'][$i]);
- 			if($filterArr[0] != $_GET['id'])
- 				array_push($newFilterArr,$_SESSION['filter'][$i]);
-		}			
-		$_SESSION['filter'] = $newFilterArr;
-	}
-}
-if(isset($_POST['action'])){
-	if($_POST['action'] == "applyfilter"){
-		$_SESSION['filter'] = $_POST['options'];
-	}
-}
-
-function showUnit($arr){
-	global $conn;
-	$unitIds="";
-	$unitPrice="";
-	
-	$unitArr = explode(",",$arr['units']);
-	for($i=0;$i<count($unitArr);$i++)
-	{
-		if(trim($unitArr[$i]) == "")
-		continue;
-		
-		$unitSubArr = explode("-",$unitArr[$i]);
-		$unitIds .= $unitSubArr[0].",";
-		$unitPrice.= $unitSubArr[1].",";
-	}
-	$unitIds = substr($unitIds,0,strlen($unitIds)-1);
-	$unitPrice = substr($unitPrice,0,strlen($unitPrice)-1);
-	$unitPriceArr = explode(",",$unitPrice);
-	$resU = mysqli_query($conn,"select * from units where id in(".$unitIds.")");
-	echo '<div style="border:0px solid red;width:70%;height:150px;"  id="unitstbl_'.$arr['id'].'">';
-	$cnt = 0;
-	while($arrU = mysqli_fetch_array($resU,MYSQLI_ASSOC))
-	{
-		echo '<div class="col-md-1" style="text-align: center;padding:10px;width="28%";border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
-		echo '<img src="unitimages/'.($arrU['images']==""?"pna.jpg":$arrU['images']).'" style="vertical-align: top;width:50px;height:50px">';
-		echo '<p style="width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrU['units'].'</b><br>$'.$unitPriceArr[$cnt].'</p>';
-		echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80px;display:inline;padding:0px;" onClick="onUnitClick(this,'.
-										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
-										$arr['id'].','.
-										$arr['reservationdays'].',\''.
-										urlencode($arrU['units']).'\',\''.
-										$unitPriceArr[$cnt].'\');">Reserve</button></div>';
-		$cnt++;
-	}
-	echo "</div>";
-}
-
-function showOpt($arr){
-	global $conn;
-	$opt = $arr['options'];
-	$pos = strpos($opt,",");
-	if($pos ==  0)
-		$opt = substr($opt,1,strlen($opt)-2);
-	else
-		$opt = substr($opt,0,strlen($opt)-1);
-	$resO = mysqli_query($conn,"select * from options where id in(".$opt.")");
-	echo '<p style="font-size:.8em">';
-	while($arrO = mysqli_fetch_array($resO,MYSQLI_ASSOC))
-		echo $arrO['opt'].', ';
-	echo "</p>";
-}
-
-function file_get_contents_curl($url) {
-$ch = curl_init();
-curl_setopt($ch, CURLOPT_HEADER, 0);
-curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //Set curl to return the data instead of printing it to the browser.
-curl_setopt($ch, CURLOPT_URL, $url);
-$data = curl_exec($ch);
-curl_close($ch);
-return $data;
-}
 ?>
+
+</body>
+</html>
 
