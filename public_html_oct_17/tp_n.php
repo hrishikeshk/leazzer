@@ -2,7 +2,6 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 </head>
 <body>
 
@@ -35,14 +34,14 @@
     }
     else{
       $captionsArr = Array(
-        'Store Your Valuables At This Secured And Clean Facility, Try now.',
-        'Store Your Beloved Stuff At This Rock Solid Facility, Try Now.',
-        'Affordable, Clean, And Secured, this facility Boasts Amenities second to none, Try Now.',
-        'Abundant Amenities With NO Pain To Your Pocket, Try Now.',
-        'Try this First Class Facility within Affordable Limits, Try Now.',
-        'Relax, This Facility will Keep Your Stuff Protected and Preserved, Try Now',
-        'Enjoy Your Life While We Work Hard To Protect and Preserve Your Stuff, Try Now',
-        'Stop Worrying and Get On WIth Your Life, Try Now'
+        'Store your Valuables at this Secured and Clean Facility',
+        'Store your Beloved Stuff at this Rock Solid Facility',
+        'Affordable, Clean and Secured, this facility Boasts Amenities second to none',
+        'Abundant Amenities with NO Pain to your Pocket',
+        'Try this First Class Facility within Affordable Limits',
+        'Relax, This Facility will keep your Stuff Protected and Preserved',
+        'Enjoy your Life while we Work Hard to Protect and Preserve your Stuff',
+        'Stop Worrying and Get On with your Life'
       );
       $i = 0;
       $arr_len = count($captionsArr);
@@ -51,7 +50,7 @@
         $img_name = extract_image_name($arr['url']);
         echo '<div class="mySlides">';
         echo '<div class="numbertext">'.($i + 1).' / '.$num_images.'</div>';
-        echo '<img src="images/'.$_GET['facility_id'].'/'.$img_name.'" height="400" width="400">';
+        echo '<img src="images/'.$_GET['facility_id'].'/'.$img_name.'" height="400" width="500">';
         echo '<div class="slidertext">'.$captionsArr[$i].'</div>';
         $i++;
         $i = $i % $arr_len;

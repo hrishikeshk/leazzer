@@ -521,12 +521,12 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 <style>
 .modal {
     display: none;
-    position: fixed;
+    /*position: fixed;
     z-index: 1;
     left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
+    top: 0;*/
+    /*width: 100%; /* Full width */
+    /*height: 100%; /* Full height */
     overflow: auto; /* Enable scroll if needed */
     background-color: rgb(0,0,0); /* Fallback color */
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
@@ -537,7 +537,11 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
     margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 80%; /* Could be more or less, depending on screen size */
+    width: 55%; /* Could be more or less, depending on screen size */
+    /*z-index: 1;
+    top: 0;*/
+    animation-name: animatetop;
+    animation-duration: 0.9s;
 }
 
 .close {
@@ -547,6 +551,7 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
     font-weight: bold;
 }
 
+.trynow.hover,
 .close:hover,
 .close:focus {
     color: black;
@@ -558,20 +563,21 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 
 * {box-sizing: border-box}
   .mySlides {display: none}
-  img {vertical-align: middle;}
+  img {
+    vertical-align: middle;
+  }
 
-/* Slideshow container */
 .slideshow-container {
-  max-width: 700px;
+  max-width: 500px;
   max-height: 500px;
   position: relative;
-  margin: auto;
+  /*margin: auto;*/
+  margin-top:0;
 }
 
-/* Next & previous buttons */
 .prev, .next {
   cursor: pointer;
-  position: absolute;
+  position: relative;
   top: 50%;
   width: auto;
   padding: 16px;
@@ -584,24 +590,22 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
   user-select: none;
 }
 
-/* Position the "next button" to the right */
 .next {
   right: 0;
   border-radius: 3px 0 0 3px;
 }
 
-/* On hover, add a black background color with a little bit see-through */
 .prev:hover, .next:hover {
   background-color: rgba(0,0,0,0.8);
 }
 
-/* Caption text */
 .slidertext {
   color: #000000;
-  font-size: 15px;
+  font-size: 13px;
   padding: 8px 12px;
-  position: absolute;
-  bottom: 8px;
+  position: relative;
+  top: 5px;
+  /*bottom: 8px;*/
   width: 100%;
   text-align: center;
 }
@@ -647,6 +651,11 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 @keyframes fade {
   from {opacity: .4} 
   to {opacity: 1}
+}
+
+@keyframes animatetop {
+    from {top: -500px; opacity: 0}
+    to {top: -200px; opacity: 1}
 }
 
 /* On smaller screens, decrease text size */
@@ -706,6 +715,7 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
   
   var span = document.getElementById('modal-close');
   span.onclick = function() {
+    var modal = document.getElementById('modalPhotos');
     modal.style.display = "none";
   }
   
@@ -716,6 +726,12 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
     }
   }
   
+  var trynow = document.getElementById('trynow');
+  trynow.onclick = function() {
+    var modal = document.getElementById('modalPhotos');
+    modal.style.display = "none";
+  }
+    
   function showMorePhotos(facility_id){
     var res = ajaxcall_photos("facility_id="+facility_id);
   }
@@ -733,10 +749,8 @@ function showSlides(n) {
   var i;
   var slides = document.getElementsByClassName("mySlides");
   //var dots = document.getElementsByClassName("dot");
-  console.log('slideIndex 1 = ' + slideIndex);
   if (n > slides.length) {slideIndex = 1}    
   if (n < 1) {slideIndex = slides.length}
-  console.log('slideIndex 2 = ' + slideIndex);
 
   for (i = 0; i < slides.length; i++) {
       slides[i].style.display = "none";  
@@ -747,6 +761,7 @@ function showSlides(n) {
   slides[slideIndex-1].style.display = "block";  
   //dots[slideIndex-1].className += " active";
 }
+
 </script>
 
 <div id="modalPhotos" class="modal">
@@ -756,9 +771,16 @@ function showSlides(n) {
     <div class="slideshow-container">
     <table><tr>
     <td><a class="prev" onclick="plusSlides(-1)">&#10094;</a></td>
-    <td><div id="innerHTMLTarget">Some text in the Modal..</div></td>
+    <td><div id="innerHTMLTarget">Some text in the Modal..</div>
+    </td>
     <td><a class="next" onclick="plusSlides(1)">&#10095;</a></td>
-    </tr></table>
+    </tr>
+    <tr>
+    <td></td>
+    <td style="text-align:center"><a class="trynow" style="cursor:pointer" id="trynow">Try now.<a></td>
+    <td></td>
+    </tr>
+    </table>
     </div>
   </div>
 
