@@ -110,7 +110,7 @@ if(isset($_POST['action'])){
 				echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
 			else
 			  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
-			echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More photos</a>';
+			echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More Photos</a>';
 			echo '</td>';
 
 			echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
@@ -534,12 +534,14 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
+    /*margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
     width: 55%; /* Could be more or less, depending on screen size */
-    /*z-index: 1;
-    top: 0;*/
+    /*position: fixed;*/
+    z-index: 1;
+    left: 200px;
+    top: 0px;
     animation-name: animatetop;
     animation-duration: 0.9s;
 }
@@ -655,7 +657,7 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 
 @keyframes animatetop {
     from {top: -500px; opacity: 0}
-    to {top: -200px; opacity: 1}
+    to {top: 0px; opacity: 1}
 }
 
 /* On smaller screens, decrease text size */
@@ -708,6 +710,9 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
    				 	var iht = document.getElementById('innerHTMLTarget');
    				 	iht.innerHTML = res;
             showSlides(slideIndex);
+            setTimeout(function() {
+              $(document.body).scrollTop(0);
+            }, 15);
    		 	}
     });
     return res;
@@ -777,7 +782,7 @@ function showSlides(n) {
     </tr>
     <tr>
     <td></td>
-    <td style="text-align:center"><a class="trynow" style="cursor:pointer" id="trynow">Try now.<a></td>
+    <td style="text-align:center"><a class="trynow" style="cursor:pointer" id="trynow">Try Now<a></td>
     <td></td>
     </tr>
     </table>

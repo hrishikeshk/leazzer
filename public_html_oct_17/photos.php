@@ -5,7 +5,7 @@ $GError = "";
 $filter = "";
 if(isset($_GET['q'])){
   $q=$_GET['q'];
-  $res_fac = mysqli_query($conn,"select * from image where facility_id='$q'");
+  $res_fac = mysqli_query($conn,"select * from facility_images where facility_id='$q'");
 }
 
 if((!isset($_POST['search'])) && isset($_SESSION['search'])){
