@@ -61,6 +61,14 @@ function read_owner_data($resO, $facility_id){
   }  
 }
 
+function has_climate_control($arr_amenities){
+  for($i = 0; $i < count($arr_amenities); $i++){
+    if(stristr($arr_amenities[$i], 'climate') !== FALSE)
+      return true;
+  }
+  return false;
+}
+
 if(isset($_POST['action'])){
 	if($_POST['action'] == "addfacility"){
 		$email  = checkEmail($_POST['email'], 0);
@@ -99,7 +107,9 @@ if(isset($_POST['action'])){
 		while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
 		  $facility_id = $arr['id'];
 		  $arr_imgs = fetch_image_url($facility_id);
-		  
+		  $unit_info_arr = fetch_units($facility_id);
+      $facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
+      
 			echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
 			echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
 			$image_file_name = extract_image_name($arr_imgs['url_thumbsize']);
@@ -110,6 +120,7 @@ if(isset($_POST['action'])){
 				echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
 			else
 			  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
+			
 			echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More Photos</a>';
 			echo '</td>';
 
@@ -118,14 +129,18 @@ if(isset($_POST['action'])){
 			echo '<table>';
 			
 			echo '<tr><td><b>'.$arr['title'].'</b><br>';
-			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br /></td>';
+			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
+			
+			if(has_climate_control($facility_unit_amenities)){
+			  echo '<img src="images/cc_amenity.jpg" style="min-height:40px;width:40px;">';
+			}
+			
+			echo '</td>';
 //
       echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div></td>';
 //
 			echo '</tr>';
 			
-			$unit_info_arr = fetch_units($facility_id);
-      $facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
       show_amenities($facility_id, $facility_unit_amenities);
       
       echo '</table>';
@@ -381,7 +396,26 @@ function min_ints($a, $b){
   return $b;
 }
 
+function no_climate_control($v){
+  return !(stristr($v, 'climate') !== FALSE);
+}
+
+function a_filter($arr, $str){
+  $res = array();
+  for($i = 0; $i < count($arr); $i++){
+    if(stristr($arr[$i], $str) !== FALSE){
+    
+    }
+    else
+      $res[] = $arr[$i];
+  }
+  return $res;
+}
+
 function show_amenities($facility_id, $facility_unit_amenities){
+
+  $facility_unit_amenities = a_filter($facility_unit_amenities, "climate");
+  
   $arr_len = count($facility_unit_amenities);
   $review_count = fetch_review_count($facility_id);
   echo '<tr><td style="width:900px;padding-left:400px">';
@@ -404,7 +438,7 @@ function show_amenities($facility_id, $facility_unit_amenities){
 	}
 	
 	if($arr_len > $show_upfront){
-	  echo '<a id="switchMoreLess'.$facility_id.'" href="javascript:showMoreLessAmenities('.$facility_id.')" style="display:block">more &gt;&gt;</a>';
+	  echo '<a id="switchMoreLess'.$facility_id.'" href="javascript:showMoreLessAmenities('.$facility_id.')" style="display:block"> &gt;&gt;</a>';
 	}
 	echo '</td></tr>';
 }
@@ -441,7 +475,7 @@ function show_units($facility_id, $arr_arr_FU){
 	
 	echo "</div>";
 	if($arr_len > $show_upfront){
-	  echo '<p> <a id="switchMoreLessUnits'.$facility_id.'" href="javascript:showMoreLessUnits('.$facility_id.')" style="display:block">more &gt;&gt;</a></p>';
+	  echo '<p> <a id="switchMoreLessUnits'.$facility_id.'" href="javascript:showMoreLessUnits('.$facility_id.')" style="display:block"> &gt;&gt;</a></p>';
 	}
 }
 
@@ -521,8 +555,8 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 <style>
 .modal {
     display: none;
-    /*position: fixed;
-    z-index: 1;
+    /*position: fixed;*/
+    /*z-index: 1;
     left: 0;
     top: 0;*/
     /*width: 100%; /* Full width */
@@ -537,10 +571,10 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
     /*margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 45%; /* Could be more or less, depending on screen size */
-    /*position: fixed;*/
+    width: 60%; /* Could be more or less, depending on screen size */
+    position: sticky;
     z-index: 1;
-    left: 20%;
+    left: 10%;
     top: 20%;
     animation-name: animatetop;
     animation-duration: 0.9s;
@@ -570,11 +604,15 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
   }
 
 .slideshow-container {
-  max-width: 60%;
-  max-height: 60%;
-  position: relative;
-  /*margin: auto;*/
-  margin-top:0;
+  /*max-width: 80%;
+  max-height: 80%;*/
+  width: 70%;
+  height: 80%;
+  position: sticky;
+  margin: auto;
+  
+  /*margin-top:0;
+  margin-right:0;*/
 }
 
 .prev, .next {
@@ -600,7 +638,7 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 .prev:hover, .next:hover {
   background-color: rgba(0,0,0,0.8);
 }
-
+ 
 .slidertext {
   color: #000000;
   font-size: 13px;
@@ -617,7 +655,7 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
   color: #f2f2f2;
   font-size: 12px;
   padding: 8px 12px;
-  position: absolute;
+  position: relative;
   top: 0;
 }
 
@@ -656,7 +694,7 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 }
 
 @keyframes animatetop {
-    from {top: -500px; opacity: 0}
+    from {top: 0%; opacity: 0}
     to {top: 20%; opacity: 1}
 }
 
@@ -673,11 +711,11 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
     var a_moreless = document.getElementById("switchMoreLess" + facility_id);
     if(y.style.display == "none"){
       y.style.display = "block";
-      a_moreless.innerHTML = "&lt;&lt; less";
+      a_moreless.innerHTML = "&lt;&lt; ";
     }
     else{
       y.style.display = "none";
-      a_moreless.innerHTML = "more &gt;&gt;";
+      a_moreless.innerHTML = " &gt;&gt;";
     }
   }
   
@@ -686,11 +724,11 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
     var a_moreless = document.getElementById("switchMoreLessUnits" + facility_id);
     if(y.style.display == "none"){
       y.style.display = "block";
-      a_moreless.innerHTML = "&lt;&lt; less";
+      a_moreless.innerHTML = "&lt;&lt; ";
     }
     else{
       y.style.display = "none";
-      a_moreless.innerHTML = "more &gt;&gt;";
+      a_moreless.innerHTML = " &gt;&gt;";
     }
   }
   
