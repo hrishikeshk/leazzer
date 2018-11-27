@@ -50,7 +50,7 @@
         $img_name = extract_image_name($arr['url']);
         echo '<div class="mySlides">';
         echo '<div class="numbertext">'.($i + 1).' / '.$num_images.'</div>';
-        echo '<img src="images/'.$_GET['facility_id'].'/'.$img_name.'" height="400" width="500">';
+        echo '<img src="images/'.$_GET['facility_id'].'/'.$img_name.'" style="width:80%">';
         echo '<div class="slidertext">'.$captionsArr[$i].'</div>';
         $i++;
         $i = $i % $arr_len;

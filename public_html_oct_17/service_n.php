@@ -537,11 +537,11 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
     /*margin: 15% auto; /* 15% from the top and centered */
     padding: 20px;
     border: 1px solid #888;
-    width: 55%; /* Could be more or less, depending on screen size */
+    width: 45%; /* Could be more or less, depending on screen size */
     /*position: fixed;*/
     z-index: 1;
-    left: 200px;
-    top: 0px;
+    left: 20%;
+    top: 20%;
     animation-name: animatetop;
     animation-duration: 0.9s;
 }
@@ -570,8 +570,8 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
   }
 
 .slideshow-container {
-  max-width: 500px;
-  max-height: 500px;
+  max-width: 60%;
+  max-height: 60%;
   position: relative;
   /*margin: auto;*/
   margin-top:0;
@@ -657,7 +657,7 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 
 @keyframes animatetop {
     from {top: -500px; opacity: 0}
-    to {top: 0px; opacity: 1}
+    to {top: 20%; opacity: 1}
 }
 
 /* On smaller screens, decrease text size */
