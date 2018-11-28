@@ -194,6 +194,35 @@ public class MainSearchPageProcessor {
         }
     }
 
+    static void extractFacilityAmenities(HtmlElement body, Facility f){
+        HtmlElement topNode = body.querySelector(".facility-amenities-lists");
+        if(topNode != null){
+            Iterable<DomElement> amenities = topNode.getChildElements();
+            Iterator<DomElement> iter = amenities.iterator();
+            List<String> amenityList = new ArrayList<String>();
+            while(iter.hasNext()){
+                DomElement elem = iter.next();
+                DomElement liNode = elem.getFirstElementChild();
+                if(liNode != null){
+                    String heading = liNode.getFirstChild().getTextContent().trim();
+                    HtmlElement bullets = liNode.querySelector(".with-bullets");
+                    if(bullets != null){
+                        Iterable<DomElement> amenitiesInner = bullets.getChildElements();
+                        Iterator<DomElement> iterBullets = amenitiesInner.iterator();
+                        while(iterBullets.hasNext()){
+                            DomElement elemBullet = iterBullets.next();
+                            if(elemBullet != null){
+                                String bulletPoint = elemBullet.getTextContent();
+                                amenityList.add(heading + "|" + bulletPoint);
+                            }
+                        }
+                    }
+                }
+            }
+            f.facilityAmenities = amenityList.toArray(new String[amenityList.size()]);
+        }
+    }
+
     static String extractFacilityPhone(HtmlElement body){
         HtmlElement phoneOuter = body.getFirstByXPath("//*[@id=\"facility-page\"]/div[1]/div[2]/div[1]/div[2]/a/span");
         if(phoneOuter != null){
@@ -229,6 +258,7 @@ public class MainSearchPageProcessor {
                 f.location.phoneNumber = extractFacilityPhone(body);
             }
 
+            extractFacilityAmenities(body, f);
             extractImageUrls(body, f);
             extractUnitDetails(body, f);
             extractFacilityReviews(f, wc);

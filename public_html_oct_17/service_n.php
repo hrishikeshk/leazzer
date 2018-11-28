@@ -114,6 +114,7 @@ if(isset($_POST['action'])){
 			echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
 			$image_file_name = extract_image_name($arr_imgs['url_thumbsize']);
 			$expected_image_path = "images/".$facility_id."/".$image_file_name;
+			echo '<a href="javascript:showMorePhotos('.$facility_id.')">';
 			if(file_exists($expected_image_path))
 				echo '<img src="'.$expected_image_path.'" style="min-height:120px;width:120px;">';
 			else if(strlen($arr_imgs['url_thumbsize']) > 0)
@@ -121,6 +122,7 @@ if(isset($_POST['action'])){
 			else
 			  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
 			
+			echo '</a>';
 			echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More Photos</a>';
 			echo '</td>';
 
@@ -132,7 +134,7 @@ if(isset($_POST['action'])){
 			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
 			
 			if(has_climate_control($facility_unit_amenities)){
-			  echo '<a href="javascript:showMorePhotos('.$facility_id.')"><img src="images/cc_amenity.jpg" style="min-height:40px;width:40px;" /></a>';
+			  echo '<img src="images/cc_amenity.jpg" style="min-height:40px;width:40px;" />';
 			}
 			
 			echo '</td>';
@@ -313,7 +315,8 @@ function onReserveOwnerMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$re
 function onReserveAdminMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$resToDate){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
-	$toemail= 'admin@leazzer.com';
+	//$toemail= 'admin@leazzer.com';
+	$toemail= 'kv_hrishikesh@yahoo.com';
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
 	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="125px" alt="Logo" title="Logo" style="display:block"></center><br>';
@@ -434,7 +437,7 @@ function show_amenities($facility_id, $facility_unit_amenities){
 	echo '</div>';
 	if($review_count > 0){
 	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
-	  echo '  <a href="reviews.php?facility_id='.$facility_id.'">Reviews</a> (* Based on reviews collected from third-party sites)</br>';
+	  echo '  <a href="reviews.php?facility_id='.$facility_id.'">Reviews</a></br>';
 	}
 	
 	if($arr_len > $show_upfront){

@@ -124,6 +124,14 @@ if(isset($_POST['action']))
 													$_POST['price'],
 													date('m/d/Y',$reserveFromDate),
 													date('m/d/Y',$reserveToDate));
+													
+		  onReserveAdminMail($arrF['emailid'],
+													$arrF['firstname']." ".$arrF['lastname'],
+													$_POST['unit'],
+													$_POST['price'],
+													date('m/d/Y',$reserveFromDate),
+													date('m/d/Y',$reserveToDate));
+													
 			if($arrF['receivereserve'] == "1")
 			{
 				onReserveOwnerText($arrF['phone'],"Congratulations. A ".$_POST['unit']." unit reservation has been confirmed at ".$arrF['companyname']." for you from ".date('m/d/Y',$reserveFromDate)." to ".date('m/d/Y',$reserveFromDate)." for the price of ".$_POST['price']." per month.");
@@ -133,6 +141,36 @@ if(isset($_POST['action']))
 		
 	}
 }
+
+function onReserveAdminMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$resToDate){
+	global $conn,$GError;
+	$fromemail="no-reply@leazzer.com"; 
+	$toemail= 'admin@leazzer.com';
+	//$toemail= 'kv.hrishikesh@gmail.com';
+	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
+	$message .= '<tr><td>';
+	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="125px" alt="Logo" title="Logo" style="display:block"></center><br>';
+	$message .= 'Hello Admin ! A reservation for facility owner: <b>'.$ownerName.' and email sent to owner at '.$ownerEmail.'</b>,';
+	$message .= '<br><br>A '.$unit.' unit has been reserved from ';
+	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
+	$message .= '</td></tr>';
+	$message .= '<tr><td><br><br>';
+	$message .= 'Sincerely,<br>&mdash; Leazzer';
+	$message .= '</td></tr>';
+	$message .= '</table>';
+	
+	$mail = new PHPMailer();
+	$mail->CharSet = 'UTF-8';
+	$mail->AddReplyTo($fromemail,"Leazzer"); 
+	$mail->SetFrom($fromemail, "Leazzer");
+	$mail->AddAddress($toemail, substr($toemail,0,strpos($toemail,"@")));
+	$mail->Subject    = "A reservation has been done";
+	$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; 
+	$mail->MsgHTML($message);
+	$mail->isHTML(true);
+	$ret = $mail->Send();
+}
+
 function onReserveOwnerText($toNumber,$message)
 {
 	require 'twilio/Twilio/autoload.php';
