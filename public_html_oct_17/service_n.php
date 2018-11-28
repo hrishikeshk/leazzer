@@ -132,7 +132,7 @@ if(isset($_POST['action'])){
 			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
 			
 			if(has_climate_control($facility_unit_amenities)){
-			  echo '<img src="images/cc_amenity.jpg" style="min-height:40px;width:40px;">';
+			  echo '<a href="javascript:showMorePhotos('.$facility_id.')"><img src="images/cc_amenity.jpg" style="min-height:40px;width:40px;" /></a>';
 			}
 			
 			echo '</td>';
@@ -503,8 +503,10 @@ function a_unique($arr){
   for($i = 0; $i < count($arr); $i++){
     $add = 1;
     for($j = $i + 1; $j < count($arr); $j++){
-      if($arr[$i] == $arr[$j])
+      if($arr[$i] == $arr[$j]){
         $add = 0;
+        break;
+      }
     }
     if($add == 1)
       $res[] = $arr[$i];
@@ -518,7 +520,7 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
   
   $amenities = array();
   while($arrFA = mysqli_fetch_array($resFA, MYSQLI_ASSOC)){
-		$amenities[] = $arrFU['fac_amenity'];
+		$amenities[] = $arrFA['fac_amenity'];
 	}
 	
 	$unit_amenities = array();
@@ -539,6 +541,10 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 	    else if(stristr($uas, 'security') !== FALSE && strlen(trim($uas)) > 0)
 	      $amenities[] = $uas;
 	    else if(stristr($uas, 'discount') !== FALSE && strlen(trim($uas)) > 0)
+	      $amenities[] = $uas;
+	    else if(stristr($uas, 'administration') !== FALSE && strlen(trim($uas)) > 0)
+	      $amenities[] = $uas;
+	    else if(stristr($uas, 'property') !== FALSE && strlen(trim($uas)) > 0)
 	      $amenities[] = $uas;
 	  }
 	  if(count($unit_amenities) == 0){

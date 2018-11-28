@@ -33,6 +33,23 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout"))
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
 <link href="fonts/fonts.css" rel="stylesheet">
 
+<!-- 
+https://developers.google.com/maps/documentation/javascript/places
+https://developers.google.com/maps/documentation/javascript/get-api-key
+https://developers.google.com/maps/api-key-best-practices
+https://cloud.google.com/maps-platform/user-guide/account-changes/
+https://developers.google.com/maps/documentation/javascript/usage-and-billing
+
+https://www.w3schools.com/howto/howto_js_slideshow.asp
+https://www.w3schools.com/howto/howto_js_popup.asp
+https://www.w3schools.com/howto/howto_css_modals.asp
+https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML
+https://www.w3schools.com/bootstrap/bootstrap_carousel.asp
+https://getbootstrap.com/docs/3.3/javascript/
+https://www.jqueryscript.net/lightbox/Lightbox-Carousel-Plugin-jQuery-slideBox.html
+https://www.w3schools.com/cssref/pr_class_position.asp
+
+-->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
         async defer></script>
 

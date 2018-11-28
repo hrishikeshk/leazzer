@@ -81,9 +81,9 @@ function persist_facility_amenities($id){
   global $conn;
   
   $num_facility_amenities =$_POST["num_amenities"];
-  if($num_facility_amenities > 10){
+  /*if($num_facility_amenities > 10){
     $num_facility_amenities = 10;
-  }
+  }*/
 
   for($i=0; $i < $num_facility_amenities; $i++){
     $amenity = mysqli_real_escape_string($conn, $_POST["facility".$i."amenity"]);
