@@ -26,7 +26,7 @@ if(isset($_POST['action'])){
 													 $_POST['fname']."','".
 													 $_POST['lname']."','".
 													 $_POST['email']."','','".
-													 $_POST['acctype']."','','Enabled')");
+													 $_POST['acctype']."','".$_POST['phone']."','Enabled')");
 				$res = mysqli_query($conn,"SELECT * FROM customer WHERE emailid='".$_POST['email']."'");
 				processLogin($res);
 			}
@@ -206,6 +206,7 @@ window.onbeforeunload = function(e){
 					<input type="hidden" name="fname" id="hfname">
 					<input type="hidden" name="lname" id="hlname">
 					<input type="hidden" name="email" id="hemail">
+					<input type="hidden" name="phone" id="hphone">
 					<input type="hidden" name="acctype" id="hacctype" >
 					<input type="hidden" name="action"  id="haction">
 					<input type="hidden" name="reffer" value="<?php echo (isset($_POST["reffer"])?$_POST["reffer"]:$_SERVER["HTTP_REFERER"]);?>">	

@@ -72,29 +72,30 @@ include('sql.php');
     <div class="blank">
     	<div class="blankpage-main" style="padding:1em 1em;text-align:center;">
 		<?php
-			$rdateArr = explode("/",$_GET['rdate']);
-			$reserveFromDate = mktime(0,0,0,$rdateArr[0],$rdateArr[1],$rdateArr[2]);
-			$reserveToDate = strtotime("+".$_GET['rdays']." days",$reserveFromDate);
+			$rdateArr = explode("/", $_GET['rdate']);
+			$reserveFromDate = mktime(0, 0, 0, $rdateArr[0], $rdateArr[1], $rdateArr[2]);
+			$reserveToDate = strtotime("+".$_GET['rdays']." days", $reserveFromDate);
 			$resC = mysqli_query($conn,"select * from customer where id=".$_GET['cid']);
 			$resF = mysqli_query($conn,"select * from facility_master where id=".$_GET['fid']);
+			$resI = mysqli_query($conn,"select * from image where facility_id=".$_GET['fid']);
 			if((mysqli_num_rows($resC) > 0) && (mysqli_num_rows($resF) > 0)){
 				$arrC = mysqli_fetch_array($resC, MYSQLI_ASSOC);
 				$arrF = mysqli_fetch_array($resF, MYSQLI_ASSOC);
-				echo '<b>Congratulations, your unit(s) of '.$_GET['unit'].' has been reserved at '.$arrF['companyname'].' for you from '.date('m/d/Y',$reserveFromDate).
+				echo '<b>Congratulations, your unit(s) of '.$_GET['unit'].' has been reserved at '.$arrF['title'].' for you from '.date('m/d/Y',$reserveFromDate).
 					 ' until '.date('m/d/Y',$reserveToDate).' for the price of $'.$_GET['price'].' at the following location<br>';
 				echo '<br>';
-				if($arrF['image']!="")
-				{
-					if(file_exists("unitimages/".$arrF['image']))
-						echo '<center><img src="//leazzer.com/unitimages/'.$arrF['image'].'" width="250px" height="250px"></center><br>';
+				if(mysqli_num_rows($resI) != 0){
+				  $arrI = mysqli_fetch_array($resI, MYSQLI_ASSOC);
+					if(file_exists("images/".$_GET['fid']."/".$arrI['url_fullsize']))
+						echo '<center><img src="//leazzer.com/images/"'.$_GET['fid'].'"/"'.$arrI['url_fullsize'].'" width="250px" height="250px"></center><br>';
 					else
-						echo '<center><img src="'.$arrF['image'].'" width="250px" height="250px"></center><br>';
+						echo '<center><img src="https:'.$arrI['url_fullsize'].'" width="250px" height="250px"></center><br>';
 				}
 				else
 					echo '<center><img src="//leazzer.com/unitimages/pna.jpg" width="250px" height="250px"></center><br>';
 				echo '<br>';				
-				echo $arrF['companyname']."<br>";
-				echo $arrF['address1']." ".$arrF['address2']."<br>".$arrF['city']." ".$arrF['state']." - ".$arrF['zipcode'];
+				echo $arrF['title']."<br>";
+				echo $arrF['street']." ".$arrF['locality']."<br>".$arrF['city']." ".$arrF['state']." - ".$arrF['zip'];
 				if((isset($_SERVER["HTTP_REFERER"]) && (strpos($_SERVER["HTTP_REFERER"],"search.php")!==false)) || 
 						(isset($_GET['ref']) && ($_GET['ref']=="search")))
 					echo '<h5><a href="search.php" style="color:#68AE00;">Go Back Search</a></h5>';

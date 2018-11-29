@@ -54,7 +54,7 @@ function calc_img_path($facility_id){
 function read_owner_data($resO, $facility_id){
   if(mysqli_num_rows($resO) > 0){
     $arrO = mysqli_fetch_array($resO, MYSQLI_ASSOC);
-    return array($arrO['firstname'], $arrO['lastname'], $arrO['emailid']);
+    return array($arrO['emailid'], $arrO['firstname'], $arrO['lastname']);
   }
   else{
     return array($facility_id.'@leazzer.com', $facility_id, $facility_id);
@@ -149,9 +149,9 @@ if(isset($_POST['action'])){
       
       echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
 			
-			echo '<div id="dateday_'.$arr['id'].'" class="login-block" name="dateday_'.$arr['id'].'" style="margin:0px;text-align:left;padding:0;">';
-			echo '<p id="mdatemsg_'.$arr['id'].'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
-			echo '<input class="datepicker" id="mdate_'.$arr['id'].'" name="mdate_'.$arr['id'].'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div>';
+			echo '<div id="dateday_'.$facility_id.'" class="login-block" name="dateday_'.$facility_id.'" style="margin:0px;text-align:left;padding:0;">';
+			echo '<p id="mdatemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
+			echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div>';
 			echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
 
 			show_units($facility_id, $unit_info_arr);
@@ -159,6 +159,7 @@ if(isset($_POST['action'])){
 			echo'</td></tr></table>';
 		}			
 	}
+	
 	if($_POST['action'] == "sessionreserve"){
 		$_SESSION['res_fid'] = $_POST['fid'];
 		$_SESSION['res_cid'] = $_POST['cid'];
@@ -187,8 +188,9 @@ if(isset($_POST['action'])){
 			$arrF = mysqli_fetch_array($resF, MYSQLI_ASSOC);
 			$arrO = read_owner_data($resO, $arrF['id']);
 			
-			$img_path = calc_img_path($arrF['id']);
-			
+			$img_paths_arr = calc_img_path($arrF['id']);
+			$img_path = $img_paths_arr['url_fullsize'];
+			$facilityAddress = $arrF['street'].", ".($arrF['locality']==""?"":$arrF['region']."<br>").$arrF['city'].", ".$arrF['state']." - ".$arrF['zip'];
 			onReserveCustomerMail($arrF['id'], $arrC['emailid'],
 													$arrC['firstname']." ".$arrC['lastname'],
 													$_POST['unit'],
@@ -197,48 +199,59 @@ if(isset($_POST['action'])){
 													date('m/d/Y', $reserveFromDate),
 													date('m/d/Y', $reserveToDate),
 													$img_path,
-													$arrF['street']."<br>".($arrF['locality']==""?"":$arrF['region']."<br>").$arrF['city']." ".$arrF['state']." - ".$arrF['zip']);
+													$facilityAddress);
 			onReserveOwnerMail($arrO[0],
 													$arrO[1]." ".$arrO[2],
 													$_POST['unit'],
 													$_POST['price'],
 													date('m/d/Y',$reserveFromDate),
 													date('m/d/Y',$reserveToDate));
-			onReserveAdminMail($arrO[0],
+			onReserveAdminMail( $facilityAddress,
+			                    $arrF['phone'],
+			                    $arrO[0],
 													$arrO[1]." ".$arrO[2],
+													$arrC['phone'],
 													$_POST['unit'],
 													$_POST['price'],
 													date('m/d/Y',$reserveFromDate),
 													date('m/d/Y',$reserveToDate));
-			/*if($arrF['receivereserve'] == "1"){
-				////
-			}*/
 		}
 		echo "success";
 	}
 }
 
-function onReserveOwnerText($toNumber, $message){
-	require 'twilio/Twilio/autoload.php';
-	$fromNumber = "+18327939577";//"+18323810817";
-	$account_sid = 'ACd6cb12f2e7dd554028648e4882b3cf1a';
-	$auth_token = '2b2a366ce9be1c7b1daedab4f4939fe9';
-	//001-8323810817
-	//test : 424de3ff616f82d4ef59e531da52f1e2
-	//real : 2b2a366ce9be1c7b1daedab4f4939fe9
-	// In production, these should be environment variables. E.g.:
-	// $auth_token = $_ENV["TWILIO_ACCOUNT_SID"]
-
-	// A Twilio number you own with SMS capabilities
-	//$twilio_number = $fromNumber;
-	$client = new Twilio\Rest\Client($account_sid, $auth_token);
-	$message = $client->messages->create(
-    $toNumber,
-    array(
-        'from' => $fromNumber,
-        'body' => $message
-    ));
-  //print_r($message);
+function onReserveAdminMail($facilityAddress, $facilityPhone, $ownerEmail, $ownerName, $userPhone, $unit, $price, $resFromDate, $resToDate){
+	global $conn,$GError;
+	$fromemail="no-reply@leazzer.com"; 
+	//$toemail= 'admin@leazzer.com';
+	$toemail= 'kv_hrishikesh@yahoo.com';
+	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
+	$message .= '<tr><td>';
+	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="150px" alt="Logo" title="Logo" style="display:block"></center><br>';
+	$message .= 'Hello Admin !<br />';
+	
+	$message .= '<b><u>Facility Address</u> - '.$facilityAddress.'<br />';
+	$message .= '<u>Facility Phone Number</u> - '.$facilityPhone.'<br />';
+	$message .= '<u>User Phone Number</u> - '.$userPhone.'<br /></b>';
+	
+	$message .= '<br><br>A '.$unit.' unit has been reserved from ';
+	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
+	$message .= '</td></tr>';
+	$message .= '<tr><td><br><br>';
+	$message .= 'Sincerely,<br>&mdash; Leazzer';
+	$message .= '</td></tr>';
+	$message .= '</table>';
+	
+	$mail = new PHPMailer();
+	$mail->CharSet = 'UTF-8';
+	$mail->AddReplyTo($fromemail,"Leazzer"); 
+	$mail->SetFrom($fromemail, "Leazzer");
+	$mail->AddAddress($toemail, substr($toemail,0,strpos($toemail,"@")));
+	$mail->Subject    = "A reservation has been done";
+	$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; 
+	$mail->MsgHTML($message);
+	$mail->isHTML(true);
+	$ret = $mail->Send();
 }
 
 function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $price, $companyName, $resFromDate, $resToDate, $image, $fAddress){
@@ -254,7 +267,7 @@ function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $pric
 	  $image_name = extract_image_name($image);
 	  $expected_path = "images/".$facility_id.'/'.$image_name;
 	  if(strlen($image_name) > 0 && file_exists($expected_path))
-			$message .= '<center><img src="https://www.leazzer.com/images/'.$image_name.'" height="120px" width="125px" alt="uiLogo" title="uiLogo" style="display:block"></center><br>';
+			$message .= '<center><img src="https://www.leazzer.com/'.$expected_path.'" height="120px" width="125px" alt="uiLogo" title="uiLogo" style="display:block"></center><br>';
 		else if(file_exists("unitimages/".$image))
 			$message .= '<center><img src="https://www.leazzer.com/unitimages/'.$image.'" height="120px" width="125px" alt="uiLogo" title="uiLogo" style="display:block"></center><br>';
 		else if(stristr($image, 'images.selfstorage.com') === FALSE)
@@ -306,35 +319,6 @@ function onReserveOwnerMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$re
 	$mail->SetFrom($fromemail, "Leazzer");
 	$mail->AddAddress($toemail, substr($toemail,0,strpos($toemail,"@")));
 	$mail->Subject    = "Your have a reservation";
-	$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; 
-	$mail->MsgHTML($message);
-	$mail->isHTML(true);
-	$ret = $mail->Send();
-}
-
-function onReserveAdminMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$resToDate){
-	global $conn,$GError;
-	$fromemail="no-reply@leazzer.com"; 
-	//$toemail= 'admin@leazzer.com';
-	$toemail= 'kv_hrishikesh@yahoo.com';
-	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
-	$message .= '<tr><td>';
-	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="125px" alt="Logo" title="Logo" style="display:block"></center><br>';
-	$message .= 'Hello Admin ! A reservation for facility owner: <b>'.$ownerName.' and email sent to owner at '.$ownerEmail.'</b>,';
-	$message .= '<br><br>A '.$unit.' unit has been reserved from ';
-	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
-	$message .= '</td></tr>';
-	$message .= '<tr><td><br><br>';
-	$message .= 'Sincerely,<br>&mdash; Leazzer';
-	$message .= '</td></tr>';
-	$message .= '</table>';
-	
-	$mail = new PHPMailer();
-	$mail->CharSet = 'UTF-8';
-	$mail->AddReplyTo($fromemail,"Leazzer"); 
-	$mail->SetFrom($fromemail, "Leazzer");
-	$mail->AddAddress($toemail, substr($toemail,0,strpos($toemail,"@")));
-	$mail->Subject    = "A reservation has been done";
 	$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; 
 	$mail->MsgHTML($message);
 	$mail->isHTML(true);
@@ -458,7 +442,7 @@ function show_units($facility_id, $arr_arr_FU){
 		echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
 		echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80px;display:inline;padding:0px;" onClick="onUnitClick(this,'.
 										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
-										$arrFU['id'].',\'0\',\''.
+										$facility_id.',\'0\',\''.
 										urlencode($arrFU['size']).'\',\''.
 										$arrFU['price'].'\');">Reserve</button></div>';
 	}
