@@ -170,9 +170,19 @@ function onShowUnit(id){
 	}
 }
 
-function onUnitClick(btn, cid, fid, rdays, unit, price){
+function validatePhone(phone){
+  if(phone == undefined || phone == null || phone.length < 10)
+    return false;
+  return true;
+}
+
+function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 	if($('#mdate_'+fid).val() == ""){
 		$('#mdatemsg_'+fid).show();
+		if(validatePhone(hasPhone) == false){
+		  $('#mphonemsg_'+fid).show();
+		  $('#mphone_'+fid).show();
+		}
 	}
 	else if(cid == 0){
 			var res = ajaxcall("action=sessionreserve&fid="+fid+
@@ -180,10 +190,15 @@ function onUnitClick(btn, cid, fid, rdays, unit, price){
 									"&rdays="+rdays+
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
-									"&price="+price);
+									"&price="+price+
+									"&phone="+$('#mphone_'+fid).val());
 			if(res !== false){
 				window.location.href='customer/index_n.php?action=search';
 			}
+	}
+	else if(validatePhone(hasPhone) == false){
+	  $('#mphonemsg_'+fid).show();
+		$('#mphone_'+fid).show();
 	}
 	else{
 			$('#mdatemsg_'+fid).hide();
@@ -192,7 +207,8 @@ function onUnitClick(btn, cid, fid, rdays, unit, price){
 									"&rdays="+rdays+
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
-									"&price="+price);
+									"&price="+price+
+									"&phone="+$('#mphone_'+fid).val());
 			//if(res == "success")
 			{
 				btn.innerHTML = "<i class=\"fa fa-check\"></i>";

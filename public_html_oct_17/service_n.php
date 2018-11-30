@@ -69,6 +69,11 @@ function has_climate_control($arr_amenities){
   return false;
 }
 
+function save_phone($cid, $phone){
+  global $conn;
+  mysqli_query($conn,"UPDATE customer set phone = '".$phone."' where id = '".$cid."'");
+}
+
 if(isset($_POST['action'])){
 	if($_POST['action'] == "addfacility"){
 		$email  = checkEmail($_POST['email'], 0);
@@ -153,6 +158,10 @@ if(isset($_POST['action'])){
 			echo '<div id="dateday_'.$facility_id.'" class="login-block" name="dateday_'.$facility_id.'" style="margin:0px;text-align:left;padding:0;">';
 			echo '<p id="mdatemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
 			echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div>';
+			
+			echo '<p id="mphonemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Please provide your phone number</p>';
+			echo '<input style="display:none" id="mphone_'.$facility_id.'" name="mphone_'.$facility_id.'" type="text" placeholder="Your phone number"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;">';
+			
 			echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
 
 			show_units($facility_id, $unit_info_arr, 5);
@@ -168,6 +177,7 @@ if(isset($_POST['action'])){
 		$_SESSION['res_rdate'] = $_POST['rdate'];
 		$_SESSION['res_unit'] = $_POST['unit'];
 		$_SESSION['res_price'] = $_POST['price'];
+		$_SESSION['res_phone'] = $_POST['phone'];
 		echo "success";
 	}
 	if($_POST['action'] == "reserve"){
@@ -189,6 +199,14 @@ if(isset($_POST['action'])){
 			$arrF = mysqli_fetch_array($resF, MYSQLI_ASSOC);
 			$arrO = read_owner_data($resO, $arrF['id']);
 			
+			$phone = '';
+			if(!isset($arrC['phone']) && isset($_POST['phone']) && isset($arrC['id'])){
+			  save_phone($arrC['id'], $_POST['phone']);
+			  $phone = $_POST['phone'];
+			}
+			else if(isset($arrC['phone'])){
+			  $phone = $arrC['phone'];
+			}
 			$img_paths_arr = calc_img_path($arrF['id']);
 			$img_path = $img_paths_arr['url_fullsize'];
 			$facilityAddress = $arrF['street'].", ".($arrF['locality']==""?"":$arrF['region']."<br>").$arrF['city'].", ".$arrF['state']." - ".$arrF['zip'];
@@ -212,17 +230,18 @@ if(isset($_POST['action'])){
 			                    $arrF['phone'],
 			                    $arrO[0],
 													$arrO[1]." ".$arrO[2],
-													$arrC['phone'],
+													$phone,
 													$_POST['unit'],
 													$_POST['price'],
 													date('m/d/Y',$reserveFromDate),
-													date('m/d/Y',$reserveToDate));
+													date('m/d/Y',$reserveToDate),
+													$phone);
 		}
 		echo "success";
 	}
 }
 
-function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ownerEmail, $ownerName, $userPhone, $unit, $price, $resFromDate, $resToDate){
+function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ownerEmail, $ownerName, $userPhone, $unit, $price, $resFromDate, $resToDate, $phone){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	//$toemail= 'admin@leazzer.com';
@@ -446,32 +465,29 @@ function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $
 	echo '</td></tr>';
 }
 
+function show_unit_detail($arrFU, $facility_id){
+  echo '<div class="col-md-1" style="text-align:center;padding:10px;border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
+	echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
+	echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
+	echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80px;display:inline;padding:0px;" onClick="onUnitClick(this,'.
+										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
+										$facility_id.',\'0\',\''.
+										urlencode($arrFU['size']).'\',\''.
+										$arrFU['price'].'\',\''.$_SESSION['lcdata']['phone'].'\');">Reserve</button></div>';
+}
+
 function show_units($facility_id, $arr_arr_FU, $show_upfront){
 
   echo '<div id="unitstbl_'.$facility_id.'" style="width:100%">';
   $arr_len = count($arr_arr_FU);
 	for($i = 0; $i < min_ints($arr_len, $show_upfront); $i++){
 	  $arrFU = $arr_arr_FU[$i];
-		echo '<div class="col-md-1" style="text-align:center;padding:10px;border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
-		echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
-		echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
-		echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80px;display:inline;padding:0px;" onClick="onUnitClick(this,'.
-										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
-										$facility_id.',\'0\',\''.
-										urlencode($arrFU['size']).'\',\''.
-										$arrFU['price'].'\');">Reserve</button></div>';
+	  show_unit_detail($arrFU, $facility_id);
 	}
 	echo '<div id="unit_more_show'.$facility_id.'" style="display:none">';
 	for($i = $show_upfront; $i < $arr_len; $i++){
 	  $arrFU = $arr_arr_FU[$i];
-		echo '<div class="col-md-1" style="text-align:center;padding:10px;border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
-		echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
-		echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
-		echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80px;display:inline;padding:0px;" onClick="onUnitClick(this,'.
-										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
-										$facility_id.',\'0\',\''.
-										urlencode($arrFU['size']).'\',\''.
-										$arrFU['price'].'\');">Reserve</button></div>';
+		show_unit_detail($arrFU, $facility_id);
 	}
 	echo '</div>';
 	

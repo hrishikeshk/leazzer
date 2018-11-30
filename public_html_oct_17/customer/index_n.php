@@ -41,22 +41,39 @@ if(isset($_POST['action'])){
 	}
 }
 
+function save_phone($cid, $phone){
+  global $conn;
+  mysqli_query($conn,"UPDATE customer set phone = '".$phone."' where id = '".$cid."'");
+}
+
+function has_valid_phone($phone){
+  if(isset($phone) && strlen($phone) >= 10)
+    return true;
+  return false;
+}
+
 function processLogin($res){
 	global $conn;
 	$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 	$GError = "Logged in successfully.";
 	$_SESSION['lcdata']	= $arr;
 	
+	$has_phone_saved = has_valid_phone($arr['phone']);
 	$reserve = "";
 	if(isset($_SESSION['res_fid'])){
+	
+	  if($has_phone_saved == false && has_valid_phone($_SESSION['res_phone']) == true && isset($arr['id'])){
+	    save_phone($arr['id'], $_SESSION['res_phone']);
+	  }
+
 		$reserve = "&fid=".$_SESSION['res_fid'].
 							"&cid=".$_SESSION['lcdata']['id'].
 							"&rdays=".$_SESSION['res_rdays'].
 							"&rdate=".$_SESSION['res_rdate'].
 							"&unit=".$_SESSION['res_unit'].
-							"&price=".$_SESSION['res_price'];
+							"&price=".$_SESSION['res_price'].
+							"&phone=".$_SESSION['res_phone'];
 	}
-	
 	
 	if(isset($_GET["action"]) && ($_GET["action"] == "search"))
 		header("Location: ../thankyou_n.php?ref=index".$reserve);

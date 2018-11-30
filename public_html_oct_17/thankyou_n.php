@@ -128,13 +128,14 @@ $(document).ready(function(){
 	if(isset($_SESSION['res_fid']) && isset($_SESSION['lcdata'])){
 		echo "var res = ajaxcall(\"action=reserve&fid=".$_SESSION['res_fid']."&cid=".$_SESSION['lcdata']['id'].
 						"&rdays=".$_SESSION['res_rdays']."&rdate=".$_SESSION['res_rdate'].
-						"&unit=".$_SESSION['res_unit']."&price=".$_SESSION['res_price']."\");\n";
+						"&unit=".$_SESSION['res_unit']."&phone=".$_SESSION['res_phone']."&price=".$_SESSION['res_price']."\");\n";
 		unset($_SESSION['res_fid']);
 		unset($_SESSION['res_cid']);
 		unset($_SESSION['res_rdays']);
 		unset($_SESSION['res_rdate']);
 		unset($_SESSION['res_unit']);
 		unset($_SESSION['res_price']);
+		unset($_SESSION['res_phone']);
 	}
 	?>
 });
@@ -152,7 +153,7 @@ function ajaxcall(datastring){
    				 	res=result;
    		 	},
    		 	error: function(err){
-   		 	    alert('Failed to invoke serverside function... Please try again in some time' + err);
+   		 	    alert('Failed to invoke post login reservation serverside function... Please try again in some time' + err);
    		 	    res = false;
    		 	}
     });
