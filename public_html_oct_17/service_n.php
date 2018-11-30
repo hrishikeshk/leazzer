@@ -109,6 +109,7 @@ if(isset($_POST['action'])){
 		  $arr_imgs = fetch_image_url($facility_id);
 		  $unit_info_arr = fetch_units($facility_id);
       $facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
+      $priority_amenities = arrange_priority($facility_unit_amenities);
       
 			echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
 			echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
@@ -143,7 +144,7 @@ if(isset($_POST['action'])){
 //
 			echo '</tr>';
 			
-      show_amenities($facility_id, $facility_unit_amenities);
+      show_amenities($facility_id, $priority_amenities, 5, $arr['title']);
       
       echo '</table>';
       
@@ -154,7 +155,7 @@ if(isset($_POST['action'])){
 			echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div>';
 			echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
 
-			show_units($facility_id, $unit_info_arr);
+			show_units($facility_id, $unit_info_arr, 5);
 
 			echo'</td></tr></table>';
 		}			
@@ -206,7 +207,8 @@ if(isset($_POST['action'])){
 													$_POST['price'],
 													date('m/d/Y',$reserveFromDate),
 													date('m/d/Y',$reserveToDate));
-			onReserveAdminMail( $facilityAddress,
+			onReserveAdminMail( $arrF['title'],
+			                    $facilityAddress,
 			                    $arrF['phone'],
 			                    $arrO[0],
 													$arrO[1]." ".$arrO[2],
@@ -220,7 +222,7 @@ if(isset($_POST['action'])){
 	}
 }
 
-function onReserveAdminMail($facilityAddress, $facilityPhone, $ownerEmail, $ownerName, $userPhone, $unit, $price, $resFromDate, $resToDate){
+function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ownerEmail, $ownerName, $userPhone, $unit, $price, $resFromDate, $resToDate){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	//$toemail= 'admin@leazzer.com';
@@ -230,6 +232,7 @@ function onReserveAdminMail($facilityAddress, $facilityPhone, $ownerEmail, $owne
 	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="150px" alt="Logo" title="Logo" style="display:block"></center><br>';
 	$message .= 'Hello Admin !<br />';
 	
+	$message .= '<b><u>Facility Name</u> - '.$facilityName.'<br />';
 	$message .= '<b><u>Facility Address</u> - '.$facilityAddress.'<br />';
 	$message .= '<u>Facility Phone Number</u> - '.$facilityPhone.'<br />';
 	$message .= '<u>User Phone Number</u> - '.$userPhone.'<br /></b>';
@@ -399,24 +402,36 @@ function a_filter($arr, $str){
   return $res;
 }
 
-function show_amenities($facility_id, $facility_unit_amenities){
+function popup_amenities($facility_id, $facility_unit_amenities){
+  
+  $arr_len = count($facility_unit_amenities);
+  $inner_data = 'new Array(';
+	for($i = 0; $i < $arr_len; $i++){
+	  $amenity = $facility_unit_amenities[$i];
+		$inner_data .= '\''.'  '.str_replace('"', '&quot;', $amenity).'<br />\',';
+	}
+	$inner_data .= '\'<br />\')';
+	return $inner_data;
+}
+
+function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $facilityName){
 
   $facility_unit_amenities = a_filter($facility_unit_amenities, "climate");
   
   $arr_len = count($facility_unit_amenities);
   $review_count = fetch_review_count($facility_id);
   echo '<tr><td style="width:900px;padding-left:400px">';
-  $show_upfront = 2;
+
 	for($i = 0; $i < min_ints($show_upfront, $arr_len); $i++){
 	  $amenity = $facility_unit_amenities[$i];
 	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
-		echo '  '.$amenity.'</br>';
+		echo '  '.$amenity.'<br />';
 	}
 	
 	echo '<div id="unit_more_amenities'.$facility_id.'" style="display:none">';
 	for($i = $show_upfront; $i < $arr_len; $i++){
 	  $amenity = $facility_unit_amenities[$i];
-	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px;" />  '.$amenity.'</br>';
+	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px;" />  '.$amenity.'<br />';
 	}
 	echo '</div>';
 	if($review_count > 0){
@@ -425,14 +440,14 @@ function show_amenities($facility_id, $facility_unit_amenities){
 	}
 	
 	if($arr_len > $show_upfront){
-	  echo '<a id="switchMoreLess'.$facility_id.'" href="javascript:showMoreLessAmenities('.$facility_id.')" style="display:block"> &gt;&gt;</a>';
+	  //echo '<a id="switchMoreLess'.$facility_id.'" href="javascript:showMoreLessAmenities('.$facility_id.')" style="display:block"> &gt;&gt;</a>';
+	  echo '<a href="javascript:popupMoreLessAmenities(\''.$facilityName.'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="display:block">      &gt;&gt;</a>';
 	}
 	echo '</td></tr>';
 }
 
-function show_units($facility_id, $arr_arr_FU){
+function show_units($facility_id, $arr_arr_FU, $show_upfront){
 
-  $show_upfront = 5;
   echo '<div id="unitstbl_'.$facility_id.'" style="width:100%">';
   $arr_len = count($arr_arr_FU);
 	for($i = 0; $i < min_ints($arr_len, $show_upfront); $i++){
@@ -501,6 +516,62 @@ function a_unique($arr){
   return $res;
 }
 
+function is_high_priority($amenity){
+  if(stristr($amenity, 'climate') !== FALSE)
+	  return 'climate';
+	else if(stristr($amenity, 'security features|') !== FALSE)
+	  return 'security';
+	else if(stristr($amenity, 'discounts|') !== FALSE)
+	  return 'discount';
+	else if(stristr($amenity, 'administration|') !== FALSE)
+	  return 'administration';
+	else if(stristr($amenity, 'property coverage|') !== FALSE)
+	  return 'property';
+	return 'low';
+}
+
+function extract_amenity($amenity){
+  $pos = stripos($amenity, "|");
+  if($pos == FALSE)
+    return $amenity;
+  return substr($amenity, $pos + 1);
+}
+
+function arrange_priority($facility_unit_amenities){
+  $high_pr = array();
+  $low_pr = array();
+  $climate_pr = array();
+  $security_pr = array();
+  $admin_pr = array();
+  $discount_pr = array();
+  $property_pr = array();
+  
+  for($i = 0; $i < count($facility_unit_amenities); $i++){
+    $amenity = $facility_unit_amenities[$i];
+    $classified_as = is_high_priority($amenity);
+    if($classified_as == 'climate')
+      $climate_pr[] = $amenity;
+    else if($classified_as == 'security')
+      $security_pr[] = substr($amenity, 18);
+    else if($classified_as == 'discount')
+      $discount_pr[] = substr($amenity, 10);
+    else if($classified_as == 'administration')
+      $admin_pr[] = substr($amenity, 15);
+    else if($classified_as == 'property')
+      $property_pr[] = substr($amenity, 18);
+    else
+      $low_pr[] = extract_amenity($amenity);
+  }
+  $high_pr = a_merge($climate_pr, $high_pr);
+  $high_pr = a_merge($security_pr, $high_pr);
+  $high_pr = a_merge($discount_pr, $high_pr);
+  $high_pr = a_merge($admin_pr, $high_pr);
+  $high_pr = a_merge($property_pr, $high_pr);
+  
+  //return a_merge($low_pr, $high_pr);
+  return $high_pr;
+}
+
 function fetch_consolidate_amenities($facility_id, $unit_info_arr){
   global $conn;
   $resFA = mysqli_query($conn, "SELECT amenity as fac_amenity FROM facility_amenity where facility_id='".$facility_id."'");
@@ -545,7 +616,41 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 }
 
 ?>
+
 <style>
+.modalAmenities {
+    display: none;
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-amenity {
+    background-color: #fefefe;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 60%; /* Could be more or less, depending on screen size */
+    height: 60%;
+    position: fixed;
+    z-index: 1;
+    left: 10%;
+    top: 20%;
+    animation-name: animatetop;
+    animation-duration: 0.9s;
+}
+
+.amenity-container {
+  /*max-width: 80%;
+  max-height: 80%;*/
+  width: 40%;
+  height: 70%;
+  position: fixed;
+  margin: auto;
+  
+  /*margin-top:0;
+  margin-right:0;*/
+}
+
 .modal {
     display: none;
     /*position: fixed;*/
@@ -573,7 +678,8 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
     animation-duration: 0.9s;
 }
 
-.close {
+.close,
+.close-amenity {
     color: #aaa;
     float: right;
     font-size: 28px;
@@ -582,7 +688,8 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 
 .trynow.hover,
 .close:hover,
-.close:focus {
+.close:focus,
+.close-amenity:hover {
     color: black;
     text-decoration: none;
     cursor: pointer;
@@ -712,6 +819,24 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
     }
   }
   
+  function popupMoreLessAmenities(facilityName, amenitiesArr){
+    setTimeout(function(){
+    var y = document.getElementById("modalAmenities");
+      var ac = document.getElementById("amenity-container");
+      var heading = '<h5 style="text-align: center">Avail these amenities at our excellent facility</h5><br /><h4 style="text-align: center"><b>' + facilityName + '</b></h4><br /><br />';
+      var tbl_start = '<table><tr><td>';
+      var tbl_end = '</td></tr></table>';
+      var img = '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
+      var data = '';
+      for(i = 0; i < amenitiesArr.length - 1; ++i){
+        data += img;
+        data += amenitiesArr[i];
+      }
+      ac.innerHTML = (heading + tbl_start + data + tbl_end);
+      y.style.display = "block";
+    }, 1000);
+  }
+  
   function showMoreLessUnits(facility_id){
     var y = document.getElementById("unit_more_show" + facility_id);
     var a_moreless = document.getElementById("switchMoreLessUnits" + facility_id);
@@ -755,10 +880,20 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
     modal.style.display = "none";
   }
   
+  var span_amenity = document.getElementById('close-amenity');
+  span_amenity.onclick = function() {
+    var modal = document.getElementById('modalAmenities');
+    modal.style.display = "none";
+  }
+  
   window.onclick = function(event) {
     var modal = document.getElementById('modalPhotos');
     if (event.target == modal) {
         modal.style.display = "none";
+    }
+    var modalAmenities = document.getElementById('modalAmenities');
+    if (event.target == modalAmenities) {
+        modalAmenities.style.display = "none";
     }
   }
   
@@ -767,7 +902,7 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
     var modal = document.getElementById('modalPhotos');
     modal.style.display = "none";
   }
-    
+  
   function showMorePhotos(facility_id){
     var res = ajaxcall_photos("facility_id="+facility_id);
   }
@@ -801,7 +936,6 @@ function showSlides(n) {
 </script>
 
 <div id="modalPhotos" class="modal">
-
   <div class="modal-content">
     <span class="close" id="modal-close">&times;</span>
     <div class="slideshow-container">
@@ -817,6 +951,16 @@ function showSlides(n) {
     <td></td>
     </tr>
     </table>
+    </div>
+  </div>
+
+</div>
+
+<div id="modalAmenities" class="modalAmenities">
+  <div class="modal-amenity">
+    <span class="close-amenity" id="close-amenity">&times;</span>
+    <div id="amenity-container" class="amenity-container">
+    
     </div>
   </div>
 
