@@ -159,8 +159,8 @@ if(isset($_POST['action'])){
 			echo '<p id="mdatemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
 			echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div>';
 			
-			echo '<p id="mphonemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Please provide your phone number</p>';
-			echo '<input style="display:none" id="mphone_'.$facility_id.'" name="mphone_'.$facility_id.'" type="text" placeholder="Your phone number"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;">';
+			echo '<p id="mphonemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 20px;padding:0;text-align:left;">Please provide your phone number</p>';
+			echo '<input style="display:none" id="mphone_'.$facility_id.'" name="mphone_'.$facility_id.'" type="text" placeholder="Your phone number"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"><br />';
 			
 			echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
 
@@ -177,7 +177,11 @@ if(isset($_POST['action'])){
 		$_SESSION['res_rdate'] = $_POST['rdate'];
 		$_SESSION['res_unit'] = $_POST['unit'];
 		$_SESSION['res_price'] = $_POST['price'];
-		$_SESSION['res_phone'] = $_POST['phone'];
+		if(isset($_POST['phone']) && strlen($_POST['phone']) >= 10)
+  		$_SESSION['res_phone'] = $_POST['phone'];
+  	else
+  	  $_SESSION['res_phone'] = 'unknown';
+  	error_log('service_n session_reserve - '.$_POST['phone'].', session - '.$_SESSION['res_phone']);
 		echo "success";
 	}
 	if($_POST['action'] == "reserve"){
@@ -200,16 +204,28 @@ if(isset($_POST['action'])){
 			$arrO = read_owner_data($resO, $arrF['id']);
 			
 			$phone = '';
-			if(!isset($arrC['phone']) && isset($_POST['phone']) && isset($arrC['id'])){
+			if((!isset($arrC['phone']) || strlen($arrC['phone']) < 10) && isset($_POST['phone']) && isset($arrC['id'])){
 			  save_phone($arrC['id'], $_POST['phone']);
 			  $phone = $_POST['phone'];
 			}
 			else if(isset($arrC['phone'])){
 			  $phone = $arrC['phone'];
 			}
+			error_log('service_n reserve - '.$phone.', session: '.$_SESSION['res_phone'].', posted: '.$_POST['phone']);
 			$img_paths_arr = calc_img_path($arrF['id']);
 			$img_path = $img_paths_arr['url_fullsize'];
 			$facilityAddress = $arrF['street'].", ".($arrF['locality']==""?"":$arrF['region']."<br>").$arrF['city'].", ".$arrF['state']." - ".$arrF['zip'];
+			onReserveAdminMail( $arrF['title'],
+			                    $facilityAddress,
+			                    $arrF['phone'],
+			                    $arrO[0],
+													$arrO[1]." ".$arrO[2],
+													$phone,
+													$_POST['unit'],
+													$_POST['price'],
+													date('m/d/Y',$reserveFromDate),
+													date('m/d/Y',$reserveToDate),
+													$phone);
 			onReserveCustomerMail($arrF['id'], $arrC['emailid'],
 													$arrC['firstname']." ".$arrC['lastname'],
 													$_POST['unit'],
@@ -225,17 +241,6 @@ if(isset($_POST['action'])){
 													$_POST['price'],
 													date('m/d/Y',$reserveFromDate),
 													date('m/d/Y',$reserveToDate));
-			onReserveAdminMail( $arrF['title'],
-			                    $facilityAddress,
-			                    $arrF['phone'],
-			                    $arrO[0],
-													$arrO[1]." ".$arrO[2],
-													$phone,
-													$_POST['unit'],
-													$_POST['price'],
-													date('m/d/Y',$reserveFromDate),
-													date('m/d/Y',$reserveToDate),
-													$phone);
 		}
 		echo "success";
 	}
@@ -244,8 +249,8 @@ if(isset($_POST['action'])){
 function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ownerEmail, $ownerName, $userPhone, $unit, $price, $resFromDate, $resToDate, $phone){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
-	//$toemail= 'admin@leazzer.com';
-	$toemail= 'kv_hrishikesh@yahoo.com';
+	$toemail= 'admin@leazzer.com';
+	//$toemail= 'kv.hrishikesh@gmail.com';
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
 	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="150px" alt="Logo" title="Logo" style="display:block"></center><br>';
@@ -322,7 +327,8 @@ function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $pric
 function onReserveOwnerMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$resToDate){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
-	$toemail=$ownerEmail; 
+	//$toemail=$ownerEmail;
+	$toemail='owners@leazzer.com';
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
 	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="125px" alt="Logo" title="Logo" style="display:block"></center><br>';
@@ -469,11 +475,14 @@ function show_unit_detail($arrFU, $facility_id){
   echo '<div class="col-md-1" style="text-align:center;padding:10px;border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
 	echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
 	echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
+	$phone = 'unknown';
+	if(isset($_SESSION['lcdata']['phone']))
+	  $phone = $_SESSION['lcdata']['phone'];
 	echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80px;display:inline;padding:0px;" onClick="onUnitClick(this,'.
 										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
 										$facility_id.',\'0\',\''.
 										urlencode($arrFU['size']).'\',\''.
-										$arrFU['price'].'\',\''.$_SESSION['lcdata']['phone'].'\');">Reserve</button></div>';
+										$arrFU['price'].'\',\''.$phone.'\');">Reserve</button></div>';
 }
 
 function show_units($facility_id, $arr_arr_FU, $show_upfront){

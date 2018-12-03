@@ -179,7 +179,7 @@ function validatePhone(phone){
 function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 	if($('#mdate_'+fid).val() == ""){
 		$('#mdatemsg_'+fid).show();
-		if(validatePhone(hasPhone) == false){
+		if(cid != 0 && validatePhone($('#mphone_'+fid).val()) == false && validatePhone(hasPhone) == false){
 		  $('#mphonemsg_'+fid).show();
 		  $('#mphone_'+fid).show();
 		}
@@ -196,19 +196,24 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 				window.location.href='customer/index_n.php?action=search';
 			}
 	}
-	else if(validatePhone(hasPhone) == false){
+	else if(validatePhone($('#mphone_'+fid).val()) == false && validatePhone(hasPhone) == false){
 	  $('#mphonemsg_'+fid).show();
 		$('#mphone_'+fid).show();
 	}
 	else{
+	    var phoneFieldVal = $('#mphone_'+fid).val();
+	    if(validatePhone(phoneFieldVal) == false)
+	      phoneFieldVal = hasPhone;
+	    
 			$('#mdatemsg_'+fid).hide();
+			$('#mphonemsg_'+fid).hide();
 			var res = ajaxcall("action=reserve&fid="+fid+
 									"&cid="+cid+
 									"&rdays="+rdays+
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+$('#mphone_'+fid).val());
+									"&phone="+phoneFieldVal);
 			//if(res == "success")
 			{
 				btn.innerHTML = "<i class=\"fa fa-check\"></i>";
@@ -217,7 +222,8 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 									"&rdays="+rdays+
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
-									"&price="+price;
+									"&price="+price+
+									"&phone="+phoneFieldVal;
 			}
 	}
 }

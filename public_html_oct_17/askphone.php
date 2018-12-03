@@ -6,7 +6,7 @@ if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on")){
 }
 
 session_start();
-include('sql.php');    
+include('sql.php');
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -71,38 +71,54 @@ include('sql.php');
 <div class="inner-block">
     <div class="blank">
     	<div class="blankpage-main" style="padding:1em 1em;text-align:center;">
+    	<h4><center>Nearly there... </center></h4>
+    	<br /><br />
+    	<center>
+    	
 		<?php
-			$rdateArr = explode("/", $_GET['rdate']);
-			$reserveFromDate = mktime(0, 0, 0, $rdateArr[0], $rdateArr[1], $rdateArr[2]);
-			$reserveToDate = strtotime("+".$_GET['rdays']." days", $reserveFromDate);
-			$resC = mysqli_query($conn,"select * from customer where id=".$_GET['cid']);
-			$resF = mysqli_query($conn,"select * from facility_master where id=".$_GET['fid']);
-			$resI = mysqli_query($conn,"select * from image where facility_id=".$_GET['fid']);
-			if((mysqli_num_rows($resC) > 0) && (mysqli_num_rows($resF) > 0)){
-				$arrC = mysqli_fetch_array($resC, MYSQLI_ASSOC);
-				$arrF = mysqli_fetch_array($resF, MYSQLI_ASSOC);
-				echo '<b>Congratulations, your unit(s) of '.$_GET['unit'].' has been reserved at '.$arrF['title'].' for you from '.date('m/d/Y',$reserveFromDate).
-					 ' until '.date('m/d/Y',$reserveToDate).' for the price of $'.$_GET['price'].' at the following location<br>';
-				echo '<br>';
-				if(mysqli_num_rows($resI) != 0){
-				  $arrI = mysqli_fetch_array($resI, MYSQLI_ASSOC);
-					if(file_exists("images/".$_GET['fid']."/".$arrI['url_fullsize']))
-						echo '<center><img src="//leazzer.com/images/"'.$_GET['fid'].'"/"'.$arrI['url_fullsize'].'" width="250px" height="250px"></center><br>';
-					else
-						echo '<center><img src="https:'.$arrI['url_fullsize'].'" width="250px" height="250px"></center><br>';
-				}
-				else
-					echo '<center><img src="//leazzer.com/unitimages/pna.jpg" width="250px" height="250px"></center><br>';
-				echo '<br>';				
-				echo $arrF['title']."<br>";
-				echo $arrF['street']." ".$arrF['locality']."<br>".$arrF['city']." ".$arrF['state']." - ".$arrF['zip'];
-				if((isset($_SERVER["HTTP_REFERER"]) && (strpos($_SERVER["HTTP_REFERER"],"search.php")!==false)) || 
-						(isset($_GET['ref']) && ($_GET['ref']=="search")))
-					echo '<h5><a href="search_n.php" style="color:#68AE00;">Go Back Search</a></h5>';
-				else
-					echo '<h5><a href="index_n.php" style="color:#68AE00;">Go Back Home</a></h5>';
-			}
+		  if(isset($_POST['action']) && $_POST['action'] == 'Proceed' && isset($_POST['phone']) && strlen($_POST['phone']) >= 10){
+		    error_log(' askphone: posted: '.$_POST['phone']);
+		    $_SESSION['res_phone'] = $_POST['phone'];
+		    if(isset($_SESSION['lcdata']))
+		      $_SESSION['lcdata']['phone'] = $_POST['phone'];
+		    $reserve = "&fid=".$_SESSION['res_fid'].
+							"&cid=".$_SESSION['lcdata']['id'].
+							"&rdays=".$_SESSION['res_rdays'].
+							"&rdate=".$_SESSION['res_rdate'].
+							"&unit=".$_SESSION['res_unit'].
+							"&price=".$_SESSION['res_price'].
+							"&phone=".$_POST['phone'];
+
+				error_log(' askphone: reserve: '.$reserve);
+				header("Location: thankyou_n.php?ref=index".$reserve);
+		  }
+		  else{
+				$rdateArr = explode("/", $_GET['rdate']);
+  			$reserveFromDate = mktime(0, 0, 0, $rdateArr[0], $rdateArr[1], $rdateArr[2]);
+	  		$reserveToDate = strtotime("+".$_GET['rdays']." days", $reserveFromDate);
+
+        echo 'About to reserve your unit '.$_GET['unit'].' for you from '.date('m/d/Y',$reserveFromDate).
+					 ' until '.date('m/d/Y',$reserveToDate).' for the price of $'.$_GET['price'].'. <br /> Please provide your phone number to proceed ...';
+		  }
+
+      ?>
+      <form method="post" action="askphone.php" enctype="multipart/form-data">
+          Phone number: <input type="text" name="phone" id="phone"> <br />
+          <input type="hidden" name="reffer" value="<?php echo (isset($_POST["reffer"])?$_POST["reffer"]:$_SERVER["HTTP_REFERER"]);?>">
+          <br />
+					<input type="submit" name="action" value="Proceed" style="width:250px;height:50px;">	
+				</form>
+		<br />
+		<?php
+			if((isset($_SERVER["HTTP_REFERER"]) && (strpos($_SERVER["HTTP_REFERER"],"search.php")!==false)) || 
+					(isset($_GET['ref']) && ($_GET['ref']=="search")))
+				echo '<h5><a href="search.php" style="color:#68AE00;">Go Back Search</a></h5>';
+			else
+				echo '<h5><a href="index.php" style="color:#68AE00;">Go Back Home</a></h5>';
 		?>
+		  <br /><br />
+			  
+			</center>
 		<div class="clearfix"> </div>
     	</div>
     </div>
@@ -125,41 +141,8 @@ include('sql.php');
 <script>
 $(document).ready(function(){
 	<?php
-	error_log(' ty_n: session: '.$_SESSION['res_phone'].', posted: '.$_POST['phone']);
-	if(isset($_SESSION['res_fid']) && isset($_SESSION['lcdata'])){
-		echo "var res = ajaxcall(\"action=reserve&fid=".$_SESSION['res_fid']."&cid=".$_SESSION['lcdata']['id'].
-						"&rdays=".$_SESSION['res_rdays']."&rdate=".$_SESSION['res_rdate'].
-						"&unit=".$_SESSION['res_unit']."&phone=".$_SESSION['res_phone']."&price=".$_SESSION['res_price']."\");\n";
-		unset($_SESSION['res_fid']);
-		unset($_SESSION['res_cid']);
-		unset($_SESSION['res_rdays']);
-		unset($_SESSION['res_rdate']);
-		unset($_SESSION['res_unit']);
-		unset($_SESSION['res_price']);
-		unset($_SESSION['res_phone']);
-	}
 	?>
 });
-
-function ajaxcall(datastring){
-    var res;
-    $.ajax
-    ({	
-    		type:"POST",
-    		url:"service_n.php",
-    		data:datastring,
-    		cache:false,
-    		async:false,
-    		success: function(result){		
-   				 	res=result;
-   		 	},
-   		 	error: function(err){
-   		 	    alert('Failed to invoke post login reservation serverside function... Please try again in some time' + err);
-   		 	    res = false;
-   		 	}
-    });
-    return res;
-}
 
 </script>
 <!-- Start of HubSpot Embed Code -->

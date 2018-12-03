@@ -61,21 +61,34 @@ function processLogin($res){
 	$has_phone_saved = has_valid_phone($arr['phone']);
 	$reserve = "";
 	if(isset($_SESSION['res_fid'])){
-	
-	  if($has_phone_saved == false && has_valid_phone($_SESSION['res_phone']) == true && isset($arr['id'])){
-	    save_phone($arr['id'], $_SESSION['res_phone']);
+	  $session_has_phone = has_valid_phone($_SESSION['res_phone']);
+	  $has_phone_posted = (isset($_POST['phone']) && has_valid_phone($_POST['phone']));
+	  $phone = 'unknown';
+	  if($has_phone_posted == true && isset($arr['id']) && $has_phone_saved == false){
+	    save_phone($arr['id'], $_POST['phone']);
+	    $_SESSION['res_phone'] = $_POST['phone'];
+	    $phone = $_POST['phone'];
 	  }
-
+	  else if($has_phone_saved == false && $session_has_phone == true && isset($arr['id'])){
+	    save_phone($arr['id'], $_SESSION['res_phone']);
+	    $phone = $_SESSION['res_phone'];
+	  }
+    
+    $_SESSION['res_phone'] = $phone;
+    
+    error_log('customer index post login success - '.$phone.', session: '.$_SESSION['res_phone'].', posted: '.$_POST['phone']);
 		$reserve = "&fid=".$_SESSION['res_fid'].
 							"&cid=".$_SESSION['lcdata']['id'].
 							"&rdays=".$_SESSION['res_rdays'].
 							"&rdate=".$_SESSION['res_rdate'].
 							"&unit=".$_SESSION['res_unit'].
 							"&price=".$_SESSION['res_price'].
-							"&phone=".$_SESSION['res_phone'];
+							"&phone=".$phone;
 	}
-	
-	if(isset($_GET["action"]) && ($_GET["action"] == "search"))
+	error_log('customer index post login success - reserve string: '.$reserve);
+	if($has_phone_saved == false && $session_has_phone == false && $has_phone_posted == false)
+	  header("Location: ../askphone.php?ref=index".$reserve);
+	else if(isset($_GET["action"]) && ($_GET["action"] == "search"))
 		header("Location: ../thankyou_n.php?ref=index".$reserve);
 	else if(isset($_POST["reffer"]) && (strpos($_POST["reffer"],"search_n.php")!==false))
 		header("Location: ../thankyou_n.php?ref=search".$reserve);
