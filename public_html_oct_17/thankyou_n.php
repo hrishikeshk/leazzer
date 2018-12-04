@@ -125,7 +125,7 @@ include('sql.php');
 <script>
 $(document).ready(function(){
 	<?php
-	error_log(' ty_n: session: '.$_SESSION['res_phone'].', posted: '.$_POST['phone']);
+	//error_log(' ty_n: session: '.$_SESSION['res_phone'].', posted: '.$_POST['phone']);
 	if(isset($_SESSION['res_fid']) && isset($_SESSION['lcdata'])){
 		echo "var res = ajaxcall(\"action=reserve&fid=".$_SESSION['res_fid']."&cid=".$_SESSION['lcdata']['id'].
 						"&rdays=".$_SESSION['res_rdays']."&rdate=".$_SESSION['res_rdate'].

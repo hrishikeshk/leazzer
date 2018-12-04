@@ -76,8 +76,8 @@ include('sql.php');
     	<center>
     	
 		<?php
-		  if(isset($_POST['action']) && $_POST['action'] == 'Proceed' && isset($_POST['phone']) && strlen($_POST['phone']) >= 10){
-		    error_log(' askphone: posted: '.$_POST['phone']);
+		  if(isset($_POST['action']) && $_POST['action'] == 'Complete Reservation' && isset($_POST['phone']) && strlen($_POST['phone']) >= 10){
+		    //error_log(' askphone: posted: '.$_POST['phone']);
 		    $_SESSION['res_phone'] = $_POST['phone'];
 		    if(isset($_SESSION['lcdata']))
 		      $_SESSION['lcdata']['phone'] = $_POST['phone'];
@@ -89,7 +89,7 @@ include('sql.php');
 							"&price=".$_SESSION['res_price'].
 							"&phone=".$_POST['phone'];
 
-				error_log(' askphone: reserve: '.$reserve);
+				//error_log(' askphone: reserve: '.$reserve);
 				header("Location: thankyou_n.php?ref=index".$reserve);
 		  }
 		  else{
@@ -97,8 +97,8 @@ include('sql.php');
   			$reserveFromDate = mktime(0, 0, 0, $rdateArr[0], $rdateArr[1], $rdateArr[2]);
 	  		$reserveToDate = strtotime("+".$_GET['rdays']." days", $reserveFromDate);
 
-        echo 'About to reserve your unit '.$_GET['unit'].' for you from '.date('m/d/Y',$reserveFromDate).
-					 ' until '.date('m/d/Y',$reserveToDate).' for the price of $'.$_GET['price'].'. <br /> Please provide your phone number to proceed ...';
+        //echo 'About to reserve your unit '.$_GET['unit'].' for you from '.date('m/d/Y',$reserveFromDate).' until '.date('m/d/Y',$reserveToDate).' for the price of $'.$_GET['price'].'. <br /> Please provide your phone number to proceed ...';
+				echo '<br />Enter phone number to Complete Reservation.';
 		  }
 
       ?>
@@ -106,7 +106,7 @@ include('sql.php');
           Phone number: <input type="text" name="phone" id="phone"> <br />
           <input type="hidden" name="reffer" value="<?php echo (isset($_POST["reffer"])?$_POST["reffer"]:$_SERVER["HTTP_REFERER"]);?>">
           <br />
-					<input type="submit" name="action" value="Proceed" style="width:250px;height:50px;">	
+					<input type="submit" name="action" value="Complete Reservation" style="width:250px;height:50px;">	
 				</form>
 		<br />
 		<?php
