@@ -55,6 +55,20 @@ function facility_amenities_delete($id){
     $res = mysqli_query($conn, "delete FROM facility_amenity WHERE facility_id='" . $id. "'") OR die('Failed to delete existing facility amenities by id: '.$id.mysqli_error($conn));
 }
 
+function persist_facility_owner($email, $owner_id){
+  global $conn;
+  
+  $res = mysqli_query($conn, "select max(auto_id) as max_auto FROM facility_owner") OR die('Failed to select max owner id: '.$owner_id.mysqli_error($conn));
+  
+  $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
+  
+  $max_auto = $arr['max_auto'] + 1;
+  
+  $res_insert = mysqli_query($conn, "insert into facility_owner(pwd, emailid, logintype) values('excited123!','".$email.$max_auto."@leazzer.com','auto')") OR die('Failed to insert facility owner: ' . $owner_id.mysqli_error($conn));
+  
+  return $max_auto;
+}
+
 function persist_reviews($id){
   global $conn;
   
@@ -193,8 +207,10 @@ function handle_insert_update(){
 
   $lowest_price = $_POST['lowest_price'];
   
+  $owner_id = '0';
   $existing_facility = facility_exists($id);
   if($existing_facility != false){
+    $owner_id = $existing_facility['facility_owner_id'];
     facility_amenities_delete($id);
     image_delete($id);
     review_delete($id);
@@ -202,8 +218,11 @@ function handle_insert_update(){
     unit_delete($id);
     facility_delete($id);
   }
+  if(!isset($owner_id) || $owner_id == '0'){
+    $owner_id = persist_facility_owner($_POST['email'], $id."|".$name);
+  }
   
-  $res = mysqli_query($conn, "insert into facility_master(id, title, description, url, distance, street, locality, region, zip, lowest_price, city, state, phone, facility_promo, lat, lng) values('".$id."','".$name."','".$about."','".$url."','".$distance."','".$street."','".$locality."','".$region."','".$zip."','".$lowest_price."','".$city."','".$state."','".$phone."','".$facility_promo."','".$lat_lng_arr[0]."','".$lat_lng_arr[1]."')") OR die('Failed to insert facility: ' . $id.mysqli_error($conn));
+  $res = mysqli_query($conn, "insert into facility_master(id, facility_owner_id, title, description, url, distance, street, locality, region, zip, lowest_price, city, state, phone, facility_promo, lat, lng) values('".$id."','".$owner_id."','".$name."','".$about."','".$url."','".$distance."','".$street."','".$locality."','".$region."','".$zip."','".$lowest_price."','".$city."','".$state."','".$phone."','".$facility_promo."','".$lat_lng_arr[0]."','".$lat_lng_arr[1]."')") OR die('Failed to insert facility: ' . $id.mysqli_error($conn));
   
   persist_facility_amenities($id);
 

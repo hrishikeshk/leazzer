@@ -49,7 +49,7 @@ public class MainImplementation implements Runnable {
             Logger.println("Fetching now page# " + pagenum + "... " + arg);
             HtmlPage hp = wc.getPage(new URL(consSearchURL(arg, pagenum)));
             ParsedPage pp = MainSearchPageProcessor.extractFacilities(hp, pagenum == 1);
-            if(pagenum == 1 && pp.pagination != null){
+            if(pagenum == 1 && pp != null && pp.pagination != null){
                 Logger.println("Num pages found for " + arg + ": " + pp.pagination.numPages);
                 Logger.println("Num facilities found for " + arg + ": " + pp.pagination.numFacilities);
             }

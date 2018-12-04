@@ -108,6 +108,8 @@ public class Persistence {
         listKV.add(new NameValuePair("city", f.location.city));
         listKV.add(new NameValuePair("state", f.location.state));
 
+        listKV.add(new NameValuePair("email", f.id + "_"));
+
         appendFacilityAmenities(f, listKV);
 
         appendFacilityImages(f, listKV);
