@@ -73,9 +73,9 @@ https://www.w3schools.com/cssref/pr_class_position.asp
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
     	<ul class="nav navbar-nav navbar-right">
-		<li><a href="facility/register_n.php">Add Facility</a></li>
-		<li><a href="facility/dashboard_n.php"><?php echo (isset($_SESSION['lfdata'])?$_SESSION['lfdata']['firstname']:"Owner Login");?></a></li>
-    <li><a href="customer/dashboard_n.php"><?php echo (isset($_SESSION['lcdata'])?$_SESSION['lcdata']['firstname']:"Login");?></a></li>
+		<li><a href="facility/register.php">Add Facility</a></li>
+		<li><a href="facility/dashboard.php"><?php echo (isset($_SESSION['lfdata'])?$_SESSION['lfdata']['firstname']:"Owner Login");?></a></li>
+    <li><a href="customer/dashboard.php"><?php echo (isset($_SESSION['lcdata'])?$_SESSION['lcdata']['firstname']:"Login");?></a></li>
     <?php 
     if(isset($_SESSION['lcdata']) || isset($_SESSION['lfdata']))
     	echo '<li><a href="index_n.php?action=logout">Logout</a></li>';
@@ -177,6 +177,9 @@ function validatePhone(phone){
 }
 
 function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
+  var phone = 'unknown';
+  if(validatePhone(hasPhone) == true)
+    phone = hasPhone;
 	if($('#mdate_'+fid).val() == ""){
 		$('#mdatemsg_'+fid).show();
 	}
@@ -187,10 +190,20 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+hasPhone);
+									"&phone="+phone);
 			if(res !== false){
 				window.location.href='customer/index_n.php?action=search';
 			}
+	}
+	else if(validatePhone(phone) == false){
+	  $('#mdatemsg_'+fid).hide();
+			window.location.href = "askphone.php?ref=index&fid="+fid+
+									"&cid="+cid+
+									"&rdays="+rdays+
+									"&rdate="+$('#mdate_'+fid).val()+
+									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
+									"&price="+price+
+									"&phone="+phone;
 	}
 	else{
 			$('#mdatemsg_'+fid).hide();
@@ -200,7 +213,7 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+hasPhone);
+									"&phone="+phone);
 			//if(res == "success")
 			{
 				btn.innerHTML = "<i class=\"fa fa-check\"></i>";
@@ -210,7 +223,7 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+hasPhone;
+									"&phone="+phone;
 			}
 	}
 }
@@ -229,6 +242,26 @@ function ajaxcall(datastring){
    		 	},
    		 	error: function(err){
    		 	    alert('Failed to invoke serverside function... Please try again in some time' + err);
+   		 	    res = false;
+   		 	}
+    });
+    return res;
+}
+
+function ajaxcall_ap(datastring){
+    var res;
+    $.ajax
+    ({	
+    		type:"GET",
+    		url:"askphone.php",
+    		data:datastring,
+    		cache:false,
+    		async:false,
+    		success: function(result){		
+   				 	res = result;
+   		 	},
+   		 	error: function(err){
+   		 	    alert('Failed to invoke serverside function( to ask phone)... Please try again in some time' + err);
    		 	    res = false;
    		 	}
     });

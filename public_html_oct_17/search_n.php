@@ -1,7 +1,7 @@
 <?php
 session_start();
-include('sql.php');
-include('service_n.php');
+include('service_utils.php');
+
 $GError = "";
 $filter = "";
 
@@ -179,62 +179,78 @@ function file_get_contents_curl($url){
 		<?php
 			$query = "";
 			if(is_numeric(isset($_POST['search'])?trim($_POST['search']):"")){
-				//$query = "select * from facility where searchable=1 and  zipcode >= '".(isset($_POST['search'])?trim($_POST['search']):"0")."' ".($filter==""?"":$filter)." order by zipcode LIMIT 100";
 				$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".trim($_POST['search'])."&sensor=false";
 				$result_string = file_get_contents_curl($url);
     		$result = json_decode($result_string, true);
-    		//print_r($result['results'][0]['geometry']['location']['lat']);
     		$lat = $result['results'][0]['geometry']['location']['lat'];
     		$lng = $result['results'][0]['geometry']['location']['lng'];
-    		$query = "select *,(6371 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as distance from facility where searchable=1 having distance < 10000 order by distance limit 100";
+    		$query = "select *,(6371 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 having calc_distance < 10000 order by calc_distance limit 100";
 			}
 			else if(strpos((isset($_POST['search'])?trim($_POST['search']):""),",") !== false){
 				$searchArr = explode(",",trim($_POST['search']));
-				$query = "select * from facility where searchable=1 and (companyname LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%')   ".($filter==""?"":$filter)." LIMIT 100";
+				$query = "select * from facility_master where searchable=1 and (title LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%')   ".($filter==""?"":$filter)." LIMIT 100";
 			}
 			else
-				$query = "select * from facility where searchable=1 and (companyname LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%')   ".($filter==""?"":$filter)." order by companyname LIMIT 100";
+				$query = "select * from facility_master where searchable=1 and (title LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%')   ".($filter==""?"":$filter)." order by title LIMIT 100";
 			
 			$res = mysqli_query($conn,$query);
 			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
-				if($arr['companyname'] == "")
+				if($arr['title'] == "")
 					continue;
 				
-				echo '<tr style="margin:0px;padding:0px;border:0px solid #000;background:none;">';
-				echo '<td style="background:none;margin:0px;padding:5px;border:0px solid #000;">';
-				echo '<table style="width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
-				echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
-				if($arr['image'] =="")
-					echo '<img src="unitimages/pna_1.jpg" style="min-height:120px;width:120px;">';
-				else if(file_exists("unitimages/".$arr['image']))
-					echo '<img src="unitimages/'.$arr['image'].'" style="min-height:120px;width:120px;">';
-				else
-					echo '<img src="'.$arr['image'].'" style="min-height:120px;width:120px;">';?>
-					<br><a href="photos.php?q=<?php echo $arr['id']?>">More photos</a>
-					
-					<?php  
-				echo '</td>';
-				
-				echo '<td class="login-block" style="vertical-align:top;text-align:left;width="50%";border-top:1px solid #ddd;padding: 10px 10px 0px 10px;"><b>'.$arr['companyname'].'</b><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;"></div><br>';
-				echo $arr['city'].",".$arr['state']." ".$arr['zipcode'].'<br>';
-				if($arr['options']!="")
-					showOpt($arr);
-				else
-					echo "<br>";
-					
-				echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
-				echo '<p id="mdatemsg_'.$arr['id'].'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;">Enter Move-In Date</p>';
-				echo '<div id="dateday_'.$arr['id'].'" class="login-block" name="dateday_'.$arr['id'].'" style="margin:3px;text-align:left;padding:0;">';
-				echo '<input class="datepicker" id="mdate_'.$arr['id'].'" name="mdate_'.$arr['id'].'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div>';
-			
-				echo '</td><tr><td colspan=2 width="40%";style="padding:0;border-left:1px solid #ddd;">';
-				if($arr['units']!="")
-					showUnit($arr);
-				
-				echo'</td>';
-				echo '<td class="login-block" style="vertical-align:top;color:#68AE00;text-align:left;width="25%";border-top:1px solid #ddd;padding: 2px 1px 0px 10px;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</td>';
-				echo '<td class="login-block" style="vertical-align:top;color:rgb(38, 116, 166);text-align:left;width="25%";border-top:1px solid #ddd;padding: 2px 1px 0px 10px;">'.$arr['description'].'</td>';
-				echo '</tr></table></td></tr>';
+				$facility_id = $arr['id'];
+  		  $arr_imgs = fetch_image_url($facility_id);
+	  	  $unit_info_arr = fetch_units($facility_id);
+        $facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
+        $priority_amenities = arrange_priority($facility_unit_amenities);
+      
+	  		echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
+	  		echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
+	  		$image_file_name = extract_image_name($arr_imgs['url_thumbsize']);
+	  		$expected_image_path = "images/".$facility_id."/".$image_file_name;
+	  		echo '<a href="javascript:showMorePhotos('.$facility_id.')">';
+	  		if(file_exists($expected_image_path))
+	  			echo '<img src="'.$expected_image_path.'" style="min-height:120px;width:120px;">';
+	  		else if(strlen($arr_imgs['url_thumbsize']) > 0)
+	  			echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
+	  		else
+	  		  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
+	  		
+	  		echo '</a>';
+	  		echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More Photos</a>';
+	  		echo '</td>';
+  
+	  		echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
+	  		
+	  		echo '<table>';
+	  		
+	  		echo '<tr><td><b>'.$arr['title'].'</b><br>';
+	  		echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
+	  		
+	  		if(has_climate_control($facility_unit_amenities))
+	  		  echo '<img src="images/cc_amenity.jpg" style="min-height:40px;width:40px;" />';
+	  		
+	  		echo '</td>';
+//  
+        echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div></td>';
+//
+	  		echo '</tr>';
+	  		
+        show_amenities($facility_id, $priority_amenities, 5, $arr['title']);
+        
+        echo '</table>';
+        
+        echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
+	  		
+	  		echo '<div id="dateday_'.$facility_id.'" class="login-block" name="dateday_'.$facility_id.'" style="margin:0px;text-align:left;padding:0;">';
+	  		echo '<p id="mdatemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
+	  		echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div><br />';
+						
+	  		echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
+
+	  		show_units($facility_id, $unit_info_arr, 5);
+
+	  		echo'</td></tr></table>';
 			}
 		?>
 		</table>		
@@ -272,21 +288,6 @@ $(document).ready(function(){
 		autoclose:true
     });
 });
-function onShowUnit(id){
-	if($('#unitstbl_'+id).is(':hidden')){
-		$('#unitstbl_'+id).show();
-		$("#dateday_"+id).css("display", "inline");	
-		$('#mdate_'+id).datepicker({
-     	format: 'mm/dd/yyyy',
-     	startDate: new Date(),
-		autoclose:true
-    });
-	}
-	else{
-		$('#unitstbl_'+id).hide();
-		$('#dateday_'+id).hide();	
-	}
-}
 
 function validatePhone(phone){
   if(phone == undefined || phone == null || phone.length < 10)
@@ -297,10 +298,6 @@ function validatePhone(phone){
 function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 	if($('#mdate_'+fid).val() == ""){
 		$('#mdatemsg_'+fid).show();
-		if(cid != 0 && validatePhone($('#mphone_'+fid).val()) == false && validatePhone(hasPhone) == false){
-		  $('#mphonemsg_'+fid).show();
-		  $('#mphone_'+fid).show();
-		}
 	}
 	else if(cid == 0){
 			var res = ajaxcall("action=sessionreserve&fid="+fid+
@@ -309,29 +306,20 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+$('#mphone_'+fid).val());
+									"&phone="+hasPhone);
 			if(res !== false){
 				window.location.href='customer/index_n.php?action=search';
 			}
 	}
-	else if(validatePhone($('#mphone_'+fid).val()) == false && validatePhone(hasPhone) == false){
-	  $('#mphonemsg_'+fid).show();
-		$('#mphone_'+fid).show();
-	}
 	else{
-	    var phoneFieldVal = $('#mphone_'+fid).val();
-	    if(validatePhone(phoneFieldVal) == false)
-	      phoneFieldVal = hasPhone;
-	    
 			$('#mdatemsg_'+fid).hide();
-			$('#mphonemsg_'+fid).hide();
 			var res = ajaxcall("action=reserve&fid="+fid+
 									"&cid="+cid+
 									"&rdays="+rdays+
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+phoneFieldVal);
+									"&phone="+hasPhone);
 			//if(res == "success")
 			{
 				btn.innerHTML = "<i class=\"fa fa-check\"></i>";
@@ -341,7 +329,7 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+phoneFieldVal;
+									"&phone="+hasPhone;
 			}
 	}
 }
@@ -365,6 +353,7 @@ function ajaxcall(datastring){
     });
     return res;
 }
+
 </script>
 <!--scrolling js-->
 		<script src="facility/js/jquery.nicescroll.js"></script>
