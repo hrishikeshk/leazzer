@@ -75,32 +75,6 @@ function save_phone($cid, $phone){
 }
 
 if(isset($_POST['action'])){
-	if($_POST['action'] == "addfacility"){
-		$email  = checkEmail($_POST['email'], 0);
-		$units = checkUnits($_POST['units']);									
-
-    $owner_id = insert_facility_owner($email);
-    if($email == false){
-      echo("Failed to persist facility owner information to DB");
-      header("Location: facility/dashboard.php");
-      exit;
-    }
-    else{
-      $gen_id = "leazzer".$owner_id;
-			mysqli_query($conn,"insert into facility_master(facility_owner_id, id, title, phone, street, locality, region, city, state, zip, lat, lng) values ('".
-												$owner_id."','".gen_id."','".
-												mysqli_real_escape_string($conn,$_POST['company'])."','".
-												mysqli_real_escape_string($conn,$_POST['phone'])."','".
-												mysqli_real_escape_string($conn,$_POST['street'])."','".
-												mysqli_real_escape_string($conn,$_POST['locality'])."','".
-												mysqli_real_escape_string($conn,$_POST['region'])."','".
-												$_POST['city']."','".
-												$_POST['state']."','".
-												$_POST['zip']."','".
-												$_POST['lat']."','".
-												$_POST['lng']."')");
-    }
-	}
 	if($_POST['action'] == "nearlocation"){
 		$query = "";
 		if($_POST['lat'] == 0 || $_POST['lng'] == 0)
@@ -139,9 +113,8 @@ if(isset($_POST['action'])){
 			echo '<tr><td><b>'.$arr['title'].'</b><br>';
 			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
 			
-			if(has_climate_control($facility_unit_amenities)){
+			if(has_climate_control($facility_unit_amenities))
 			  echo '<img src="images/cc_amenity.jpg" style="min-height:40px;width:40px;" />';
-			}
 			
 			echo '</td>';
 //
@@ -157,11 +130,8 @@ if(isset($_POST['action'])){
 			
 			echo '<div id="dateday_'.$facility_id.'" class="login-block" name="dateday_'.$facility_id.'" style="margin:0px;text-align:left;padding:0;">';
 			echo '<p id="mdatemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
-			echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div>';
-			
-			echo '<p id="mphonemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 20px;padding:0;text-align:left;">Please provide your phone number</p>';
-			echo '<input style="display:none" id="mphone_'.$facility_id.'" name="mphone_'.$facility_id.'" type="text" placeholder="Your phone number"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"><br />';
-			
+			echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div><br />';
+						
 			echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
 
 			show_units($facility_id, $unit_info_arr, 5);
@@ -184,6 +154,7 @@ if(isset($_POST['action'])){
   	//error_log('service_n session_reserve - '.$_POST['phone'].', session - '.$_SESSION['res_phone']);
 		echo "success";
 	}
+	
 	if($_POST['action'] == "reserve"){
 		$rdateArr = explode("/",$_POST['rdate']);
 		$reserveFromDate = mktime(0,0,0,$rdateArr[0],$rdateArr[1],$rdateArr[2]);
@@ -235,7 +206,8 @@ if(isset($_POST['action'])){
 													date('m/d/Y', $reserveToDate),
 													$img_path,
 													$facilityAddress);
-			onReserveOwnerMail($arrO[0],
+			onReserveOwnerMail( $arrF['title'],
+			                    $arrO[0],
 													$arrO[1]." ".$arrO[2],
 													$_POST['unit'],
 													$_POST['price'],
@@ -324,7 +296,7 @@ function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $pric
 	$ret = $mail->Send();
 }
 
-function onReserveOwnerMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$resToDate){
+function onReserveOwnerMail($facilityName, $ownerEmail, $ownerName, $unit, $price, $resFromDate, $resToDate){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	//$toemail=$ownerEmail;
@@ -332,7 +304,7 @@ function onReserveOwnerMail($ownerEmail,$ownerName,$unit,$price,$resFromDate,$re
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
 	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="125px" alt="Logo" title="Logo" style="display:block"></center><br>';
-	$message .= 'Hello <b>'.$ownerName.'</b>,';
+	$message .= 'Hello <b>'.$facilityName.'</b>,';
 	$message .= '<br><br>A '.$unit.' unit has been reserved from ';
 	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
 	$message .= '</td></tr>';

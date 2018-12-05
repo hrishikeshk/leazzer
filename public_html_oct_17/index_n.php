@@ -97,7 +97,7 @@ https://www.w3schools.com/cssref/pr_class_position.asp
 			  <input class="text" name="search" id="searchTextField" type="text" placeholder="Zip or City" required="">
 				<input type="submit" value="Find Storage" style="margin-left: 10px;">
 				  <div class="clearfix"></div>
-	  			<br><a href="helpmechoose_n.php" style="color:#000;text-shadow: 1px 1px 1px #555;">Help me choose units</a><br><br>
+	  			<br><a href="helpmechoose.php" style="color:#000;text-shadow: 1px 1px 1px #555;">Help me choose units</a><br><br>
 	  			<p>Search And Compare Selfstorage Near You</p>
 				  <div class="clearfix"></div>
 			</div>
@@ -179,10 +179,6 @@ function validatePhone(phone){
 function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 	if($('#mdate_'+fid).val() == ""){
 		$('#mdatemsg_'+fid).show();
-		if(cid != 0 && validatePhone($('#mphone_'+fid).val()) == false && validatePhone(hasPhone) == false){
-		  $('#mphonemsg_'+fid).show();
-		  $('#mphone_'+fid).show();
-		}
 	}
 	else if(cid == 0){
 			var res = ajaxcall("action=sessionreserve&fid="+fid+
@@ -191,29 +187,20 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+$('#mphone_'+fid).val());
+									"&phone="+hasPhone);
 			if(res !== false){
 				window.location.href='customer/index_n.php?action=search';
 			}
 	}
-	else if(validatePhone($('#mphone_'+fid).val()) == false && validatePhone(hasPhone) == false){
-	  $('#mphonemsg_'+fid).show();
-		$('#mphone_'+fid).show();
-	}
 	else{
-	    var phoneFieldVal = $('#mphone_'+fid).val();
-	    if(validatePhone(phoneFieldVal) == false)
-	      phoneFieldVal = hasPhone;
-	    
 			$('#mdatemsg_'+fid).hide();
-			$('#mphonemsg_'+fid).hide();
 			var res = ajaxcall("action=reserve&fid="+fid+
 									"&cid="+cid+
 									"&rdays="+rdays+
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+phoneFieldVal);
+									"&phone="+hasPhone);
 			//if(res == "success")
 			{
 				btn.innerHTML = "<i class=\"fa fa-check\"></i>";
@@ -223,7 +210,7 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+phoneFieldVal;
+									"&phone="+hasPhone;
 			}
 	}
 }
@@ -252,7 +239,7 @@ function ajaxcall(datastring){
 
 <script>
 var input = document.getElementById('searchTextField');
-      var autocomplete = new google.maps.places.Autocomplete(input);
+var autocomplete = new google.maps.places.Autocomplete(input);
 </script>
 
 <!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script> 
