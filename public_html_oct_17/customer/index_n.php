@@ -76,7 +76,7 @@ function processLogin($res){
     
     $_SESSION['res_phone'] = $phone;
     
-    error_log('customer index post login success - '.$phone.', session: '.$_SESSION['res_phone'].', posted: '.$_POST['phone']);
+    //error_log('customer index post login success - '.$phone.', session: '.$_SESSION['res_phone'].', posted: '.$_POST['phone']);
 		$reserve = "&fid=".$_SESSION['res_fid'].
 							"&cid=".$_SESSION['lcdata']['id'].
 							"&rdays=".$_SESSION['res_rdays'].
@@ -85,7 +85,7 @@ function processLogin($res){
 							"&price=".$_SESSION['res_price'].
 							"&phone=".$phone;
 	}
-	error_log('customer index post login success - reserve string: '.$reserve);
+	//error_log('customer index post login success - reserve string: '.$reserve);
 	if($has_phone_saved == false && $session_has_phone == false && $has_phone_posted == false)
 	  header("Location: ../askphone.php?ref=index".$reserve);
 	else if(isset($_GET["action"]) && ($_GET["action"] == "search"))
