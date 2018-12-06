@@ -109,10 +109,10 @@ include('sql.php');
 
       ?>
       <form method="post" action="askphone.php" enctype="multipart/form-data">
-          Phone number: <input type="text" name="phone" id="phone"> <br />
+          <input type="text" name="phone" id="phone"> <br />
           <input type="hidden" name="reffer" value="<?php echo (isset($_POST["reffer"])?$_POST["reffer"]:$_SERVER["HTTP_REFERER"]);?>">
           <br />
-					<input type="submit" name="action" value="Complete Reservation" style="width:250px;height:50px;">	
+					<input type="submit" name="action" value="Complete Reservation" style="width:250px;height:50px; broder-radius: 10px; background-color: #4CAF50;">
 				</form>
 		<br />
 		<?php

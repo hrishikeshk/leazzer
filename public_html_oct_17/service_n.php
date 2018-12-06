@@ -42,7 +42,7 @@ if(isset($_POST['action'])){
 			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
 			
 			if(has_climate_control($facility_unit_amenities))
-			  echo '<img src="images/cc_amenity.jpg" style="min-height:40px;width:40px;" />';
+			  echo '<img src="images/cc_amenity.png" style="min-height:40px;width:40px;" />';
 			
 			echo '</td>';
 //
