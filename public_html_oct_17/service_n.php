@@ -74,11 +74,11 @@ if(isset($_POST['action'])){
 		$_SESSION['res_rdate'] = $_POST['rdate'];
 		$_SESSION['res_unit'] = $_POST['unit'];
 		$_SESSION['res_price'] = $_POST['price'];
-		if(isset($_POST['phone']) && strlen($_POST['phone']) >= 10)
+		if(isset($_POST['phone']) && strlen($_POST['phone']) == 10)
   		$_SESSION['res_phone'] = $_POST['phone'];
   	else
   	  $_SESSION['res_phone'] = 'unknown';
-  	error_log('service_n session_reserve - '.$_POST['phone'].', session - '.$_SESSION['res_phone']);
+  	//error_log('service_n session_reserve - '.$_POST['phone'].', session - '.$_SESSION['res_phone']);
 		echo "success";
 	}
 	else if($_POST['action'] == "reserve"){
@@ -108,7 +108,7 @@ if(isset($_POST['action'])){
 			else if(isset($arrC['phone'])){
 			  $phone = $arrC['phone'];
 			}
-			error_log('service_n reserve - '.$phone.', session: '.$_SESSION['res_phone'].', posted: '.$_POST['phone']);
+			//error_log('service_n reserve - '.$phone.', session: '.$_SESSION['res_phone'].', posted: '.$_POST['phone']);
 			$img_paths_arr = calc_img_path($arrF['id']);
 			$img_path = $img_paths_arr['url_fullsize'];
 			$facilityAddress = $arrF['street'].", ".($arrF['locality']==""?"":$arrF['region']."<br>").$arrF['city'].", ".$arrF['state']." - ".$arrF['zip'];

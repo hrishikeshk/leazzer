@@ -47,7 +47,7 @@ function save_phone($cid, $phone){
 }
 
 function has_valid_phone($phone){
-  if(isset($phone) && strlen($phone) >= 10)
+  if(isset($phone) && strlen($phone) == 10)
     return true;
   return false;
 }

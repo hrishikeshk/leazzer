@@ -171,7 +171,7 @@ function onShowUnit(id){
 }
 
 function validatePhone(phone){
-  if(phone == undefined || phone == null || phone.length < 10)
+  if(phone == undefined || phone == null || phone.length != 10)
     return false;
   return true;
 }

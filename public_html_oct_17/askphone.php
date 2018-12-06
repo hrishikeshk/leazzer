@@ -76,7 +76,7 @@ include('sql.php');
     	<center>
     	
 		<?php
-		  if(isset($_POST['action']) && $_POST['action'] == 'Complete Reservation' && isset($_POST['phone']) && strlen($_POST['phone']) >= 10){
+		  if(isset($_POST['action']) && $_POST['action'] == 'Complete Reservation' && isset($_POST['phone']) && strlen($_POST['phone']) == 10){
 		    //error_log(' askphone: posted: '.$_POST['phone']);
 		    $_SESSION['res_phone'] = $_POST['phone'];
 		    if(isset($_SESSION['lcdata']))
@@ -112,7 +112,7 @@ include('sql.php');
           <input type="text" name="phone" id="phone"> <br />
           <input type="hidden" name="reffer" value="<?php echo (isset($_POST["reffer"])?$_POST["reffer"]:$_SERVER["HTTP_REFERER"]);?>">
           <br />
-					<input type="submit" name="action" value="Complete Reservation" style="width:250px;height:50px; broder-radius: 10px; background-color: #4CAF50;">
+					<input type="submit" name="action" value="Complete Reservation" style="width:200px;height:50px; border-radius: 10px; background-color: #4CAF50;">
 				</form>
 		<br />
 		<?php

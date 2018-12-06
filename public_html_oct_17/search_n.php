@@ -72,6 +72,91 @@ function file_get_contents_curl($url){
 <link href="facility/css/demo-page.css" rel="stylesheet" media="all">
 <link href="facility/css/hover.css" rel="stylesheet" media="all">
 <!--//skycons-icons-->
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#datatable').DataTable({
+    		"aaSorting": []
+    		});
+	$('#datatable').on('draw.dt', function (){ 
+	$('.datepicker').datepicker({
+     	format: 'mm/dd/yyyy',
+     	startDate: new Date(),
+		autoclose:true
+    });
+	});
+	$('.datepicker').datepicker({
+     	format: 'mm/dd/yyyy',
+     	startDate: new Date(),
+		autoclose:true
+    });
+});
+
+function validatePhone(phone){
+  if(phone == undefined || phone == null || phone.length != 10)
+    return false;
+  return true;
+}
+
+function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
+	if($('#mdate_'+fid).val() == ""){
+		$('#mdatemsg_'+fid).show();
+	}
+	else if(cid == 0){
+			var res = ajaxcall("action=sessionreserve&fid="+fid+
+									"&cid="+cid+
+									"&rdays="+rdays+
+									"&rdate="+$('#mdate_'+fid).val()+
+									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
+									"&price="+price+
+									"&phone="+hasPhone);
+			if(res !== false){
+				window.location.href='customer/index_n.php?action=search';
+			}
+	}
+	else{
+			$('#mdatemsg_'+fid).hide();
+			var res = ajaxcall("action=reserve&fid="+fid+
+									"&cid="+cid+
+									"&rdays="+rdays+
+									"&rdate="+$('#mdate_'+fid).val()+
+									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
+									"&price="+price+
+									"&phone="+hasPhone);
+			//if(res == "success")
+			{
+				btn.innerHTML = "<i class=\"fa fa-check\"></i>";
+				window.location.href = "thankyou_n.php?fid="+fid+
+									"&cid="+cid+
+									"&rdays="+rdays+
+									"&rdate="+$('#mdate_'+fid).val()+
+									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
+									"&price="+price+
+									"&phone="+hasPhone;
+			}
+	}
+}
+
+function ajaxcall(datastring){
+    var res;
+    $.ajax
+    ({	
+    		type:"POST",
+    		url:"service_n.php",
+    		data:datastring,
+    		cache:false,
+    		async:false,
+    		success: function(result){		
+   				 	res = result;
+   		 	},
+   		 	error: function(err){
+   		 	    alert('Failed to invoke serverside function(from search)... Please try again in some time' + err);
+   		 	    res = false;
+   		 	}
+    });
+    return res;
+}
+
+</script>
 </head>
 <body>
 <div class="page-container">	
@@ -171,7 +256,7 @@ function file_get_contents_curl($url){
 			   		}
 			   }
 			?>
-			<br>
+			<br />
 		<table id="datatable" class="table table-striped table-bordered" style="margin:0px;padding:0px;border:0px solid #000;" width="100%" cellspacing="0">
 		<thead style="display:none;">
 		<tr><th>Content</th></tr>
@@ -270,91 +355,7 @@ function file_get_contents_curl($url){
 <script type="text/javascript" src="admin/js/jquery.dataTables.min.js"></script>
 <link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" />
 <script type="text/javascript" src="admin/js/bootstrap-datepicker.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){
-    $('#datatable').DataTable({
-    		"aaSorting": []
-    		});
-	$('#datatable').on('draw.dt', function (){ 
-	$('.datepicker').datepicker({
-     	format: 'mm/dd/yyyy',
-     	startDate: new Date(),
-		autoclose:true
-    });
-	});
-	$('.datepicker').datepicker({
-     	format: 'mm/dd/yyyy',
-     	startDate: new Date(),
-		autoclose:true
-    });
-});
 
-function validatePhone(phone){
-  if(phone == undefined || phone == null || phone.length < 10)
-    return false;
-  return true;
-}
-
-function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
-	if($('#mdate_'+fid).val() == ""){
-		$('#mdatemsg_'+fid).show();
-	}
-	else if(cid == 0){
-			var res = ajaxcall("action=sessionreserve&fid="+fid+
-									"&cid="+cid+
-									"&rdays="+rdays+
-									"&rdate="+$('#mdate_'+fid).val()+
-									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
-									"&price="+price+
-									"&phone="+hasPhone);
-			if(res !== false){
-				window.location.href='customer/index_n.php?action=search';
-			}
-	}
-	else{
-			$('#mdatemsg_'+fid).hide();
-			var res = ajaxcall("action=reserve&fid="+fid+
-									"&cid="+cid+
-									"&rdays="+rdays+
-									"&rdate="+$('#mdate_'+fid).val()+
-									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
-									"&price="+price+
-									"&phone="+hasPhone);
-			//if(res == "success")
-			{
-				btn.innerHTML = "<i class=\"fa fa-check\"></i>";
-				window.location.href = "thankyou_n.php?fid="+fid+
-									"&cid="+cid+
-									"&rdays="+rdays+
-									"&rdate="+$('#mdate_'+fid).val()+
-									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
-									"&price="+price+
-									"&phone="+hasPhone;
-			}
-	}
-}
-
-function ajaxcall(datastring){
-    var res;
-    $.ajax
-    ({	
-    		type:"POST",
-    		url:"service_n.php",
-    		data:datastring,
-    		cache:false,
-    		async:false,
-    		success: function(result){		
-   				 	res = result;
-   		 	},
-   		 	error: function(err){
-   		 	    alert('Failed to invoke serverside function... Please try again in some time' + err);
-   		 	    res = false;
-   		 	}
-    });
-    return res;
-}
-
-</script>
 <!--scrolling js-->
 		<script src="facility/js/jquery.nicescroll.js"></script>
 		<script src="facility/js/scripts.js"></script>
