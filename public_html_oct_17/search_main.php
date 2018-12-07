@@ -1,0 +1,359 @@
+<?php
+session_start();
+include('service_utils.php');
+
+$GError = "";
+$filter = "";
+
+if((!isset($_POST['search'])) && isset($_SESSION['search']))
+	$_POST['search']= $_SESSION['search'];
+else if(isset($_POST['search']))
+	$_SESSION['search']= $_POST['search'];
+
+if(isset($_POST['action'])){
+	if($_POST['action'] == "removefilter" && isset($_SESSION['filter'])){		
+		$newFilterArr = array();
+ 		for($i=0;$i<count($_SESSION['filter']);$i++){
+ 			$filterArr = explode("[-]",$_SESSION['filter'][$i]);
+ 			if($filterArr[0] != $_POST['id'])
+ 				array_push($newFilterArr,$_SESSION['filter'][$i]);
+		}			
+		$_SESSION['filter'] = $newFilterArr;
+	}
+}
+
+if(isset($_POST['action'])){
+	if($_POST['action'] == "applyfilter")
+		$_SESSION['filter'] = $_POST['options'];
+}
+
+function showOpt($arr){
+	global $conn;
+	$opt = $arr['options'];
+	$pos = strpos($opt,",");
+	if($pos ==  0)
+		$opt = substr($opt,1,strlen($opt)-2);
+	else
+		$opt = substr($opt,0,strlen($opt)-1);
+	$resO = mysqli_query($conn,"select * from options where id in(".$opt.")");
+	echo '<p style="font-size:.8em">';
+	while($arrO = mysqli_fetch_array($resO,MYSQLI_ASSOC))
+		echo $arrO['opt'].', ';
+	echo "</p>";
+}
+
+function file_get_contents_curl($url){
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_HEADER, 0);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //Set curl to return the data instead of printing it to the browser.
+  curl_setopt($ch, CURLOPT_URL, $url);
+  $data = curl_exec($ch);
+  curl_close($ch);
+  return $data;
+}
+
+?>
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Leazzer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="keywords" content="Leazzer" />
+<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
+<link href="facility/css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
+<link href="facility/css/style.css" rel="stylesheet" type="text/css" media="all"/>
+<script src="facility/js/jquery-2.1.1.min.js"></script> 
+<link href="facility/css/font-awesome.css" rel="stylesheet"> 
+<link href='facility/fonts/fonts.css' rel='stylesheet' type='text/css'>
+<script src="facility/js/Chart.min.js"></script>
+<!--skycons-icons-->
+<script src="facility/js/skycons.js"></script>
+<link href="facility/css/demo-page.css" rel="stylesheet" media="all">
+<link href="facility/css/hover.css" rel="stylesheet" media="all">
+<!--//skycons-icons-->
+<script type="text/javascript">
+
+function validatePhone(phone){
+  if(phone == undefined || phone == null || phone.length != 10)
+    return false;
+  return true;
+}
+
+function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
+	if($('#mdate_'+fid).val() == ""){
+		$('#mdatemsg_'+fid).show();
+	}
+	else if(cid == 0){
+			var res = ajaxcall("action=sessionreserve&fid="+fid+
+									"&cid="+cid+
+									"&rdays="+rdays+
+									"&rdate="+$('#mdate_'+fid).val()+
+									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
+									"&price="+price+
+									"&phone="+hasPhone);
+			if(res !== false){
+				window.location.href='customer/index_n.php?action=search';
+			}
+	}
+	else{
+			$('#mdatemsg_'+fid).hide();
+			var res = ajaxcall("action=reserve&fid="+fid+
+									"&cid="+cid+
+									"&rdays="+rdays+
+									"&rdate="+$('#mdate_'+fid).val()+
+									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
+									"&price="+price+
+									"&phone="+hasPhone);
+			//if(res == "success")
+			{
+				btn.innerHTML = "<i class=\"fa fa-check\"></i>";
+				window.location.href = "thankyou_n.php?fid="+fid+
+									"&cid="+cid+
+									"&rdays="+rdays+
+									"&rdate="+$('#mdate_'+fid).val()+
+									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
+									"&price="+price+
+									"&phone="+hasPhone;
+			}
+	}
+}
+
+function ajaxcall(datastring){
+    var res;
+    $.ajax
+    ({	
+    		type:"POST",
+    		url:"service_n.php",
+    		data:datastring,
+    		cache:false,
+    		async:false,
+    		success: function(result){		
+   				 	res = result;
+   		 	},
+   		 	error: function(err){
+   		 	    alert('Failed to invoke serverside function(from search)... Please try again in some time' + err);
+   		 	    res = false;
+   		 	}
+    });
+    return res;
+}
+
+</script>
+</head>
+<body>
+<div class="page-container">	
+   <div class="left-content">
+	   <div class="mother-grid-inner">
+            <!--header start here-->
+				<div class="header-main">
+					<div class="header-left" style="width:100%;">
+							<div class="logo-name login-block"  style="width:100%;padding:0;margin:0;">
+								<form method="post" action="search_n.php" enctype="multipart/form-data">
+								<center>
+								<a href="index_n.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/></a>
+								<input name="search" type="text" placeholder="Zip or Address" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>" required="" style="width:50%;display:inline;margin:0;">
+								<button data-toggle="modal" data-target="#myModal" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button>
+								<button type="submit" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-search"></i></button>
+								</center>
+								</form>
+							</div>
+							<div class="clearfix"> </div>
+						 </div>
+				     <div class="clearfix"> </div>	
+				</div>
+<!--header end here-->
+  		<!---START-->
+				<div id="myModal" class="modal fade" role="dialog">
+				  <div class="modal-dialog">
+				    <!-- Modal content-->
+				    <form method="post" action="search_n.php" enctype="multipart/form-data">
+				    <div class="modal-content">
+				      <div class="modal-body">
+				        <p>
+						<hr style="margin:5px 0px 5px 0px">
+						<b>Filter Features</b>
+						<hr style="margin:5px 0px 5px 0px">
+						<?php
+							$res = mysqli_query($conn,"select * from options");
+							while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
+								$checked = "";
+								if(isset($_SESSION['filter']) && (in_array($arr['id'].'[-]'.$arr['opt'],$_SESSION['filter'])))
+									$checked = "checked";
+								echo '<input type="checkbox" style="margin-right:5px;" name="options[]" value="'.
+											$arr['id'].'[-]'.$arr['opt'].'" '.$checked.'>'.$arr['opt'].'<br>';
+							}
+						?>
+						<input type="hidden" name="search" id="search" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>">
+						<input type="hidden" name="action" id="action" value="applyfilter">
+				        </p>
+				      </div>
+				      <div class="modal-footer">
+				      	<button class="btn btn-primary" name="submit" id="submit" value="Create" style="background:#68AE00;border-color:#68AE00;">Apply Filter</button>
+				        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				      </div>
+				    </div>
+						</form>
+				  </div>
+				</div>
+			<!---END-->
+
+<!-- script-for sticky-nav -->
+		<script>
+		$(document).ready(function(){
+			 var navoffeset=$(".header-main").offset().top;
+			 $(window).scroll(function(){
+				var scrollpos=$(window).scrollTop(); 
+				if(scrollpos >=navoffeset){
+					$(".header-main").addClass("fixed");
+				}else{
+					$(".header-main").removeClass("fixed");
+				}
+			 });
+			 $('.datepicker').datepicker({
+         	format: 'mm/dd/yyyy',
+         	startDate: new Date(),
+	      	autoclose:true
+        });
+        $('#datatable').DataTable({
+      		"aaSorting": []
+        });
+	      $('#datatable').on('draw.dt', function (){ 
+        	$('.datepicker').datepicker({
+           	format: 'mm/dd/yyyy',
+           	startDate: new Date(),
+	        	autoclose:true
+          });
+	      });
+		});
+		</script>
+<!-- /script-for sticky-nav -->
+<!--inner block start here-->
+<div class="inner-block">
+    <div class="blank">
+    	<div class="blankpage-main" style="padding:1em 1em;">
+			<?php
+			   if(isset($_SESSION['filter'])){
+			   		if(count($_SESSION['filter'])> 0)
+			   		$filter="AND (";
+			   		for($i=0;$i<count($_SESSION['filter']);$i++){
+			   			$filterArr = explode("[-]",$_SESSION['filter'][$i]);
+			   			echo '<div style="background:#eee;display:inline-block;padding:5px;margin:2px;">'.
+			   						$filterArr[1].
+			   						' <a href="search_n.php?action=removefilter&id='.$filterArr[0].'" style="color:#68AE00;"><i class="fa fa-close"></i></a></div>';
+			   						
+			   			$filter .= " options LIKE '%,".$filterArr[0].",%' ";
+			   			if(($i+1) != count($_SESSION['filter']))
+			   				$filter .= " OR ";
+			   		}
+
+			   		if(count($_SESSION['filter'])> 0){
+			   			echo "<br><br>";
+			   			$filter .= ")";
+			   		}
+			   }
+			?>
+			<br />
+		<table id="datatable" class="table table-striped table-bordered" style="margin:0px;padding:0px;border:0px solid #000;" width="100%" cellspacing="0">
+		<thead style="display:none;">
+		<tr><th>Content</th></tr>
+		</thead>
+		<?php
+			$query = "";
+			if(is_numeric(isset($_POST['search'])?trim($_POST['search']):"")){
+				$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".trim($_POST['search'])."&sensor=false";
+				$result_string = file_get_contents_curl($url);
+    		$result = json_decode($result_string, true);
+    		$lat = $result['results'][0]['geometry']['location']['lat'];
+    		$lng = $result['results'][0]['geometry']['location']['lng'];
+    		$query = "select *,(6371 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 having calc_distance < 10000 order by calc_distance limit 100";
+			}
+			else if(strpos((isset($_POST['search'])?trim($_POST['search']):""),",") !== false){
+				$searchArr = explode(",",trim($_POST['search']));
+				$query = "select * from facility_master where searchable=1 and (title LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%')   ".($filter==""?"":$filter)." LIMIT 100";
+			}
+			else
+				$query = "select * from facility_master where searchable=1 and (title LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%')   ".($filter==""?"":$filter)." order by title LIMIT 100";
+			
+			$res = mysqli_query($conn,$query);
+			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
+				if($arr['title'] == "")
+					continue;
+				
+				$facility_id = $arr['id'];
+  		  $arr_imgs = fetch_image_url($facility_id);
+	  	  $unit_info_arr = fetch_units($facility_id);
+        $facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
+        $priority_amenities = arrange_priority($facility_unit_amenities);
+      
+	  		echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
+	  		echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
+	  		$image_file_name = extract_image_name($arr_imgs['url_thumbsize']);
+	  		$expected_image_path = "images/".$facility_id."/".$image_file_name;
+	  		echo '<a href="javascript:showMorePhotos('.$facility_id.')">';
+	  		if(file_exists($expected_image_path))
+	  			echo '<img src="'.$expected_image_path.'" style="min-height:120px;width:120px;">';
+	  		else if(strlen($arr_imgs['url_thumbsize']) > 0)
+	  			echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
+	  		else
+	  		  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
+	  		
+	  		echo '</a>';
+	  		echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More Photos</a>';
+	  		echo '</td>';
+  
+	  		echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
+	  		
+	  		echo '<table>';
+	  		
+	  		echo '<tr><td><b>'.$arr['title'].'</b><br>';
+	  		echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
+	  		
+	  		if(has_climate_control($facility_unit_amenities))
+	  		  echo '<img src="images/cc.jpg" style="min-height:40px;width:40px;" />';
+	  		
+	  		echo '</td>';
+//  
+        echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div></td>';
+//
+	  		echo '</tr>';
+	  		
+        show_amenities($facility_id, $priority_amenities, 5, $arr['title']);
+        
+        echo '</table>';
+        
+        echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
+	  		
+	  		echo '<div id="dateday_'.$facility_id.'" class="login-block" name="dateday_'.$facility_id.'" style="margin:0px;text-align:left;padding:0;">';
+	  		echo '<p id="mdatemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
+	  		echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div><br />';
+						
+	  		echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
+
+	  		show_units($facility_id, $unit_info_arr, 5);
+
+	  		echo'</td></tr></table>';
+			}
+		?>
+		</table>		
+    	</div>
+    </div>
+</div>
+<!--inner block end here-->
+</div>
+</div>
+<link href="admin/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />
+<script type="text/javascript" src="admin/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" />
+<script type="text/javascript" src="admin/js/bootstrap-datepicker.js"></script>
+
+<!--scrolling js-->
+		<script src="facility/js/jquery.nicescroll.js"></script>
+		<script src="facility/js/scripts.js"></script>
+		<!--//scrolling js-->
+<script src="facility/js/bootstrap.js"> </script>
+<!-- mother grid end here-->
+
+</body>
+</html>
+

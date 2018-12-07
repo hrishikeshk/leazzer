@@ -104,7 +104,7 @@ include('sql.php');
         $_SESSION['res_price'] = $_GET['price'];
         
         //echo 'About to reserve your unit '.$_GET['unit'].' for you from '.date('m/d/Y',$reserveFromDate).' until '.date('m/d/Y',$reserveToDate).' for the price of $'.$_GET['price'].'. <br /> Please provide your phone number to proceed ...';
-				echo '<br />Enter phone number to Complete Reservation.';
+				echo '<br />Enter phone number to Complete Reservation<br /><br />';
 		  }
 
       ?>
@@ -112,7 +112,7 @@ include('sql.php');
           <input type="text" name="phone" id="phone"> <br />
           <input type="hidden" name="reffer" value="<?php echo (isset($_POST["reffer"])?$_POST["reffer"]:$_SERVER["HTTP_REFERER"]);?>">
           <br />
-					<input type="submit" name="action" value="Complete Reservation" style="width:200px;height:50px; border-radius: 10px; background-color: #4CAF50;">
+					<input type="submit" name="action" value="Complete Reservation" style="width:200px;height:50px; border-radius: 10px;">
 				</form>
 		<br />
 		<?php
