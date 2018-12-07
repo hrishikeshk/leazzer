@@ -311,6 +311,9 @@ function ajaxcall(datastring){
         $facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
         $priority_amenities = arrange_priority($facility_unit_amenities);
       
+        echo '<tr style="margin:0px;padding:0px;border:0px solid #000;background:none;">';
+				echo '<td style="background:none;margin:0px;padding:5px;border:0px solid #000;">';
+				
 	  		echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
 	  		echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
 	  		$image_file_name = extract_image_name($arr_imgs['url_thumbsize']);
@@ -358,6 +361,7 @@ function ajaxcall(datastring){
 	  		show_units($facility_id, $unit_info_arr, 5);
 
 	  		echo'</td></tr></table>';
+	  		echo '</td></tr>';
 			}
 		?>
 		</table>		
