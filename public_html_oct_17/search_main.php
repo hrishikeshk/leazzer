@@ -338,7 +338,7 @@ function ajaxcall(datastring){
 	  		echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
 	  		
 	  		if(has_climate_control($facility_unit_amenities))
-	  		  echo '<img src="images/cc.jpg" style="min-height:40px;width:40px;" />';
+	  		  echo '<img src="images/cc.jpg" title="climate control available" style="min-height:40px;width:40px;" />';
 	  		
 	  		echo '</td>';
 //  

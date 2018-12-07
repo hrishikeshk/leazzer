@@ -299,7 +299,7 @@ function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $
 }
 
 function show_unit_detail($arrFU, $facility_id){
-  echo '<div class="col-md-1" style="text-align:center;padding:10px;border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
+  echo '<div class="col-md-1" style="width:9%;text-align:center;padding:10px;border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
 	echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
 	echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
 	$phone = 'unknown';
