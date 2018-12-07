@@ -71,6 +71,18 @@ function file_get_contents_curl($url){
 <script src="facility/js/skycons.js"></script>
 <link href="facility/css/demo-page.css" rel="stylesheet" media="all">
 <link href="facility/css/hover.css" rel="stylesheet" media="all">
+
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.easing.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" />
+<script type="text/javascript" src="admin/js/bootstrap-datepicker.js"></script>
+
+<link href="admin/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />
+<script type="text/javascript" src="admin/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" />
+<script type="text/javascript" src="admin/js/bootstrap-datepicker.js"></script>
+
 <!--//skycons-icons-->
 <script type="text/javascript">
 
@@ -81,6 +93,9 @@ function validatePhone(phone){
 }
 
 function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
+  var phone = 'unknown';
+  if(validatePhone(hasPhone) == true)
+    phone = hasPhone;
 	if($('#mdate_'+fid).val() == ""){
 		$('#mdatemsg_'+fid).show();
 	}
@@ -91,10 +106,20 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+hasPhone);
+									"&phone="+phone);
 			if(res !== false){
 				window.location.href='customer/index_n.php?action=search';
 			}
+	}
+	else if(validatePhone(phone) == false){
+	  $('#mdatemsg_'+fid).hide();
+			window.location.href = "askphone.php?ref=index&fid="+fid+
+									"&cid="+cid+
+									"&rdays="+rdays+
+									"&rdate="+$('#mdate_'+fid).val()+
+									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
+									"&price="+price+
+									"&phone="+phone;
 	}
 	else{
 			$('#mdatemsg_'+fid).hide();
@@ -104,7 +129,7 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+hasPhone);
+									"&phone="+phone);
 			//if(res == "success")
 			{
 				btn.innerHTML = "<i class=\"fa fa-check\"></i>";
@@ -114,7 +139,7 @@ function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
 									"&price="+price+
-									"&phone="+hasPhone;
+									"&phone="+phone;
 			}
 	}
 }
@@ -210,7 +235,7 @@ function ajaxcall(datastring){
 					$(".header-main").removeClass("fixed");
 				}
 			 });
-			 $('.datepicker').datepicker({
+			 /*$('.datepicker').datepicker({
          	format: 'mm/dd/yyyy',
          	startDate: new Date(),
 	      	autoclose:true
@@ -224,7 +249,7 @@ function ajaxcall(datastring){
            	startDate: new Date(),
 	        	autoclose:true
           });
-	      });
+	      });*/
 		});
 		</script>
 <!-- /script-for sticky-nav -->
@@ -342,10 +367,6 @@ function ajaxcall(datastring){
 <!--inner block end here-->
 </div>
 </div>
-<link href="admin/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />
-<script type="text/javascript" src="admin/js/jquery.dataTables.min.js"></script>
-<link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" />
-<script type="text/javascript" src="admin/js/bootstrap-datepicker.js"></script>
 
 <!--scrolling js-->
 		<script src="facility/js/jquery.nicescroll.js"></script>

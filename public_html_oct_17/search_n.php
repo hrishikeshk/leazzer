@@ -61,7 +61,7 @@ $(document).ready(function(){
   	  echo $query_str;
     ?>');
 	$('#searchmain').html(res);
-	/*
+	
 	$('.datepicker').datepicker({
      	format: 'mm/dd/yyyy',
      	startDate: new Date(),
@@ -77,7 +77,7 @@ $(document).ready(function(){
 	  	autoclose:true
     });
 	});
-	*/
+	
 });
 
 function ajaxcall_search(datastring){
