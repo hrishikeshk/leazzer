@@ -90,18 +90,22 @@ include('sql.php');
 							"&phone=".$_POST['phone'];
 
 				//error_log(' askphone: reserve: '.$reserve);
-				header("Location: thankyou_n.php?ref=index".$reserve);
+				header("Location: thankyou_n.php?ref=".$_POST['reffer'].$reserve);
 		  }
 		  else{
 				//$rdateArr = explode("/", $_GET['rdate']);
   			//$reserveFromDate = mktime(0, 0, 0, $rdateArr[0], $rdateArr[1], $rdateArr[2]);
 	  		//$reserveToDate = strtotime("+".$_GET['rdays']." days", $reserveFromDate);
-        
-        $_SESSION['res_fid'] = $_GET['fid'];
-        $_SESSION['res_rdays'] = $_GET['rdays'];
-        $_SESSION['res_rdate'] = $_GET['rdate'];
-        $_SESSION['res_unit'] = $_GET['unit'];
-        $_SESSION['res_price'] = $_GET['price'];
+        if(isset($_GET['fid']))
+          $_SESSION['res_fid'] = $_GET['fid'];
+        if(isset($_GET['rdays']))
+          $_SESSION['res_rdays'] = $_GET['rdays'];
+        if(isset($_GET['rdate']))
+          $_SESSION['res_rdate'] = $_GET['rdate'];
+        if(isset($_GET['unit']))
+          $_SESSION['res_unit'] = $_GET['unit'];
+        if(isset($_GET['price']))
+          $_SESSION['res_price'] = $_GET['price'];
         
         //echo 'About to reserve your unit '.$_GET['unit'].' for you from '.date('m/d/Y',$reserveFromDate).' until '.date('m/d/Y',$reserveToDate).' for the price of $'.$_GET['price'].'. <br /> Please provide your phone number to proceed ...';
 				echo '<br />Enter phone number to Complete Reservation<br /><br />';

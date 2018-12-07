@@ -76,8 +76,8 @@ function save_phone($cid, $phone){
 function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ownerEmail, $ownerName, $userPhone, $unit, $price, $resFromDate, $resToDate, $phone){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
-	$toemail= 'admin@leazzer.com';
-	//$toemail= 'kv.hrishikesh@gmail.com';
+	//$toemail= 'admin@leazzer.com';
+	$toemail= 'kv.hrishikesh@gmail.com';
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
 	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="150px" alt="Logo" title="Logo" style="display:block"></center><br>';
