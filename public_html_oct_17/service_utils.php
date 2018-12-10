@@ -315,7 +315,7 @@ function show_unit_detail($arrFU, $facility_id, $rdays){
 	$phone = 'unknown';
 	if(isset($_SESSION['lcdata']['phone']))
 	  $phone = $_SESSION['lcdata']['phone'];
-	echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80px;display:inline;padding:0px;" onClick="onUnitClick(this,'.
+	echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80%;display:inline;padding:0px;" onClick="onUnitClick(this,'.
 										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
 										$facility_id.',\''.$rdays.'\',\''.
 										urlencode($arrFU['size']).'\',\''.

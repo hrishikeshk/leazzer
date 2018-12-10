@@ -6,14 +6,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta charset="utf-8">
 <meta name="keywords" content="Leazzer" />
-<link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all">
+<!--link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all">
 <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" media="all">
 <link href="css/owl.carousel.css" rel="stylesheet">
 <link rel="stylesheet" href="css/jquery-ui.css" />
 <link rel="stylesheet" href="css/chocolat.css" type="text/css">
 <link href="facility/css/style.css" rel="stylesheet" type="text/css" media="all"/>
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
-<link href="fonts/fonts.css" rel="stylesheet">
+<link href="fonts/fonts.css" rel="stylesheet"-->
 
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
         async defer></script>

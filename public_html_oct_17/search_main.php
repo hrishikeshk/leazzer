@@ -297,8 +297,11 @@ function ajaxcall(datastring){
 				$searchArr = explode(",",trim($_POST['search']));
 				$query = "select * from facility_master where searchable=1 and (title LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%')   ".($filter==""?"":$filter)." LIMIT 100";
 			}
-			else
+			else{
 				$query = "select * from facility_master where searchable=1 and (title LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%')   ".($filter==""?"":$filter)." order by title LIMIT 100";
+				
+				
+			}
 			
 			$res = mysqli_query($conn,$query);
 			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
