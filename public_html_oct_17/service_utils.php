@@ -68,6 +68,16 @@ function has_climate_control($arr_amenities){
   return false;
 }
 
+function has_priority_amenity($arr_amenities, $arr_search_any){
+  for($i = 0; $i < count($arr_amenities); $i++){
+    for($j = 0; $j < count($arr_search_any); $j++){
+      if(stristr($arr_amenities[$i], $arr_search_any[$j]) !== FALSE)
+        return true;
+    }
+  }
+  return false;
+}
+
 function save_phone($cid, $phone){
   global $conn;
   mysqli_query($conn,"UPDATE customer set phone = '".$phone."' where id = '".$cid."'");

@@ -337,9 +337,12 @@ function ajaxcall(datastring){
 	  		echo '<tr><td><b>'.$arr['title'].'</b><br>';
 	  		echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
 	  		
-	  		if(has_climate_control($facility_unit_amenities))
-	  		  echo '<img src="images/cc.jpg" title="climate control available" style="min-height:40px;width:40px;" />';
+	  		if(has_priority_amenity($facility_unit_amenities, array('climate')))
+	  		  echo '<img src="images/cc.jpg" title="climate control equipped" style="min-height:40px;width:40px;" />';
 	  		
+	  		if(has_priority_amenity($facility_unit_amenities, array('security', 'camera', 'video camera')))
+	  		  echo '<img src="images/secam.png" title="security camera monitoring" style="min-height:40px;width:40px;;margin-left:4px" />';
+
 	  		echo '</td>';
 //  
         echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div></td>';
