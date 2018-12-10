@@ -298,7 +298,7 @@ function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $
 	echo '</td></tr>';
 }
 
-function show_unit_detail($arrFU, $facility_id){
+function show_unit_detail($arrFU, $facility_id, $rdays){
   echo '<div class="col-md-1" style="width:9%;text-align:center;padding:10px;border:0px solid #000;box-shadow: 0px 0px 3px #888888;">';
 	echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
 	echo '<p style="text-align:center;width:80px;display:inline-block;padding:0px 10px 0px 10px;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
@@ -307,23 +307,23 @@ function show_unit_detail($arrFU, $facility_id){
 	  $phone = $_SESSION['lcdata']['phone'];
 	echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;width:80px;display:inline;padding:0px;" onClick="onUnitClick(this,'.
 										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
-										$facility_id.',\'0\',\''.
+										$facility_id.',\''.$rdays.'\',\''.
 										urlencode($arrFU['size']).'\',\''.
 										$arrFU['price'].'\',\''.$phone.'\');">Reserve</button></div>';
 }
 
-function show_units($facility_id, $arr_arr_FU, $show_upfront){
+function show_units($facility_id, $arr_arr_FU, $show_upfront, $rdays){
 
   echo '<div id="unitstbl_'.$facility_id.'" style="width:100%">';
   $arr_len = count($arr_arr_FU);
 	for($i = 0; $i < min_ints($arr_len, $show_upfront); $i++){
 	  $arrFU = $arr_arr_FU[$i];
-	  show_unit_detail($arrFU, $facility_id);
+	  show_unit_detail($arrFU, $facility_id, $rdays);
 	}
 	echo '<div id="unit_more_show'.$facility_id.'" style="display:none">';
 	for($i = $show_upfront; $i < $arr_len; $i++){
 	  $arrFU = $arr_arr_FU[$i];
-		show_unit_detail($arrFU, $facility_id);
+		show_unit_detail($arrFU, $facility_id, $rdays);
 	}
 	echo '</div>';
 	

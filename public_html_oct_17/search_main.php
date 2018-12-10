@@ -358,7 +358,7 @@ function ajaxcall(datastring){
 						
 	  		echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
 
-	  		show_units($facility_id, $unit_info_arr, 5);
+	  		show_units($facility_id, $unit_info_arr, 5, $arr['reservationdays']);
 
 	  		echo'</td></tr></table>';
 	  		echo '</td></tr>';
