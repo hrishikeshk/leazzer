@@ -107,8 +107,12 @@ include('sql.php');
         if(isset($_GET['price']))
           $_SESSION['res_price'] = $_GET['price'];
         
-        //echo 'About to reserve your unit '.$_GET['unit'].' for you from '.date('m/d/Y',$reserveFromDate).' until '.date('m/d/Y',$reserveToDate).' for the price of $'.$_GET['price'].'. <br /> Please provide your phone number to proceed ...';
-				echo '<br />Enter phone number to Complete Reservation<br /><br />';
+
+        if(isset($_POST['action']) && $_POST['action'] == 'Complete Reservation' && isset($_POST['phone']) && strlen($_POST['phone']) != 10)
+          echo '<p style="display:block;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:center;">Please enter a phone number 10 digits long, without country/region codes</p>';
+        else
+          echo 'br />';
+				echo 'Enter phone number to Complete Reservation<br /><br />';
 		  }
 
       ?>
