@@ -33,23 +33,6 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout"))
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
 <link href="fonts/fonts.css" rel="stylesheet">
 
-<!-- 
-https://developers.google.com/maps/documentation/javascript/places
-https://developers.google.com/maps/documentation/javascript/get-api-key
-https://developers.google.com/maps/api-key-best-practices
-https://cloud.google.com/maps-platform/user-guide/account-changes/
-https://developers.google.com/maps/documentation/javascript/usage-and-billing
-
-https://www.w3schools.com/howto/howto_js_slideshow.asp
-https://www.w3schools.com/howto/howto_js_popup.asp
-https://www.w3schools.com/howto/howto_css_modals.asp
-https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML
-https://www.w3schools.com/bootstrap/bootstrap_carousel.asp
-https://getbootstrap.com/docs/3.3/javascript/
-https://www.jqueryscript.net/lightbox/Lightbox-Carousel-Plugin-jQuery-slideBox.html
-https://www.w3schools.com/cssref/pr_class_position.asp
-
--->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
         async defer></script>
 
@@ -78,7 +61,7 @@ https://www.w3schools.com/cssref/pr_class_position.asp
     <li><a href="customer/dashboard.php"><?php echo (isset($_SESSION['lcdata'])?$_SESSION['lcdata']['firstname']:"Login");?></a></li>
     <?php 
     if(isset($_SESSION['lcdata']) || isset($_SESSION['lfdata']))
-    	echo '<li><a href="index_n.php?action=logout">Logout</a></li>';
+    	echo '<li><a href="index.php?action=logout">Logout</a></li>';
     ?>
         </ul>
     </div><!-- /.navbar-collapse -->
@@ -90,7 +73,7 @@ https://www.w3schools.com/cssref/pr_class_position.asp
 <!-- Search-->
   <div class="w3l_banser" style="margin-top: 20px;">
 	  <div id="search_form" class="search_top">
-		<form action="search_n.php" method="post">
+		<form action="search.php" method="post">
 
 	  	<div id="pac-card">
 
@@ -127,23 +110,25 @@ https://www.w3schools.com/cssref/pr_class_position.asp
 <link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" />
 <script type="text/javascript" src="admin/js/bootstrap-datepicker.js"></script>
 <script>
-$(document).ready(function(){
-	if (navigator.geolocation){
+$(document).ready(function()
+{
+	if (navigator.geolocation) 
+	{
   	navigator.geolocation.getCurrentPosition(showPosition,showError);
   } 
 	else 
 		nearStorage(0,0);
 });
-
-function showPosition(position){
+function showPosition(position) 
+{
 	nearStorage(position.coords.latitude,position.coords.longitude);
 }
-
-function showError(error){
+function showError(error) 
+{
 	nearStorage(0,0);
 }
-
-function nearStorage(lat,lng){
+function nearStorage(lat,lng)
+{
 	var res = ajaxcall("action=nearlocation&lat="+lat+"&lng="+lng);
 	$('#searchmain').html(res);
 	$('.datepicker').datepicker({
@@ -153,8 +138,10 @@ function nearStorage(lat,lng){
     });
 }
 
-function onShowUnit(id){
-	if($('#unitstbl_'+id).is(':hidden')){
+function onShowUnit(id)
+{
+	if($('#unitstbl_'+id).is(':hidden'))
+	{
 		$('#unitstbl_'+id).show();
 		$("#dateday_"+id).css("display", "inline");	
 		$('#mdate_'+id).datepicker({
@@ -164,115 +151,74 @@ function onShowUnit(id){
     });
     
 	}
-	else{
+	else
+	{
 		$('#unitstbl_'+id).hide();
 		$('#dateday_'+id).hide();	
 	}
 }
-
-function validatePhone(phone){
-  if(phone == undefined || phone == null || phone.length != 10)
-    return false;
-  return true;
-}
-
-function onUnitClick(btn, cid, fid, rdays, unit, price, hasPhone){
-  var phone = 'unknown';
-  if(validatePhone(hasPhone) == true)
-    phone = hasPhone;
-	if($('#mdate_'+fid).val() == ""){
+function onUnitClick(btn,cid,fid,rdays,unit,price)
+{
+	if($('#mdate_'+fid).val() == "")
+	{
 		$('#mdatemsg_'+fid).show();
 	}
-	else if(cid == 0){
+	else if(cid == 0)
+	{
 			var res = ajaxcall("action=sessionreserve&fid="+fid+
 									"&cid="+cid+
 									"&rdays="+rdays+
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
-									"&price="+price+
-									"&phone="+phone);
-			if(res !== false){
-				window.location.href='customer/index_n.php?action=search';
+									"&price="+price);
+			if(res == "success")
+			{
+				window.location.href='customer/index.php?action=search';
 			}
 	}
-	else if(validatePhone(phone) == false){
-	  $('#mdatemsg_'+fid).hide();
-			window.location.href = "askphone.php?ref=index&fid="+fid+
-									"&cid="+cid+
-									"&rdays="+rdays+
-									"&rdate="+$('#mdate_'+fid).val()+
-									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
-									"&price="+price+
-									"&phone="+phone;
-	}
-	else{
+	else
+	{		
 			$('#mdatemsg_'+fid).hide();
 			var res = ajaxcall("action=reserve&fid="+fid+
 									"&cid="+cid+
 									"&rdays="+rdays+
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
-									"&price="+price+
-									"&phone="+phone);
+									"&price="+price);
 			//if(res == "success")
 			{
 				btn.innerHTML = "<i class=\"fa fa-check\"></i>";
-				window.location.href = "thankyou_n.php?fid="+fid+
+				window.location.href = "thankyou.php?fid="+fid+
 									"&cid="+cid+
 									"&rdays="+rdays+
 									"&rdate="+$('#mdate_'+fid).val()+
 									"&unit="+decodeURIComponent(unit.replace(/\+/g, ' '))+
-									"&price="+price+
-									"&phone="+phone;
+									"&price="+price;
 			}
 	}
 }
-
-function ajaxcall(datastring){
+function ajaxcall(datastring)
+{
     var res;
     $.ajax
     ({	
     		type:"POST",
-    		url:"service_n.php",
+    		url:"service.php",
     		data:datastring,
     		cache:false,
     		async:false,
-    		success: function(result){		
-   				 	res = result;
-   		 	},
-   		 	error: function(err){
-   		 	    alert('Failed to invoke serverside function... Please try again in some time' + err);
-   		 	    res = false;
+    		success: function(result)
+    	 	{		
+   				 	res=result;
    		 	}
     });
     return res;
 }
-
-function ajaxcall_ap(datastring){
-    var res;
-    $.ajax
-    ({	
-    		type:"GET",
-    		url:"askphone.php",
-    		data:datastring,
-    		cache:false,
-    		async:false,
-    		success: function(result){		
-   				 	res = result;
-   		 	},
-   		 	error: function(err){
-   		 	    alert('Failed to invoke serverside function( to ask phone)... Please try again in some time' + err);
-   		 	    res = false;
-   		 	}
-    });
-    return res;
-}
-
 </script>
 
 <script>
 var input = document.getElementById('searchTextField');
-var autocomplete = new google.maps.places.Autocomplete(input);
+      var autocomplete = new google.maps.places.Autocomplete(input);
 </script>
 
 <!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script> 
@@ -283,6 +229,7 @@ facilities dashboard - AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA
 existing - AIzaSyCvc_18HEgG7qB9nWPE9KlxVOFW0r4RJPM
 
 -->
+
 </body>
 </html>
 

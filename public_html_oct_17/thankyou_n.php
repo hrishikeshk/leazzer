@@ -37,14 +37,14 @@ include('sql.php');
 					<div class="header-left" style="width:100%;">
 							<div class="logo-name login-block"  style="width:100%;padding:0;margin:0;">
 								<form method="post" action="<?php echo $_SERVER['PHP_SELF']?>" enctype="multipart/form-data">
-								<a href="index_n.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/></a>
+								<a href="index.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/></a>
 								</form>
 								<?php
 								if((isset($_SERVER["HTTP_REFERER"]) && (strpos($_SERVER["HTTP_REFERER"],"search_n.php")!==false)) || 
 									(isset($_GET['ref']) && ($_GET['ref']=="search")))
 									echo '<a href="search_n.php" style="float:right;margin-top:12px;padding:3px;color:#68AE00;">Back to Search</a>';
 								else
-									echo '<a href="index_n.php" style="float:right;margin-top:12px;padding:3px;color:#68AE00;">Back to Home</a>';
+									echo '<a href="index.php" style="float:right;margin-top:12px;padding:3px;color:#68AE00;">Back to Home</a>';
 									?>
 							</div>
 							<div class="clearfix"> </div>
@@ -100,7 +100,7 @@ include('sql.php');
 						(isset($_GET['ref']) && ($_GET['ref']=="search")))
 					echo '<h5><a href="search_n.php" style="color:#68AE00;">Go Back Search</a></h5>';
 				else
-					echo '<h5><a href="index_n.php" style="color:#68AE00;">Go Back Home</a></h5>';
+					echo '<h5><a href="index.php" style="color:#68AE00;">Go Back Home</a></h5>';
 			}
 		?>
 		<div class="clearfix"> </div>

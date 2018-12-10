@@ -55,7 +55,7 @@ function reformat_date($txt){
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <h1 style="color:#68AE00;"><a href="index_n.php">LEAZZER</a></h1>
+      <h1 style="color:#68AE00;"><a href="index.php">LEAZZER</a></h1>
     </div>
 
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -69,7 +69,7 @@ function reformat_date($txt){
   </div>
 </nav>
 <div class="w3_bannerinfo">
-<a href="index_n.php"><img src="images/llogo.png" height=120px></a>
+<a href="index.php"><img src="images/llogo.png" height=120px></a>
 <h3 style="margin-left:100px;text-align:left">Customer Reviews*</h3>
     <?php
       $res = fetch_reviews($_GET['facility_id']);
