@@ -11,20 +11,12 @@ else if(isset($_POST['search']))
 	$_SESSION['search']= $_POST['search'];
 
 if(isset($_POST['action'])){
+  
 	if($_POST['action'] == "removefilter" && isset($_SESSION['filter'])){
+	
 		$newFilterArr = array();
  		for($i=0;$i<count($_SESSION['filter']);$i++){
  			if($_SESSION['filter'][$i] != $_POST['id'])
- 				array_push($newFilterArr,$_SESSION['filter'][$i]);
-		}			
-		$_SESSION['filter'] = $newFilterArr;
-	}
-}
-else if(isset($_GET['action'])){
-	if($_GET['action'] == "removefilter" && isset($_SESSION['filter'])){
-		$newFilterArr = array();
- 		for($i=0;$i<count($_SESSION['filter']);$i++){
- 			if($_SESSION['filter'][$i] != $_GET['id'])
  				array_push($newFilterArr,$_SESSION['filter'][$i]);
 		}			
 		$_SESSION['filter'] = $newFilterArr;
@@ -197,6 +189,16 @@ function ajaxcall(datastring){
     return res;
 }
 
+function fd_show(){
+  var modal = document.getElementById('myModal');
+  modal.style.display = "block";
+}
+
+function fd_hide(){
+  var modal = document.getElementById('myModal');
+  modal.style.display = "none";
+}
+
 </script>
 </head>
 <body>
@@ -211,6 +213,7 @@ function ajaxcall(datastring){
 								<center>
 								<a href="index.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/></a>
 								<input name="search" type="text" placeholder="Zip or Address" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>" required="" style="width:50%;display:inline;margin:0;">
+								<!-- button onClick="fd_show();" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button-->
 								<button data-toggle="modal" data-target="#myModal" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button>
 								<button type="submit" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-search"></i></button>
 								</center>
@@ -222,7 +225,7 @@ function ajaxcall(datastring){
 				</div>
 <!--header end here-->
   		<!---START-->
-				<div id="myModal" class="modal fade" role="dialog">
+				<div id="myModal" class="modal fade" role="dialog" style="display:none;">
 				  <div class="modal-dialog">
 				    <!-- Modal content-->
 				    <form method="post" action="search_n.php" enctype="multipart/form-data">
@@ -249,6 +252,7 @@ function ajaxcall(datastring){
 				      <div class="modal-footer">
 				      	<button class="btn btn-primary" name="submit" id="submit" value="Create" style="background:#68AE00;border-color:#68AE00;">Apply Filter</button>
 				        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				        <!-- button type="button" class="btn btn-danger" data-dismiss="modal">Close</button -->
 				      </div>
 				    </div>
 						</form>
@@ -289,8 +293,6 @@ function ajaxcall(datastring){
 
 			   		if(count($_SESSION['filter'])> 0)
 			   			echo "<br><br>";
-
-			   		error_log("Filter set: ".$filter);
 			   }
 			?>
 			<br />
@@ -315,7 +317,6 @@ function ajaxcall(datastring){
 			else{
 				$query = "select * from facility_master where searchable=1 and title <> '' and (title LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%') order by title LIMIT 100";
 			}
-			error_log("query constructed: ".$query);
 			
 			$res = mysqli_query($conn,$query);
 			

@@ -675,7 +675,7 @@ function eval_filters($facility_unit_amenities, $filter_dict_opts){
   background-color: #717171;
 }
 
-/* Fading animation */
+/* Fading animation 
 .fade {
   -webkit-animation-name: fade;
   -webkit-animation-duration: 1.5s;
@@ -692,7 +692,7 @@ function eval_filters($facility_unit_amenities, $filter_dict_opts){
   from {opacity: .4} 
   to {opacity: 1}
 }
-
+*/
 @keyframes animatetop {
     from {top: 0%; opacity: 0}
     to {top: 20%; opacity: 1}

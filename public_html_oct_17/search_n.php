@@ -55,17 +55,36 @@
   	  $query_str .= "id=".$_POST['id'];
   	}
   	if(isset($_POST['options'])){
-  	  error_log('original options post: '.$_POST['options']);
   	  if(strlen($query_str) > 0)
   	    $query_str .= '&';
   	  $query_str .= "options_s=".serialize($_POST['options']);
-  	  error_log('relaying postings: '.$query_str);
   	}
   	else if(isset($_POST['options_s'])){
   	  if(strlen($query_str) > 0)
   	    $query_str .= '&';
   	  $query_str .= "options_s=".$_POST['options_s'];
-  	  error_log('relaying postings _s : '.$query_str);
+  	}
+  	if(isset($_GET['search']))
+  	  $query_str .= "search=".$_GET['search'];
+  	if(isset($_GET['action'])){
+  	  if(strlen($query_str) > 0)
+  	    $query_str .= '&';
+  	  $query_str .= "action=".$_GET['action'];
+  	}
+  	if(isset($_GET['id'])){
+  	  if(strlen($query_str) > 0)
+  	    $query_str .= '&';
+  	  $query_str .= "id=".$_GET['id'];
+  	}
+  	if(isset($_GET['options'])){
+  	  if(strlen($query_str) > 0)
+  	    $query_str .= '&';
+  	  $query_str .= "options_s=".serialize($_GET['options']);
+  	}
+  	else if(isset($_GET['options_s'])){
+  	  if(strlen($query_str) > 0)
+  	    $query_str .= '&';
+  	  $query_str .= "options_s=".$_GET['options_s'];
   	}
   	return $query_str;
   }
