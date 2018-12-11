@@ -477,6 +477,44 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 	return a_unique(a_merge($unit_amenities, $amenities));
 }
 
+function fetch_facility_amenities($facility_id){
+  global $conn;
+  $resFA = mysqli_query($conn, "SELECT amenity as fac_amenity FROM facility_amenity where facility_id='".$facility_id."'");
+  
+  $amenities = array();
+  while($arrFA = mysqli_fetch_array($resFA, MYSQLI_ASSOC)){
+		$amenities[] = $arrFA['fac_amenity'];
+	}
+	return a_unique($amenities);
+}
+
+function calc_from_amenity_dict($filter_opt_ids){
+	global $conn;
+	$opt = $filter_opt_ids[0];
+	for($i = 1; $i < count($filter_opt_ids); $i++){
+	  $opt .= ', '.$filter_opt_ids[$i];
+	}
+		  
+	$resO = mysqli_query($conn,"select equivalent from amenity_dictionary where option_id in (".$opt.")");
+	$ret = array();
+  while($arrO = mysqli_fetch_array($resO,MYSQLI_ASSOC)){
+  	$ret[] = $arrO['equivalent'];
+  }
+  return $ret;
+}
+
+function eval_filters($facility_unit_amenities, $filter_dict_opts){
+  if(count($filter_dict_opts) == 0)
+    return true;
+  for($i = 0; $i < count($filter_dict_opts); $i++){
+    for($j = 0; $j < count($facility_unit_amenities); $j++){
+      if(stristr($facility_unit_amenities[$j], $filter_dict_opts[$i]) !== FALSE)
+        return true;
+    }
+  }
+  return false;
+}
+  	
 ?>
 
 <style>

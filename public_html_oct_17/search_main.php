@@ -3,7 +3,7 @@ session_start();
 include('service_utils.php');
 
 $GError = "";
-$filter = "";
+$filter = array();
 
 if((!isset($_POST['search'])) && isset($_SESSION['search']))
 	$_POST['search']= $_SESSION['search'];
@@ -239,21 +239,6 @@ function ajaxcall(datastring){
 					$(".header-main").removeClass("fixed");
 				}
 			 });
-			 /*$('.datepicker').datepicker({
-         	format: 'mm/dd/yyyy',
-         	startDate: new Date(),
-	      	autoclose:true
-        });
-        $('#datatable').DataTable({
-      		"aaSorting": []
-        });
-	      $('#datatable').on('draw.dt', function (){ 
-        	$('.datepicker').datepicker({
-           	format: 'mm/dd/yyyy',
-           	startDate: new Date(),
-	        	autoclose:true
-          });
-	      });*/
 		});
 		</script>
 <!-- /script-for sticky-nav -->
@@ -264,23 +249,19 @@ function ajaxcall(datastring){
 			<?php
 			   if(isset($_SESSION['filter'])){
 			   		if(count($_SESSION['filter'])> 0)
-			   		$filter="AND (";
+			   		$filter=array();
 			   		for($i=0;$i<count($_SESSION['filter']);$i++){
 			   			$filterArr = explode("[-]",$_SESSION['filter'][$i]);
 			   			echo '<div style="background:#eee;display:inline-block;padding:5px;margin:2px;">'.
 			   						$filterArr[1].
 			   						' <a href="search_n.php?action=removefilter&id='.$filterArr[0].'" style="color:#68AE00;"><i class="fa fa-close"></i></a></div>';
 			   						
-			   			$filter .= " options LIKE '%,".$filterArr[0].",%' ";
-			   			if(($i+1) != count($_SESSION['filter']))
-			   				$filter .= " OR ";
+			   			$filter[] = $filterArr[0];
 			   		}
 
-			   		if(count($_SESSION['filter'])> 0){
+			   		if(count($_SESSION['filter'])> 0)
 			   			echo "<br><br>";
-			   			$filter .= ")";
-			   		}
-			   		
+
 			   		error_log("Filter set: ".$filter);
 			   }
 			?>
@@ -297,83 +278,87 @@ function ajaxcall(datastring){
     		$result = json_decode($result_string, true);
     		$lat = $result['results'][0]['geometry']['location']['lat'];
     		$lng = $result['results'][0]['geometry']['location']['lng'];
-    		$query = "select *,(6371 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 having calc_distance < 10000 order by calc_distance limit 100";
+    		$query = "select *,(6371 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 and title <> '' having calc_distance < 10000 order by calc_distance limit 100";
 			}
 			else if(strpos((isset($_POST['search'])?trim($_POST['search']):""),",") !== false){
 				$searchArr = explode(",",trim($_POST['search']));
-				$query = "select * from facility_master where searchable=1 and (title LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%')   ".($filter==""?"":$filter)." LIMIT 100";
+				$query = "select * from facility_master where searchable=1 and title <> '' and (title LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%') LIMIT 100";
 			}
 			else{
-				$query = "select * from facility_master where searchable=1 and (title LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%')   ".($filter==""?"":$filter)." order by title LIMIT 100";
-				
+				$query = "select * from facility_master where searchable=1 and title <> '' and (title LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%') order by title LIMIT 100";
 			}
 			error_log("query constructed: ".$query);
 			
 			$res = mysqli_query($conn,$query);
+			
+			$filter_dict_opts = array();
+			if(count($filter) > 0)
+			  $filter_dict_opts = calc_from_amenity_dict($filter);
+
 			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
-				if($arr['title'] == "")
-					continue;
-				
-				$facility_id = $arr['id'];
-  		  $arr_imgs = fetch_image_url($facility_id);
-	  	  $unit_info_arr = fetch_units($facility_id);
-        $facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
-        $priority_amenities = arrange_priority($facility_unit_amenities);
-      
-        echo '<tr style="margin:0px;padding:0px;border:0px solid #000;background:none;">';
-				echo '<td style="background:none;margin:0px;padding:5px;border:0px solid #000;">';
-				
-	  		echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
-	  		echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
-	  		$image_file_name = extract_image_name($arr_imgs['url_thumbsize']);
-	  		$expected_image_path = "images/".$facility_id."/".$image_file_name;
-	  		echo '<a href="javascript:showMorePhotos('.$facility_id.')">';
-	  		if(file_exists($expected_image_path))
-	  			echo '<img src="'.$expected_image_path.'" style="min-height:120px;width:120px;">';
-	  		else if(strlen($arr_imgs['url_thumbsize']) > 0)
-	  			echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
-	  		else
-	  		  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
+        $facility_id = $arr['id'];				
+				$facility_unit_amenities = fetch_facility_amenities($facility_id);
+
+        if(count($filter_dict_opts) == 0 || eval_filters($facility_unit_amenities, $filter_dict_opts) == true){
+    		  $arr_imgs = fetch_image_url($facility_id);
+	    	  $unit_info_arr = fetch_units($facility_id);
+          $priority_amenities = arrange_priority($facility_unit_amenities);
+        
+          echo '<tr style="margin:0px;padding:0px;border:0px solid #000;background:none;">';
+	  			echo '<td style="background:none;margin:0px;padding:5px;border:0px solid #000;">';
+	  			
+	    		echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
+	    		echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
+	    		$image_file_name = extract_image_name($arr_imgs['url_thumbsize']);
+	    		$expected_image_path = "images/".$facility_id."/".$image_file_name;
+	    		echo '<a href="javascript:showMorePhotos('.$facility_id.')">';
+	    		if(file_exists($expected_image_path))
+	    			echo '<img src="'.$expected_image_path.'" style="min-height:120px;width:120px;">';
+	    		else if(strlen($arr_imgs['url_thumbsize']) > 0)
+	    			echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
+	    		else
+	    		  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
 	  		
-	  		echo '</a>';
-	  		echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More Photos</a>';
-	  		echo '</td>';
+	    		echo '</a>';
+	    		echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More Photos</a>';
+	    		echo '</td>';
   
-	  		echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
+	    		echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
 	  		
-	  		echo '<table>';
+	    		echo '<table>';
 	  		
-	  		echo '<tr><td><b>'.$arr['title'].'</b><br>';
-	  		echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
+	    		echo '<tr><td><b>'.$arr['title'].'</b><br>';
+	    		echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
 	  		
-	  		if(has_priority_amenity($facility_unit_amenities, array('climate')))
-	  		  echo '<img src="images/cc.jpg" title="climate control equipped" style="min-height:40px;width:40px;" />';
+	    		if(has_priority_amenity($facility_unit_amenities, array('climate')))
+	    		  echo '<img src="images/cc.jpg" title="climate control equipped" style="min-height:40px;width:40px;" />';
 	  		
-	  		if(has_priority_amenity($facility_unit_amenities, array('security', 'camera', 'video camera')))
-	  		  echo '<img src="images/secam.png" title="security camera monitoring" style="min-height:40px;width:40px;;margin-left:4px" />';
+	    		if(has_priority_amenity($facility_unit_amenities, array('security', 'camera', 'video camera')))
+	    		  echo '<img src="images/secam.png" title="security camera monitoring" style="min-height:40px;width:40px;;margin-left:4px" />';
 
-	  		echo '</td>';
+	    		echo '</td>';
 //  
-        echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div></td>';
+          echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div></td>';
 //
-	  		echo '</tr>';
+	    		echo '</tr>';
 	  		
-        show_amenities($facility_id, $priority_amenities, 5, $arr['title']);
+          show_amenities($facility_id, $priority_amenities, 5, $arr['title']);
         
-        echo '</table>';
+          echo '</table>';
         
-        echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
+          echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
 	  		
-	  		echo '<div id="dateday_'.$facility_id.'" class="login-block" name="dateday_'.$facility_id.'" style="margin:0px;text-align:left;padding:0;">';
-	  		echo '<p id="mdatemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
-	  		echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div><br />';
+	    		echo '<div id="dateday_'.$facility_id.'" class="login-block" name="dateday_'.$facility_id.'" style="margin:0px;text-align:left;padding:0;">';
+	    		echo '<p id="mdatemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
+	    		echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div><br />';
 						
-	  		echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
+	    		echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
 
-	  		show_units($facility_id, $unit_info_arr, 5, $arr['reservationdays']);
+	    		show_units($facility_id, $unit_info_arr, 5, $arr['reservationdays']);
 
-	  		echo'</td></tr></table>';
-	  		echo '</td></tr>';
+	    		echo'</td></tr></table>';
+  	  		echo '</td></tr>';
+	  		}
 			}
 		?>
 		</table>		
