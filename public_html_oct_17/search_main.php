@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('service_utils.php');
+//include('service_utils.php');
 
 $GError = "";
 $filter = array();
@@ -30,26 +30,6 @@ if(isset($_POST['action'])){
 		else if(isset($_POST['options_s']))
 		  $_SESSION['filter'] = unserialize($_POST['options_s']);
 	}
-}
-
-function fetch_option_vals($opt_ids){
-  global $conn;
-  $ret = array();
-  if(count($opt_ids) == 0)
-    return $ret;
-  $id_str = $opt_ids[0];
-  for($i = 1; $i < count($opt_ids); $i++)
-    $id_str .= ', '.$opt_ids[$i];  
-	$resO = mysqli_query($conn,"select opt from options where id in(".$id_str.")");
-	while($arrO = mysqli_fetch_array($resO, MYSQLI_ASSOC)){
-	  $ret[] = $arrO['opt'];
-	}
-	return $ret;
-}
-
-$filter_vals = array();
-if(isset($_SESSION['filter'])){
-  $filter_vals = fetch_option_vals($_SESSION['filter']);
 }
 
 function showOpt($arr){
@@ -202,6 +182,29 @@ function fd_hide(){
 </script>
 </head>
 <body>
+<?php
+  include('service_utils.php');
+  function fetch_option_vals($opt_ids){
+    global $conn;
+    $ret = array();
+    if(count($opt_ids) == 0)
+      return $ret;
+    $id_str = $opt_ids[0];
+    for($i = 1; $i < count($opt_ids); $i++)
+      $id_str .= ', '.$opt_ids[$i];  
+	  $resO = mysqli_query($conn,"select opt from options where id in(".$id_str.")");
+	  while($arrO = mysqli_fetch_array($resO, MYSQLI_ASSOC)){
+	    $ret[] = $arrO['opt'];
+	  }
+	  return $ret;
+  }
+
+  $filter_vals = array();
+  if(isset($_SESSION['filter'])){
+    $filter_vals = fetch_option_vals($_SESSION['filter']);
+  }
+
+?>
 <div class="page-container">	
    <div class="left-content">
 	   <div class="mother-grid-inner">
@@ -213,8 +216,8 @@ function fd_hide(){
 								<center>
 								<a href="index.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/></a>
 								<input name="search" type="text" placeholder="Zip or Address" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>" required="" style="width:50%;display:inline;margin:0;">
-								<!-- button onClick="fd_show();" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button-->
-								<button data-toggle="modal" data-target="#myModal" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button>
+								<button onClick="fd_show();" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button>
+								<!--button data-toggle="modal" data-target="#myModal" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button -->
 								<button type="submit" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-search"></i></button>
 								</center>
 								</form>
@@ -225,7 +228,7 @@ function fd_hide(){
 				</div>
 <!--header end here-->
   		<!---START-->
-				<div id="myModal" class="modal fade" role="dialog" style="display:none;">
+				<div id="myModal" class="modal" role="dialog" style="display:none;">
 				  <div class="modal-dialog">
 				    <!-- Modal content-->
 				    <form method="post" action="search_n.php" enctype="multipart/form-data">
@@ -251,7 +254,7 @@ function fd_hide(){
 				      </div>
 				      <div class="modal-footer">
 				      	<button class="btn btn-primary" name="submit" id="submit" value="Create" style="background:#68AE00;border-color:#68AE00;">Apply Filter</button>
-				        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				        <button type="button" class="btn btn-danger" onClick="fd_hide();">Close</button>
 				        <!-- button type="button" class="btn btn-danger" data-dismiss="modal">Close</button -->
 				      </div>
 				    </div>
