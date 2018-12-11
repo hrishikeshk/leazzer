@@ -14,8 +14,17 @@ if(isset($_POST['action'])){
 	if($_POST['action'] == "removefilter" && isset($_SESSION['filter'])){
 		$newFilterArr = array();
  		for($i=0;$i<count($_SESSION['filter']);$i++){
- 			$filterArr = explode("[-]",$_SESSION['filter'][$i]);
- 			if($filterArr[0] != $_POST['id'])
+ 			if($_SESSION['filter'][$i] != $_POST['id'])
+ 				array_push($newFilterArr,$_SESSION['filter'][$i]);
+		}			
+		$_SESSION['filter'] = $newFilterArr;
+	}
+}
+else if(isset($_GET['action'])){
+	if($_GET['action'] == "removefilter" && isset($_SESSION['filter'])){
+		$newFilterArr = array();
+ 		for($i=0;$i<count($_SESSION['filter']);$i++){
+ 			if($_SESSION['filter'][$i] != $_GET['id'])
  				array_push($newFilterArr,$_SESSION['filter'][$i]);
 		}			
 		$_SESSION['filter'] = $newFilterArr;
@@ -29,6 +38,26 @@ if(isset($_POST['action'])){
 		else if(isset($_POST['options_s']))
 		  $_SESSION['filter'] = unserialize($_POST['options_s']);
 	}
+}
+
+function fetch_option_vals($opt_ids){
+  global $conn;
+  $ret = array();
+  if(count($opt_ids) == 0)
+    return $ret;
+  $id_str = $opt_ids[0];
+  for($i = 1; $i < count($opt_ids); $i++)
+    $id_str .= ', '.$opt_ids[$i];  
+	$resO = mysqli_query($conn,"select opt from options where id in(".$id_str.")");
+	while($arrO = mysqli_fetch_array($resO, MYSQLI_ASSOC)){
+	  $ret[] = $arrO['opt'];
+	}
+	return $ret;
+}
+
+$filter_vals = array();
+if(isset($_SESSION['filter'])){
+  $filter_vals = fetch_option_vals($_SESSION['filter']);
 }
 
 function showOpt($arr){
@@ -200,21 +229,21 @@ function ajaxcall(datastring){
 				    <div class="modal-content">
 				      <div class="modal-body">
 				        <p>
-						<hr style="margin:5px 0px 5px 0px">
-						<b>Filter Features</b>
-						<hr style="margin:5px 0px 5px 0px">
-						<?php
-							$res = mysqli_query($conn,"select * from options");
-							while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
-								$checked = "";
-								if(isset($_SESSION['filter']) && (in_array($arr['id'].'[-]'.$arr['opt'],$_SESSION['filter'])))
-									$checked = "checked";
-								echo '<input type="checkbox" style="margin-right:5px;" name="options[]" value="'.
-											$arr['id'].'[-]'.$arr['opt'].'" '.$checked.'>'.$arr['opt'].'<br>';
-							}
-						?>
-						<input type="hidden" name="search" id="search" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>">
-						<input type="hidden" name="action" id="action" value="applyfilter">
+      						<hr style="margin:5px 0px 5px 0px">
+      						<b>Filter Features</b>
+      						<hr style="margin:5px 0px 5px 0px">
+      						<?php
+      							$res = mysqli_query($conn,"select * from options");
+      							while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
+      								$checked = "";
+      								if(isset($_SESSION['filter']) && (in_array($arr['id'], $_SESSION['filter'])))
+      									$checked = "checked";
+      								echo '<input type="checkbox" style="margin-right:5px;" name="options[]" value="'.
+      											$arr['id'].'" '.$checked.'>'.$arr['opt'].'<br>';
+      							}
+      						?>
+      						<input type="hidden" name="search" id="search" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>">
+      						<input type="hidden" name="action" id="action" value="applyfilter">
 				        </p>
 				      </div>
 				      <div class="modal-footer">
@@ -248,15 +277,14 @@ function ajaxcall(datastring){
     	<div class="blankpage-main" style="padding:1em 1em;">
 			<?php
 			   if(isset($_SESSION['filter'])){
-			   		if(count($_SESSION['filter'])> 0)
-			   		$filter=array();
-			   		for($i=0;$i<count($_SESSION['filter']);$i++){
-			   			$filterArr = explode("[-]",$_SESSION['filter'][$i]);
+			   		if(count($filter_vals)> 0)
+			   		  $filter=array();
+			   		for($i=0;$i<count($filter_vals);$i++){
 			   			echo '<div style="background:#eee;display:inline-block;padding:5px;margin:2px;">'.
-			   						$filterArr[1].
-			   						' <a href="search_n.php?action=removefilter&id='.$filterArr[0].'" style="color:#68AE00;"><i class="fa fa-close"></i></a></div>';
+			   						$filter_vals[$i].
+			   						' <a href="search_n.php?action=removefilter&id='.$_SESSION['filter'][$i].'" style="color:#68AE00;"><i class="fa fa-close"></i></a></div>';
 			   						
-			   			$filter[] = $filterArr[0];
+			   			$filter[] = $_SESSION['filter'][$i];
 			   		}
 
 			   		if(count($_SESSION['filter'])> 0)
