@@ -109,9 +109,9 @@ include('sql.php');
         
 
         if(isset($_POST['action']) && $_POST['action'] == 'Complete Reservation' && isset($_POST['phone']) && strlen($_POST['phone']) != 10)
-          echo '<p style="display:block;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:center;">Please enter a phone number 10 digits long, without country/region codes</p>';
+          echo '<p style="display:block;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:center;">Please enter a valid phone number</p>';
         else
-          echo 'br />';
+          echo '<br />';
 				echo 'Enter phone number to Complete Reservation<br /><br />';
 		  }
 

@@ -38,28 +38,43 @@
 <script type="text/javascript" src="admin/js/bootstrap-datepicker.js"></script>
 <script>
 
+<?php
+  
+  function relay_posts(){
+    $query_str = '';
+  	if(isset($_POST['search']))
+  	  $query_str .= "search=".$_POST['search'];
+  	if(isset($_POST['action'])){
+  	  if(strlen($query_str) > 0)
+  	    $query_str .= '&';
+  	  $query_str .= "action=".$_POST['action'];
+  	}
+  	if(isset($_POST['id'])){
+  	  if(strlen($query_str) > 0)
+  	    $query_str .= '&';
+  	  $query_str .= "id=".$_POST['id'];
+  	}
+  	if(isset($_POST['options'])){
+  	  error_log('original options post: '.$_POST['options']);
+  	  if(strlen($query_str) > 0)
+  	    $query_str .= '&';
+  	  $query_str .= "options_s=".serialize($_POST['options']);
+  	  error_log('relaying postings: '.$query_str);
+  	}
+  	else if(isset($_POST['options_s'])){
+  	  if(strlen($query_str) > 0)
+  	    $query_str .= '&';
+  	  $query_str .= "options_s=".$_POST['options_s'];
+  	  error_log('relaying postings _s : '.$query_str);
+  	}
+  	return $query_str;
+  }
+?>
+
 $(document).ready(function(){
-  	var res = ajaxcall_search('<?php
-  	  $query_str = '';
-  	  if(isset($_POST['search']))
-  	    $query_str .= "search=".$_POST['search'];
-  	  if(isset($_POST['action'])){
-  	    if(strlen($query_str) > 0)
-  	      $query_str .= '&';
-  	    $query_str .= "action=".$_POST['action'];
-  	  }
-  	  if(isset($_POST['id'])){
-  	    if(strlen($query_str) > 0)
-  	      $query_str .= '&';
-  	    $query_str .= "id=".$_POST['id'];
-  	  }
-  	  if(isset($_POST['options'])){
-  	    if(strlen($query_str) > 0)
-  	      $query_str .= '&';
-  	    $query_str .= "options=".$_POST['options'];
-  	  }
-  	  echo $query_str;
-    ?>');
+  <?php
+  	echo 'var res = ajaxcall_search(\''.relay_posts().'\');';
+  ?>
 	$('#searchmain').html(res);
 	
 	$('.datepicker').datepicker({

@@ -11,7 +11,7 @@ else if(isset($_POST['search']))
 	$_SESSION['search']= $_POST['search'];
 
 if(isset($_POST['action'])){
-	if($_POST['action'] == "removefilter" && isset($_SESSION['filter'])){		
+	if($_POST['action'] == "removefilter" && isset($_SESSION['filter'])){
 		$newFilterArr = array();
  		for($i=0;$i<count($_SESSION['filter']);$i++){
  			$filterArr = explode("[-]",$_SESSION['filter'][$i]);
@@ -23,8 +23,12 @@ if(isset($_POST['action'])){
 }
 
 if(isset($_POST['action'])){
-	if($_POST['action'] == "applyfilter")
-		$_SESSION['filter'] = $_POST['options'];
+	if($_POST['action'] == "applyfilter"){
+	  if(isset($_POST['options']))
+		  $_SESSION['filter'] = $_POST['options'];
+		else if(isset($_POST['options_s']))
+		  $_SESSION['filter'] = unserialize($_POST['options_s']);
+	}
 }
 
 function showOpt($arr){
@@ -276,6 +280,8 @@ function ajaxcall(datastring){
 			   			echo "<br><br>";
 			   			$filter .= ")";
 			   		}
+			   		
+			   		error_log("Filter set: ".$filter);
 			   }
 			?>
 			<br />
@@ -300,8 +306,8 @@ function ajaxcall(datastring){
 			else{
 				$query = "select * from facility_master where searchable=1 and (title LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%')   ".($filter==""?"":$filter)." order by title LIMIT 100";
 				
-				
 			}
+			error_log("query constructed: ".$query);
 			
 			$res = mysqli_query($conn,$query);
 			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
