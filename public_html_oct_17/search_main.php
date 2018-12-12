@@ -334,6 +334,10 @@ function fd_hide(){
         if(count($filter_dict_opts) == 0 || eval_filters($facility_unit_amenities, $filter_dict_opts) == true){
     		  $arr_imgs = fetch_image_url($facility_id);
 	    	  $unit_info_arr = fetch_units($facility_id);
+	    	  
+	    	  $from_unit_amenities = fetch_priority_unit_amenities($facility_id, $unit_info_arr);
+
+          $facility_unit_amenities = a_unique(a_merge($from_unit_amenities, $facility_unit_amenities));
           $priority_amenities = arrange_priority_with_group($facility_unit_amenities);
         
           echo '<tr style="margin:0px;padding:0px;border:0px solid #000;background:none;">';

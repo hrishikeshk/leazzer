@@ -15,7 +15,10 @@ if(isset($_POST['action'])){
 		  $facility_id = $arr['id'];
 		  $arr_imgs = fetch_image_url($facility_id);
 		  $unit_info_arr = fetch_units($facility_id);
-      $facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
+      //$facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
+      $facility_unit_amenities = fetch_facility_amenities($facility_id);
+      $from_unit_amenities = fetch_priority_unit_amenities($facility_id, $unit_info_arr);
+      $facility_unit_amenities = a_unique(a_merge($from_unit_amenities, $facility_unit_amenities));
       $priority_amenities = arrange_priority_with_group($facility_unit_amenities);
       
 			echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';

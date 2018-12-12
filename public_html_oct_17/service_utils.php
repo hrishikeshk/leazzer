@@ -513,6 +513,26 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 	return a_unique(a_merge($unit_amenities, $amenities));
 }
 
+function fetch_priority_unit_amenities($facility_id, $unit_info_arr){
+  global $conn;
+	$unit_amenities = array();
+	if(count($unit_info_arr) == 0)
+	  return $unit_amenities;
+	$unit_str = '('.$unit_info_arr[0]['id'];
+	for($i = 1; $i < count($unit_info_arr); $i++){
+	  $unit_str .= ', '.$unit_info_arr[$i]['id'];
+	}
+	$unit_str .= ')';
+	$query_str = "SELECT distinct amenity as ua FROM unit_amenity where (amenity like '%limate%' OR amenity like '%emperature%' OR amenity like '%iscount%') and unit_id in ".$unit_str;
+	
+  $resUA = mysqli_query($conn, $query_str);
+  if(mysqli_num_rows($resUA) == 0)
+	  return $unit_amenities;
+	while($ua = mysqli_fetch_array($resUA, MYSQLI_ASSOC))
+	  $unit_amenities[] = 'Other|'.$ua['ua'];
+	return $unit_amenities;
+}
+
 function fetch_facility_amenities($facility_id){
   global $conn;
   $resFA = mysqli_query($conn, "SELECT amenity as fac_amenity FROM facility_amenity where facility_id='".$facility_id."'");
