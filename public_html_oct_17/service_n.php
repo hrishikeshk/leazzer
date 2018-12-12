@@ -16,7 +16,7 @@ if(isset($_POST['action'])){
 		  $arr_imgs = fetch_image_url($facility_id);
 		  $unit_info_arr = fetch_units($facility_id);
       $facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
-      $priority_amenities = arrange_priority($facility_unit_amenities);
+      $priority_amenities = arrange_priority_with_group($facility_unit_amenities);
       
 			echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
 			echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';

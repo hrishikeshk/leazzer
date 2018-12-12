@@ -87,7 +87,6 @@ function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ow
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	$toemail= 'admin@leazzer.com';
-	//$toemail= 'kv.hrishikesh@gmail.com';
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
 	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="150px" alt="Logo" title="Logo" style="display:block"></center><br>';
@@ -149,7 +148,7 @@ function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $pric
 	$message .= '</td></tr>';
 	$message .= '</table>';
 
-	$mail = new PHPMailer(); // defaults to using php "mail()"
+	$mail = new PHPMailer();
 	$mail->CharSet = 'UTF-8';
 	$mail->AddReplyTo($fromemail,"Leazzer"); 
 	$mail->SetFrom($fromemail, "Leazzer");
@@ -178,7 +177,7 @@ function onReserveOwnerMail($facilityName, $ownerEmail, $ownerName, $unit, $pric
 	$message .= '</td></tr>';
 	$message .= '</table>';
 	
-	$mail = new PHPMailer(); // defaults to using php "mail()"
+	$mail = new PHPMailer();
 	$mail->CharSet = 'UTF-8';
 	$mail->AddReplyTo($fromemail,"Leazzer"); 
 	$mail->SetFrom($fromemail, "Leazzer");
@@ -285,14 +284,16 @@ function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $
   echo '<tr><td style="width:900px;padding-left:400px">';
 
 	for($i = 0; $i < min_ints($show_upfront, $arr_len); $i++){
-	  $amenity = $facility_unit_amenities[$i];
+	  $amenity_w_g = explode("|", $facility_unit_amenities[$i]);
+    $amenity = $amenity_w_g[1];
 	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
 		echo '  '.$amenity.'<br />';
 	}
 	
 	echo '<div id="unit_more_amenities'.$facility_id.'" style="display:none">';
 	for($i = $show_upfront; $i < $arr_len; $i++){
-	  $amenity = $facility_unit_amenities[$i];
+	  $amenity_w_g = explode("|", $facility_unit_amenities[$i]);
+    $amenity = $amenity_w_g[1];
 	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px;" />  '.$amenity.'<br />';
 	}
 	echo '</div>';
@@ -423,6 +424,41 @@ function arrange_priority($facility_unit_amenities){
       $property_pr[] = substr($amenity, 18);
     else
       $low_pr[] = extract_amenity($amenity);
+  }
+  $high_pr = a_merge($climate_pr, $high_pr);
+  $high_pr = a_merge($security_pr, $high_pr);
+  $high_pr = a_merge($discount_pr, $high_pr);
+  $high_pr = a_merge($admin_pr, $high_pr);
+  $high_pr = a_merge($property_pr, $high_pr);
+  
+  //return a_merge($low_pr, $high_pr);
+  return $high_pr;
+}
+
+function arrange_priority_with_group($facility_unit_amenities){
+  $high_pr = array();
+  $low_pr = array();
+  $climate_pr = array();
+  $security_pr = array();
+  $admin_pr = array();
+  $discount_pr = array();
+  $property_pr = array();
+  
+  for($i = 0; $i < count($facility_unit_amenities); $i++){
+    $amenity = $facility_unit_amenities[$i];
+    $classified_as = is_high_priority($amenity);
+    if($classified_as == 'climate')
+      $climate_pr[] = $amenity;
+    else if($classified_as == 'security')
+      $security_pr[] = $amenity;
+    else if($classified_as == 'discount')
+      $discount_pr[] = $amenity;
+    else if($classified_as == 'administration')
+      $admin_pr[] = $amenity;
+    else if($classified_as == 'property')
+      $property_pr[] = $amenity;
+    else
+      $low_pr[] = $amenity;
   }
   $high_pr = a_merge($climate_pr, $high_pr);
   $high_pr = a_merge($security_pr, $high_pr);
@@ -718,6 +754,27 @@ function eval_filters($facility_unit_amenities, $filter_dict_opts){
       a_moreless.innerHTML = " &gt;&gt;";
     }
   }
+
+  function group_by_arr(arr_keys, arr_data){
+    var ret = {};
+    for(i = 0; i < arr_keys.length; ++i){
+      ret[arr_keys[i]] = new Array();
+    }
+    for(i = 0; i < arr_data.length - 1; ++i){
+      var split_data = arr_data[i].split('|');
+      if(split_data.length == 1){
+          ret['Other'].push(split_data[0]);
+          continue;
+      }
+      for(j = 0; j < arr_keys.length; ++j){
+        if(split_data[0].trim().toUpperCase() === arr_keys[j].trim().toUpperCase()){
+          ret[arr_keys[j]].push(split_data[1]);
+          break;
+        }
+      }
+    }
+    return ret;
+  }
   
   function popupMoreLessAmenities(facilityName, amenitiesArr){
     setTimeout(function(){
@@ -728,10 +785,27 @@ function eval_filters($facility_unit_amenities, $filter_dict_opts){
       var tbl_end = '</td></tr></table>';
       var img = '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
       var data = '';
-      for(i = 0; i < amenitiesArr.length - 1; ++i){
-        data += img;
-        data += amenitiesArr[i];
+      
+      var arr_groups = ['Climate Control', 'Security Features', 'Discounts', 'Administration', 'Property Coverage', 'Other'];
+      var ret = group_by_arr(arr_groups, amenitiesArr);
+      var rows = 0;
+      for(i = 0; i < arr_groups.length; ++i){
+        var ams = ret[arr_groups[i]];
+        if(ams.length > 0){
+          data += '<br /><b>' + arr_groups[i] + '</b><br />';
+          rows++
+          for(j = 0; j < ams.length; ++j){
+            data += img;
+            data += '  ' + ams[j];
+            rows++;
+          }
+          if(rows > 5){
+            data += '</td><td>';
+            rows = 0;
+          }
+        }
       }
+      
       ac.innerHTML = (heading + tbl_start + data + tbl_end);
       y.style.display = "block";
     }, 1000);

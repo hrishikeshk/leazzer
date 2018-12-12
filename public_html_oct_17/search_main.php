@@ -334,7 +334,7 @@ function fd_hide(){
         if(count($filter_dict_opts) == 0 || eval_filters($facility_unit_amenities, $filter_dict_opts) == true){
     		  $arr_imgs = fetch_image_url($facility_id);
 	    	  $unit_info_arr = fetch_units($facility_id);
-          $priority_amenities = arrange_priority($facility_unit_amenities);
+          $priority_amenities = arrange_priority_with_group($facility_unit_amenities);
         
           echo '<tr style="margin:0px;padding:0px;border:0px solid #000;background:none;">';
 	  			echo '<td style="background:none;margin:0px;padding:5px;border:0px solid #000;">';
