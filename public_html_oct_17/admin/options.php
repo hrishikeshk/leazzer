@@ -1,25 +1,42 @@
 <?php
 include('header.php');
-if(isset($_GET['action']))
-{
-		if($_GET['action'] == "delete")
-		{
+
+function dicnames_upsert($dnames, $optname){
+  global $conn;
+  $opt_res = mysqli_query($conn, "select id from options where opt=N'".mysqli_real_escape_string($conn, $optname)."' limit 1") OR die('Failed to fetch inserted option - '.mysqli_error($conn));
+  if(mysqli_num_rows($opt_res) != 1){
+    die('Failed to fetch inserted option: ');
+  }
+  else{
+    $arr = mysqli_fetch_array($opt_res, MYSQLI_ASSOC);
+    $opt_id = $arr['id'];
+    mysqli_query($conn,"delete from amenity_dictionary where option_id=".$opt_id);
+    $split_dn = explode(",", $dnames);
+    for($i = 0; $i < count($split_dn); $i++){
+      mysqli_query($conn,"insert into amenity_dictionary(option_id, equivalent) values ('".$opt_id."', N'".mysqli_real_escape_string($conn, trim($split_dn[$i]))."')");
+    }
+  }
+}
+
+if(isset($_GET['action'])){
+		if($_GET['action'] == "delete"){
+		    mysqli_query($conn,"delete from amenity_dictionary where option_id=".$_GET['id']);
 				mysqli_query($conn,"delete from options where id=".$_GET['id']);
 				$GError = "Deleted successfully.";
 		}
 }
-if(isset($_POST['action']))
-{
-	if($_POST['action'] == "create")
-	{
+
+if(isset($_POST['action'])){
+	if($_POST['action'] == "create"){
 		mysqli_query($conn,"insert into options(opt) values (N'".mysqli_real_escape_string($conn,$_POST['optname'])."')");
+		dicnames_upsert($_POST['dicnames'], $_POST['optname']);
 		$GError = "Created successfully.";
 	}
-	if($_POST['action'] == "update")
-	{		
+	if($_POST['action'] == "update"){		
 		$query = "update options set opt=N'".mysqli_real_escape_string($conn,$_POST['optname'])."'";
 		$query .= " where id=".$_POST['submit'];
 		mysqli_query($conn,$query);
+		dicnames_upsert($_POST['dicnames'], $_POST['optname']);
 		$GError = "Edited successfully.";
 	}
 }
@@ -47,6 +64,10 @@ if(isset($_POST['action']))
 													<td style="vertical-align: top;text-align: right;width:30%;"><b>Name :&nbsp;</b></td>
 													<td><input class="form-control" placeholder="Option Name" type="text" name="optname" id="optname" required style="margin-bottom:0px;display:inline;width:100%;"><br><br></td>
 												</tr>
+												<tr>
+												<td style="vertical-align: top;text-align: right;width:30%;"><b>Synonym Dictionary(comma separated)&nbsp;</b></td>
+													<td><input class="form-control" placeholder="Similar phrases" type="textarea" name="dicnames" id="dicnames" style="margin-bottom:0px;display:inline;width:100%;"><br><br></td>
+												</tr>
 										</table>
 										<input type="hidden" name="action" id="action" value="create">
 									</center>
@@ -62,8 +83,7 @@ if(isset($_POST['action']))
 				</div>
 			<!---END-->
 				<?php
-					if($GError!="")
-					{
+					if($GError!=""){
 						echo "<div class=\"alert alert-success\" role=\"alert\">";
 						echo $GError;
 						echo "</div>";
@@ -79,8 +99,7 @@ if(isset($_POST['action']))
 					</thead>
 					 	<?php 
 								$res = mysqli_query($conn,"select * from options");
-								while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC))
-								{
+								while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
 									echo "<tr>\n";
 				      		echo "<td>".$arr['opt']."</td>\n";
 				      		echo "<td style=\"text-align:center;\"><a href=\"#\" data-toggle=\"modal\" data-target=\"#myModal\" onclick=\"editoption(".$arr['id'].")\"><i class=\"fa fa-pencil\"></i></a></td>\n";
@@ -96,31 +115,29 @@ if(isset($_POST['action']))
 <link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />
 <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 <script type="text/javascript">
-$(document).ready(function()
-{
+$(document).ready(function(){
     $('#datatable').DataTable();
 });
-$("#myModal").on("hidden.bs.modal", function () 
-{
+$("#myModal").on("hidden.bs.modal", function (){
     resetLayout();
 });	
-function resetLayout()
-{
+function resetLayout(){
 	document.getElementById("optname").value = "";
 	document.getElementById("action").value = "create";
 	document.getElementById("submit").innerHTML = "Create";
 }
-function editoption(id)
-{
-	var res = ajaxcall("action=getoption&id="+id);
-	document.getElementById("optname").value = res;
+
+function editoption(id){
+	var res_c = ajaxcall("action=getoption&id="+id);
+	var res = res_c.split('|');
+	document.getElementById("optname").value = res[0];
+	document.getElementById("dicnames").value = res[1];
 	document.getElementById("action").value = "update";
 	document.getElementById("submit").value = id;
 	document.getElementById("submit").innerHTML = "Update";
 }
 
-function ajaxcall(datastring)
-{
+function ajaxcall(datastring){
     var res;
     $.ajax
     ({	
@@ -129,9 +146,8 @@ function ajaxcall(datastring)
     		data:datastring,
     		cache:false,
     		async:false,
-    		success: function(result)
-    	 	{		
-   				 	res=result;
+    		success: function(result){		
+   				res=result;
    		 	}
     });
     return res;
