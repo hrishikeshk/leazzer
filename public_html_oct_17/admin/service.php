@@ -14,13 +14,17 @@ function merge_dcnames($res){
   return $ret;
 }
 
+function gen_address($street, $region, $zip, $state, $city){
+  return $street.', '.$region.', '.$city.' '.$state.' - '.$zip;
+}
+
 if(isset($_POST['action'])){
 	if($_POST['action'] == "getfacility"){
-		$res = mysqli_query($conn,"select * from facility where id='".$_POST['id']."'");
+		$res = mysqli_query($conn,"select O.emailid as emailid, O.logintype as logintype, M.title as title, O.phone as phone, M.street as street, M.region as region, M.zip as zip, M.state as state, M.city as city, M.status as status, M.searchable as searchable from facility_master M, facility_owner O where M.facility_owner_id=O.auto_id and M.id='".$_POST['id']."'");
 		if($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
-			echo $arr['emailid']."[-]".$arr['logintype']."[-]".$arr['companyname']."[-]".$arr['phone']."[-]".$arr['address1'].
-					 "[-]".$arr['city']."[-]".$arr['state']."[-]".$arr['zipcode']."[-]".$arr['searchable']."[-]".$arr['status'];
-		}	
+			echo $arr['emailid']."[-]".$arr['logintype']."[-]".$arr['title']."[-]".$arr['phone']."[-]".$arr['street'].
+					 "[-]".$arr['city']."[-]".$arr['state']."[-]".$arr['zip']."[-]".$arr['searchable']."[-]".$arr['status'];
+		}
 	}
 	if($_POST['action'] == "getcustomer"){
 		$res = mysqli_query($conn,"select * from customer where id='".$_POST['id']."'");

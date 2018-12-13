@@ -8,17 +8,17 @@
 	$start  = $_POST["start"];//Paging first record indicator.
 	$length = $_POST['length'];//Number of records that the table can display in the current draw
 	
-	$query = "SELECT * FROM facility ";
+	$query = "SELECT * FROM facility_master ";
 	if(isset($_POST['search']['value']) && ($_POST['search']['value'] != ""))
-		$query .= "where companyname like '%".$_POST['search']['value']."%' ";
+		$query .= "where title like '%".$_POST['search']['value']."%' ";
 	
 	$query .= "ORDER BY ".$orderBy." ".$orderType." limit ".$start." , ".$length;
 	//echo  "Query --".$query;
 	$data = getData($query);
 	$cnt = 0;
-	$cntQuery = "SELECT count(*) as cnt FROM facility ";
+	$cntQuery = "SELECT count(*) as cnt FROM facility_master ";
 	if(isset($_POST['search']['value']) && ($_POST['search']['value'] != ""))
-		$cntQuery .= "where companyname like '%".$_POST['search']['value']."%' ";
+		$cntQuery .= "where title like '%".$_POST['search']['value']."%' ";
 		
 	$res = mysqli_query($conn, $cntQuery) OR DIE ("Can't get Data from DB , check your SQL Query " );
 	if($arr = mysqli_fetch_array($res,MYSQLI_ASSOC))
@@ -30,13 +30,11 @@
         "data" => $data
     );
  	echo json_encode($response);
-	function getData($sql)
-	{
+	function getData($sql){
         global $conn;
         $query = mysqli_query($conn, $sql) OR DIE ("Can't get Data from DB , check your SQL Query " );
         $data = array();
-        foreach ($query as $row ) 
-				{
+        foreach ($query as $row ){
             $data[] = $row ;
         }
         return $data;

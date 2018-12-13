@@ -1,9 +1,7 @@
 <?php
 include('../sql.php');
-if(isset($_GET['action']))
-{
-		if($_GET['action'] == "export")
-		{
+if(isset($_GET['action'])){
+		if($_GET['action'] == "export"){
 			$now = gmdate("D, d M Y H:i:s");
 	    header("Expires: Tue, 03 Jul 2001 06:00:00 GMT");
 	    header("Cache-Control: max-age=0, no-cache, must-revalidate, proxy-revalidate");
@@ -15,106 +13,76 @@ if(isset($_GET['action']))
 	    header("Content-Type: application/download");
 	
 	    // disposition / encoding on response body
-	    header("Content-Disposition: attachment;filename=facility-expot.csv");
-	    header("Content-Transfer-Encoding: binary");			
+	    header("Content-Disposition: attachment;filename=facility-export.csv");
+	    header("Content-Transfer-Encoding: binary");
 
 			ob_start();
 		  $df = fopen("php://output", 'w');
-	    $res = mysqli_query($conn,"select * from facility");
-	    $cnt =0;
-			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC))
-			{
-				if($cnt == 0)
-				{
-					 fputcsv($df, array_keys($arr));
-					 $cnt++;
-				}
-				
-				if($arr['options'] != "")
-				{
-					$arr['options'] = updateOpt($arr['options']);
-				}
-				if($arr['units'] != "")
-				{
-					$arr['units'] = updateUnit($arr['units']);
-				}
-				fputcsv($df, $arr);
+	    $res = mysqli_query($conn,"select * from facility_master");
+	    if(mysqli_num_rows($res) > 0){
+  	    $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
+	      $arr['options'] = updateOpt($arr['id']);
+	  		$arr['units'] = updateUnit($arr['id']);
+	  	  fputcsv($df, array_keys($arr));
+	  		fputcsv($df, $arr);
+	  		while($arr = mysqli_fetch_array($res, MYSQLI_ASSOC)){
+	  			$arr['options'] = updateOpt($arr['id']);
+	  			$arr['units'] = updateUnit($arr['id']);
+	  			fputcsv($df, $arr);
+	  		}
 			}
 		  fclose($df);
 		  echo ob_get_clean();
 		  die();
 		}
 }
-function updateUnit($unit)
-{
+
+function updateUnit($facility_id){
 	global $conn;
-	$unitStr = "";
-	$unitName= "";
-	$unitIds="";
-	$unitPrice="";
-	
-	$unitArr = explode(",",$unit);
-	for($i=0;$i<count($unitArr);$i++)
-	{
-		if(trim($unitArr[$i]) == "")
-		continue;
-		
-		$unitSubArr = explode("-",$unitArr[$i]);
-		$unitIds .= $unitSubArr[0].",";
-		$unitPrice.= $unitSubArr[1].",";
+	$resU = mysqli_query($conn,"select size, price from unit where facility_id='".$facility_id."'");
+	if(mysqli_num_rows($resU) == 0)
+	  return '';
+	$arrU = mysqli_fetch_array($resU, MYSQLI_ASSOC);
+	$unitStr = $arrU['size']." - ".$arrU['price'];	
+	while($arrU = mysqli_fetch_array($resU, MYSQLI_ASSOC)){
+		$unitStr .= ', '.$arrU['size'].' - '.$arrU['price'];
 	}
-	$unitIds = substr($unitIds,0,strlen($unitIds)-1);
-	$unitPrice = substr($unitPrice,0,strlen($unitPrice)-1);
-	$resU = mysqli_query($conn,"select * from units where id in(".$unitIds.")");
-	while($arrU = mysqli_fetch_array($resU,MYSQLI_ASSOC))
-	{
-		$unitName.=$arrU['units'].",";
-	}
-	$unitName = substr($unitName,0,strlen($unitName)-1);
-	
-	$unitNameArr = explode(",",$unitName);
-	$unitPriceArr = explode(",",$unitPrice);
-	for($i=0;$i<count($unitNameArr);$i++)
-	{
-		if(trim($unitNameArr[$i]) == "")
-			continue;
-		$unitStr .= $unitNameArr[$i]."-".$unitPriceArr[$i].",";
-	}
-	return substr($unitStr,0,strlen($unitStr)-1);
+  return $unitStr;
 }
-function updateOpt($opt)
-{
+
+function updateOpt($facility_id){
 	global $conn;
-	$pos = strpos($opt,",");
-	if($pos ==  0)
-		$opt = substr($opt,1,strlen($opt)-2);
-	else
-		$opt = substr($opt,0,strlen($opt)-1);
-		
-	$resO = mysqli_query($conn,"select * from options where id in(".$opt.")");
-	$opt = "";
-	while($arrO = mysqli_fetch_array($resO,MYSQLI_ASSOC))
-	{
-		$opt.=$arrO['opt'].",";
+	$resO = mysqli_query($conn,"select amenity from facility_amenity where facility_id = '".$facility_id."'");
+	if(mysqli_num_rows($resO) == 0)
+	  return '';
+	$arrO = mysqli_fetch_array($resO, MYSQLI_ASSOC);
+	$opt = $arrO['amenity'];
+	while($arrO = mysqli_fetch_array($resO,MYSQLI_ASSOC)){
+		$opt .= ', '.$arrO['amenity'];
 	}
-	return substr($opt,0,strlen($opt)-1);
+	return $opt;
 }
+
 include('header.php');
-if(isset($_GET['action']))
-{
-		if($_GET['action'] == "delete")
-		{
-				mysqli_query($conn,"delete from facility where id=".$_GET['id']);
+if(isset($_GET['action'])){
+		if($_GET['action'] == "delete"){
+		    mysqli_query($conn, "delete from facility_amenity where facility_id=".$_GET['id']) or die('Failed to delete facility amenity: '.mysqli_error($conn));
+		    mysqli_query($conn, "delete from image where facility_id=".$_GET['id']) or die('Failed to delete facility images: '.mysqli_error($conn));
+		    mysqli_query($conn, "delete from review where facility_id=".$_GET['id']) or die('Failed to delete facility reviews: '.mysqli_error($conn));
+		    mysqli_query($conn, "delete from unit_amenity where unit_id in (select id from unit where facility_id='".$_GET['id']."')") or die('Failed to delete unit amenity: '.mysqli_error($conn));
+		    mysqli_query($conn, "delete from unit where facility_id=".$_GET['id']) or die('Failed to delete facility units: '.mysqli_error($conn));
+				mysqli_query($conn, "delete from facility_master where id=".$_GET['id']) or die('Failed to delete facility master: '.mysqli_error($conn));
 				$GError = "Deleted successfully.";
 		}
 }
-if(isset($_POST['action']))
-{
-	if($_POST['action'] == "update")
-	{
-		$query = "update facility set status='".$_POST['status']."', searchable='".(isset($_POST['searchable'])?1:0)."'";
+
+if(isset($_POST['action'])){
+	if($_POST['action'] == "update"){
+	error_log("got :".$_POST['status']." , ".$_POST['searchable']);
+		$query = "update facility_master set status='".(($_POST['status'] == 'Enabled')?1:0)."', searchable='".(isset($_POST['searchable'])?1:0)."'";
 		$query .= " where id=".$_POST['submit'];
-		mysqli_query($conn,$query);
+		error_log('Query in update: '.$query);
+		mysqli_query($conn,$query) OR die('Failed to update facility details - '.mysqli_error($conn));
 		$GError = "Edited successfully.";
 	}
 }
@@ -169,8 +137,7 @@ if(isset($_POST['action']))
 				</div>
 			<!---END-->
 				<?php
-					if($GError!="")
-					{
+					if($GError!=""){
 						echo "<div class=\"alert alert-info\" role=\"alert\">";
 						echo $GError;
 						echo "</div>";
@@ -180,23 +147,11 @@ if(isset($_POST['action']))
 				<table id="datatable" class="table table-striped table-bordered" width="100%" cellspacing="0">
 					<thead>
 						<tr>
-						<th width=50px>Image</th>
+						<th width=50px>Id</th>
 						<th>Company Name</th>
 						<th width=30px>Status</th>
 						<th width=20px>Edit</th></tr>
 					</thead>
-					 	<?php 
-								/*$res = mysqli_query($conn,"select * from facility");
-								while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC))
-								{
-									echo "<tr>\n";
-									echo "<td><img src=\"".$arr['image']."\" height=50px width=50px></td>\n";
-				      		echo "<td>".$arr['companyname']."</td>\n";
-				      		echo "<td>".($arr['status']=="Enabled"?"Yes":"No")."</td>\n";
-				      		echo "<td style=\"text-align:center;\"><a href=\"#\" data-toggle=\"modal\" data-target=\"#myModal\" onclick=\"editfacility(".$arr['id'].")\"><i class=\"fa fa-pencil\"></i></a></td>\n";
-				      		echo "</tr>\n";
-								}*/
-							?>
 				    </tbody>
 					</table>		
     	</div>
@@ -216,22 +171,17 @@ $(document).ready(function()
             type: 'POST'
         },
        "columns":[            
-						{"data": "image",
+						{"data": "id",
 							"render":function(data,type,row,meta)
 							{
-								if(data == null || data == "")
-									return "<img src=\"../unitimages/pna_1.jpg\" height=50px width=50px>";
-								else if(data.startsWith("http") || data.startsWith("//"))
-									return "<img src=\""+data+"\" height=50px width=50px>";
-								else
-									return "<img src=\"../unitimages/"+data+"\" height=50px width=50px>";
+									return data;
 							}
 						},
-            {"data": "companyname"},
+            {"data": "title"},
             {"data": "status",
             	"render":function(data,type,row,meta)
             	{
-								return (data=="Enabled"?"Yes":"No");
+								return (data==1?"Yes":"No");
 							}
 						},
             {"data": "id",
@@ -255,14 +205,14 @@ function resetLayout()
 	document.getElementById("action").value = "update";
 	document.getElementById("submit").innerHTML = "update";
 }
-function editfacility(id)
-{
+
+function editfacility(id){
 	var res = ajaxcall("action=getfacility&id="+id);
 	var resArr = res.split("[-]");
 	document.getElementById("email").value = resArr[0];
 	document.getElementById("details").innerHTML = resArr[2]+"\n"+resArr[4]+"\n"+resArr[5]+","+resArr[6]+" - "+resArr[7]+"\n"+resArr[3];
 	document.getElementById("searchable").checked = (resArr[8]=="1"?true:false);
-	document.getElementById("status").value = resArr[9];
+	document.getElementById("status").value = (resArr[9] == "1"?"Enabled":"Disabled");
 	document.getElementById("action").value = "update";
 	document.getElementById("submit").value = id;
 	document.getElementById("submit").innerHTML = "Update";
@@ -290,3 +240,4 @@ function ajaxcall(datastring)
 <?php
 include('footer.php');
 ?>
+
