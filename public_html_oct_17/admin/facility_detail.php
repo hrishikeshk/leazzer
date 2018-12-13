@@ -1,5 +1,6 @@
 <?php
 session_start();
+require_once('../mail/class.phpmailer.php');
 include('../sql.php');
 $GError = "";
 
@@ -91,19 +92,65 @@ function persist_reviews($id){
   }
 }
 
-function persist_facility_amenities($id){
+function dict_mapping_exists($str){
+  global $conn;
+  $res = mysqli_query($conn, "SELECT option_id FROM amenity_dictionary WHERE equivalent='" . $str. "'") OR die('Failed to check existing amenity dictionary mapping: '.$str);
+	if(mysqli_num_rows($res) > 0)
+    return true;
+	else
+	  return false;
+}
+
+function email_about_missing_dict_mapping($facility_name, $missing_in_dict){
+	$fromemail="no-reply@leazzer.com";
+	//$toemail= 'admin@leazzer.com';
+	$toemail= 'kv.hrishikesh@gmail.com';
+	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
+	$message .= '<tr><td>';
+	$message .= '<center><img src="https://www.leazzer.com/admin/images/reg.png" height="150px" width="150px" alt="Logo" title="Logo" style="display:block"></center><br>';
+	$message .= 'Hello Admin !<br />';
+		
+	$message .= '<br><br>A facility ('.$facility_name.') has been scraped and the following amenities are found missing from the amenity dictionary mappings -<br />';
+  for($i = 0; $i < count($missing_in_dict); $i++){
+    $message .= ($i + 1);
+    $message .= '/ ';
+    $message .= $missing_in_dict[$i];
+    $message .= '<br />';
+  }
+  
+	$message .= '<br />They may be added using mapping facility in Options page in admin portal.</td></tr>';
+	$message .= '<tr><td><br><br>';
+	$message .= 'Sincerely,<br>&mdash; Leazzer';
+	$message .= '</td></tr>';
+	$message .= '</table>';
+	
+	$mail = new PHPMailer();
+	$mail->CharSet = 'UTF-8';
+	$mail->AddReplyTo($fromemail,"Leazzer"); 
+	$mail->SetFrom($fromemail, "Leazzer");
+	$mail->AddAddress($toemail, substr($toemail,0,strpos($toemail,"@")));
+	$mail->Subject    = "Missing Facility Amenity Dictionary Mappings";
+	$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; 
+	$mail->MsgHTML($message);
+	$mail->isHTML(true);
+	$ret = $mail->Send();
+}
+
+function persist_facility_amenities($id, $name){
   global $conn;
   
   $num_facility_amenities =$_POST["num_amenities"];
-  /*if($num_facility_amenities > 10){
-    $num_facility_amenities = 10;
-  }*/
 
+  $missing_in_dict = array();
   for($i=0; $i < $num_facility_amenities; $i++){
     $amenity = mysqli_real_escape_string($conn, $_POST["facility".$i."amenity"]);
     
     $res = mysqli_query($conn, "insert into facility_amenity(facility_id, amenity) values('".$id."','".$amenity."')") OR die('Failed to insert facility amenity: ' . $id.mysqli_error($conn));
+    if(dict_mapping_exists($amenity) == false)
+      $missing_in_dict[] = $amenity;
   }
+  if(count($missing_in_dict) > 0)
+    email_about_missing_dict_mapping($name, $missing_in_dict);
 }
 
 function persist_image_paths($id){
@@ -224,7 +271,7 @@ function handle_insert_update(){
   
   $res = mysqli_query($conn, "insert into facility_master(id, facility_owner_id, title, description, url, distance, street, locality, region, zip, lowest_price, city, state, phone, facility_promo, lat, lng) values('".$id."','".$owner_id."','".$name."','".$about."','".$url."','".$distance."','".$street."','".$locality."','".$region."','".$zip."','".$lowest_price."','".$city."','".$state."','".$phone."','".$facility_promo."','".$lat_lng_arr[0]."','".$lat_lng_arr[1]."')") OR die('Failed to insert facility: ' . $id.mysqli_error($conn));
   
-  persist_facility_amenities($id);
+  persist_facility_amenities($id, $name);
 
   persist_image_paths($id);
 
