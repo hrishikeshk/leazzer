@@ -1,29 +1,27 @@
 <?php
 $GError="";
 include('header.php');
-if(isset($_POST['submit']))
-{
-	if($_POST['submit'] == "Update Profile")
-	{
-		$res = mysqli_query($conn,"select * from facility where emailid='".$_POST['emailid']."'");	
-		if(mysqli_num_rows($res) ==  0)
-		{
-			$query = "update facility set emailid=N'".$_POST['emailid'].
+if(isset($_POST['submit'])){
+	if($_POST['submit'] == "Update Profile"){
+		$res = mysqli_query($conn,"select * from facility_owner where emailid='".$_POST['emailid']."'");	
+		if(mysqli_num_rows($res) ==  0){
+			$query = "update facility_owner set emailid=N'".$_POST['emailid'].
 								"',firstname=N'".$_POST['fname'].
 								"',lastname=N'".$_POST['lname'].
 								"',phone=N'".$_POST['phone']."'";
 					
-			$query .= " where id='".$_SESSION['lfdata']['id']."'";
+			$query .= " where id='".$_SESSION['lfdata']['auto_id']."'";
 			mysqli_query($conn,$query);
-			$resC = mysqli_query($conn,"select * from facility where id='".$_SESSION['lfdata']['id']."'");
+			$resC = mysqli_query($conn,"select * from facility_owner where auto_id='".$_SESSION['lfdata']['auto_id']."'");
 			$_SESSION['lfdata'] = mysqli_fetch_array($resC,MYSQLI_ASSOC);
 				$GError = "Updated successfully.";
 		}
 		else
-			$GError = "Emailid already exist.";
+			$GError = "Emailid already exists.";
 	}
 }
-$resUP = mysqli_query($conn,"select * from facility where id=".$_SESSION['lfdata']['id']);	
+
+$resUP = mysqli_query($conn,"select * from facility_owner where auto_id=".$_SESSION['lfdata']['auto_id']);	
 $arrUP = mysqli_fetch_array($resUP,MYSQLI_ASSOC);
 ?>
 <!--inner block start here-->
@@ -36,9 +34,7 @@ $arrUP = mysqli_fetch_array($resUP,MYSQLI_ASSOC);
     			<hr>
 					<?php
 					if($GError!="")
-					{
 						echo "<div class=\"alert alert-info\" role=\"alert\">".$GError."</div>";
-					}
 					?>	
 					<form name="updateprofilefrm" id="updateprofilefrm" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">	
 						<?php
@@ -71,3 +67,4 @@ $arrUP = mysqli_fetch_array($resUP,MYSQLI_ASSOC);
 <?php
 include('footer.php');
 ?>
+

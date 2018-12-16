@@ -1,46 +1,32 @@
 <?php
 session_start();
-if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
-{
+if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on")){
 	$url = "https://". $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 	header("Location: $url");
 	exit;
 }
 
 if(!isset($_SESSION['lfdata']))
-{
 	header("Location: index.php");
-}
+
 $GError = "";
 $pos = strpos($_SERVER['REQUEST_URI'],"profile.php");
-if($pos === false)
-{
+if($pos === false){
 	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['phone']) == ""))
-	{
 		header("Location: profile.php");
-	}
 }
-else 
-{
+else {
 	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['phone']) == ""))
-	{
 		$GError = "Please enter phone number.";
-	}
 }
 $pos = strpos($_SERVER['REQUEST_URI'],"settings.php");
-if($pos === false)
-{
+if($pos === false){
 	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['pwd']) == "excited123!"))
-	{
 		header("Location: settings.php");
-	}
 }
-else 
-{
+else {
 	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['pwd']) == "excited123!"))
-	{
 		$GError = "Please change your password.";
-	}
 }
 include('../sql.php');
 ?>
@@ -123,3 +109,4 @@ include('../sql.php');
 		});
 		</script>
 <!-- /script-for sticky-nav -->
+

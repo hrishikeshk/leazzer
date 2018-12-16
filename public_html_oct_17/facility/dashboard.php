@@ -19,113 +19,117 @@ function getBaseUrl(){
     return $protocol.$hostName.$pathInfo['dirname']."/";
 }
 
-
 if(isset($_POST['submit'])){
+  $facility_id = $_SESSION['lfdata']['id'].'_lf';
 	if($_POST['submit'] == "Save"){
-	/////////////////////////////////
-	// Count total files
-//$countfiles = count($_FILES['image']['name']);
-  $ts = time();
-  $imageFileName = ""; 
- // Looping all files
- 
-  //$filename = $_FILES['image']['name']; var_dump($filename); exit;
+    $ts = time();
+    $imageFileName = ""; 
 	
-	$targetDir = "../unitimages/";
+  	$targetDir = "../images/".$facility_id."/";
 	
-	$facility_id = $_SESSION['lfdata']['id'];
-	
-	$allowed_extensions = array(".jpg","jpeg",".png",".gif");
-	if(!empty(array_filter($_FILES['image']['name']))){
-		foreach($_FILES['image']['name'] as $k => $v): 
+  	$allowed_extensions = array(".jpg","jpeg",".png",".gif");
+  	if(!empty(array_filter($_FILES['image']['name']))){
+  	  $has_error = false;
+  		foreach($_FILES['image']['name'] as $k => $v): 
 			
-			$fileName = md5(time()).'_'.basename($_FILES['image']['name'][$k]);
-			$extension = substr($fileName,strlen($fileName)-4,strlen($fileName));
+  			$fileName = md5(time()).'_'.basename($_FILES['image']['name'][$k]);
+  			$extension = substr($fileName,strlen($fileName)-4,strlen($fileName));
 			
-			$targetFilePath = $targetDir . $fileName;
+  			$targetFilePath = $targetDir . $fileName;
 			
-			if(!in_array($extension,$allowed_extensions)){
-				echo "<script>alert('Invalid format. Only jpg / jpeg/ png /gif format allowed');</script>";
-			}
-			else{
-				if(move_uploaded_file($_FILES["image"]["tmp_name"][$k], $targetFilePath)){
-					//insert to facility images
-					
-					//$image_sql = "INSERT INTO facility_images (facility_id, path) VALUES ('$facility_id', '$targetFilePath')";
-					$image_sql = "update facility set image='$fileName' where id=".$_SESSION['lfdata']['id'];
+  			if(!in_array($extension,$allowed_extensions)){
+  				echo "<script>alert('Invalid format(".$extension." in ".basename($_FILES['image']['name'][$k])."). Only jpg / jpeg/ png /gif format allowed');</script>";
+  				$has_error = true;
+  			}
+  		endforeach;
+		
+  		if($has_error == false){
+    		foreach($_FILES['image']['name'] as $k => $v): 
+			
+  	  		$fileName = md5(time()).'_'.basename($_FILES['image']['name'][$k]);
+  	  		$extension = substr($fileName,strlen($fileName)-4,strlen($fileName));
+			
+  	  		$targetFilePath = $targetDir . $fileName;
+			
+  				if(move_uploaded_file($_FILES["image"]["tmp_name"][$k], $targetFilePath)){
+  					$image_sql = "insert into image (url_fullsize, url_thumbsize, facility_id) values ('".$fileName."', '".$fileName."', '".$facility_id."')";
 
-					if(!mysqli_query($conn, $image_sql)) {
-						echo $image_sql;
-					}
-				}
-			}
-						
-		 // $imageFileName = time() . "_" . $filename;
-		  // Upload file
-		  //move_uploaded_file($_FILES['image']['tmp_name'],'../unitimages/'.$imageFileName);
-		  
-		  
-			//$location = '../unitimages/' .$_FILES['image']['name'];
-		endforeach;
+  					mysqli_query($conn, $image_sql)) or die('Failed to insert facility image: '.mysqli_error($conn));
+  				}
+  		  endforeach;
+  		}
+    }
 	}
 
 	$location = '';
 
-	$options ="";
-		if( isset($_POST['options']) && is_array($_POST['options']) ){
-			 foreach($_POST['options'] as $option){
-			 	$options.= $option.",";	
-			 }
-		}		
-		$units ="";
-		if( isset($_POST['units']) && is_array($_POST['units']) ){
-			 foreach($_POST['units'] as $unit){
-			 	$units.= $unit."-".$_POST['unitval'.$unit].",";	
-			 }
+	if(isset($_POST['options']) && is_array($_POST['options']) ){
+    ////
+	}		
+	if( isset($_POST['units']) && is_array($_POST['units']) ){
+		foreach($_POST['units'] as $unit){
+			////$units.= $unit."-".$_POST['unitval'.$unit].",";	
 		}
+  }
 
-		$res = mysqli_query($conn,"select * from facility where emailid='".$_POST['emailid']."'");	
-		if(mysqli_num_rows($res) >=  1){
+	$res = mysqli_query($conn,"select O.auto_id from facility_owner O, facility_master M where O.auto_id=M.id and M.id = '".$facility_id."' and O.emailid='".$_POST['emailid']."'");
+	if(mysqli_num_rows($res) >=  1){
+		if($_SESSION['lfdata']['emailid'] != $_POST['emailid'])
+			$GInfo = "Info : Your Userid is ".$_POST['emailid']."<br>You will receive Reservation Confirmations on - ".$_POST['emailid'];
 				
-			if($_SESSION['lfdata']['emailid'] != $_POST['emailid'])
-				$GInfo = "Info : Your Userid is ".$_POST['emailid']."<br>You will receive Reservation Confirmations on - ".$_POST['emailid'];
-				
-			$query = "update facility set phone=N'".$_POST['phone'].
-								"',emailid='".$_POST['emailid'].
-								"',address1=N'".mysqli_real_escape_string($conn,$_POST['address1']).
-								"',address2=N'".mysqli_real_escape_string($conn,$_POST['address2']).
+		$query = "update facility_master set phone=N'".$_POST['phone'].
+								//"',emailid='".$_POST['emailid'].
+								"',street=N'".mysqli_real_escape_string($conn,$_POST['address1']).
+								"',region=N'".mysqli_real_escape_string($conn,$_POST['address2']).
 								"',city=N'".$_POST['city'].
 								"',state=N'".$_POST['state'].
-								"',zipcode=N'".$_POST['zipcode'].
+								"',zip=N'".$_POST['zipcode'].
 								"',lat='".$_POST['lat'].
 								"',lng='".$_POST['lng'].
 								"',reservationdays='".$_POST['reservationdays'].
 								"',searchable='".(isset($_POST['searchable'])?0:1).
 								"',receivereserve='".(isset($_POST['receivereserve'])?1:0).
-								"',options=',".$options.
-								"',units=',".$units.
+								//"',options=',".$options.
+								//"',units=',".$units.
 								"',description ='".$_POST['desc'].
-								"',coupon_code ='".$_POST['coupon'].
-								"',coupon_desc ='".$_POST['coupon_desc'].
 								"'";
-			//if($imageFileName != "")
-				//$query .= ",image='".$location."'";
-				//echo $location;
-				
-			$query .= " where id='".$_SESSION['lfdata']['id']."'";
-			//echo $query;
+
+		$query .= " where id='".$facility_id."'";
 			
-			mysqli_query($conn,$query);
-		}
+		mysqli_query($conn,$query) or die('Failed to update facility details. Please try again: '.mysqli_error($conn));
 		
-  //}
- 
- }
+		$query = "update facility_owner set phone=N'".$_POST['phone'].
+								"',emailid='".$_POST['emailid'].
+								"'";
+		$query .= " where emailid='".$_SESSION['lfdata']['emailid']."'";
+		mysqli_query($conn,$query) or die('Failed to update email and phone. Please try again: '.mysqli_error($conn));
+		$_SESSION['lfdata']['emailid'] = $_POST['emailid'];
 		
-	//}
+	}
+	else{
+	  $query = "insert into facility_master (phone, street, region, city, state, zip, lat, lng, reservationdays, searchable, receivereserve, description, id) values (N'".$_POST['phone'].
+								"',N'".mysqli_real_escape_string($conn,$_POST['address1']).
+								"',N'".mysqli_real_escape_string($conn,$_POST['address2']).
+								"',N'".$_POST['city'].
+								"',N'".$_POST['state'].
+								"',N'".$_POST['zipcode'].
+								"','".$_POST['lat'].
+								"','".$_POST['lng'].
+								"','".$_POST['reservationdays'].
+								"','".(isset($_POST['searchable'])?0:1).
+								"','".(isset($_POST['receivereserve'])?1:0).
+								//"',options=',".$options.
+								//"',units=',".$units.
+								"','".$_POST['desc'].
+								"','".$facility_id.
+								"')";
+		mysqli_query($conn, $query) or die('Failed to insert facility details. Please try again: '.mysqli_error($conn));
+	}
 }
+
+/*
 if(isset($_POST['submit1'])){
- if(count($_FILES['image']['name']) > 0){
+  if(count($_FILES['image']['name']) > 0){
         //Loop through each file
         for($i=0; $i<count($_FILES['image']['name']); $i++) {
           //Get the temp file path
@@ -154,49 +158,36 @@ if(isset($_POST['submit1'])){
               }
         }
     }
-
-
 }
+*/
 
-function generateReservationDays($days)
-{
+function generateReservationDays($days){
 	$ret = '<select name="reservationdays" id="reservationdays" required class="form-control" style="margin-bottom:5px;">';
 	$ret .= '<option value="">Honor Reservations</option>';
 	for($i=1;$i<=10;$i++)
-	{
 		$ret .= '<option '.($i==$days?"selected":"").'>'.$i.'</option>';
-	}
 	$ret .= '</select>';
 	return $ret;						
 }
-function generateState($state)
-{
+
+function generateState($state){
 	$stateArr = array("AL","AK","AZ","AR","CA","CO","CT","DE","DC","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY");
 	$ret = '<select name="state" id="state" required class="form-control" style="margin-bottom:5px;">';
 	$ret .= '<option value="">Select State</option>';
 	for($i=0;$i<count($stateArr);$i++)
-	{
 		$ret .= '<option '.($stateArr[$i]==$state?"selected":"").'>'.$stateArr[$i].'</option>';
-	}
+
 	$ret .= '</select>';
 	return $ret;						
 }
 
-$res = mysqli_query($conn,"select * from facility where id=".$_SESSION['lfdata']['id']) or die("Error: " . mysqli_error($conn));;	
+$res = mysqli_query($conn,"select * from facility_master M, facility_owner O where M.facility_owner_id = O.auto_id and M.id=".$_SESSION['lfdata']['id'].'_lf') or die("Error: " . mysqli_error($conn));
 $arrF = mysqli_fetch_array($res,MYSQLI_ASSOC);
 $_SESSION['lfdata'] = $arrF;
 
+$fid = $_SESSION['lfdata']['id'].'_lf';
 
-
-$fid = $_SESSION['lfdata']['id'];
-//echo "select id,path from facility_images where status = 1 and facility_id=$fid";
-
-//$all_images = mysqli_query($conn,"select id,path from facility_images where status = 1 and facility_id=$fid" );	
-//$all_images_arr = mysqli_fetch_assoc($all_images);
-
-
-
-$image_select_sql 		= "select id,path from facility_images where status = 1 and facility_id=$fid";
+$image_select_sql 		= "select url_fullsize from image where facility_id=$fid";
 $image_select_result 	= mysqli_query($conn, $image_select_sql);
 
 $facility_images = [];
@@ -220,24 +211,6 @@ if (mysqli_num_rows($image_select_result) > 0) {
     		<div class="col-md-4" style="border:0px solid #000;padding:0px 5px;margin:0;">
     				<h2 style="margin: 0;padding:0;"><?php echo $arrF['companyname'];?></h2>
     				<hr style="margin:5px 0px 5px 0px">
-    					<?php 
-						/*
-    						if(isset($arrF['image']) && $arrF['image']!="")
-    						{
-    							if(file_exists("../unitimages/".$arrF['image']))
-    								echo '<img src="../unitimages/'.$arrF['image'].'" style="height:250px;width:100%;">';
-    							else
-    								echo '<img src="'.$arrF['image'].'" style="height:250px;width:100%;">';
-    						}
-    						else
-    							echo '<img src="../unitimages/pna.jpg" style="height:250px;width:100%;">';
-						*/
-						
-						
-						
-						//var_dump(getBaseUrl());
-						
-    						?>
 							
 							<div id="myCarousel" class="carousel slide" data-ride="carousel">
 							
@@ -273,16 +246,16 @@ if (mysqli_num_rows($image_select_result) > 0) {
 					</div>
 					<center>
     				</center>
-    				<input type="text" name="address1" id="address1" placeholder="Address1" value="<?php echo $arrF['address1'];?>" required="" class="form-control" style="margin-bottom:5px;margin-top:5px;" onchange="getLatLng()">
-    				<input type="text" name="address2" id="address2" placeholder="Address2" value="<?php echo $arrF['address2'];?>" class="form-control" style="margin-bottom:5px;">
+    				<input type="text" name="address1" id="address1" placeholder="Street, Locality" value="<?php echo $arrF['address1'];?>" required="" class="form-control" style="margin-bottom:5px;margin-top:5px;" onchange="getLatLng()">
+    				<input type="text" name="address2" id="address2" placeholder="Region" value="<?php echo $arrF['address2'];?>" class="form-control" style="margin-bottom:5px;">
     				<div class="col-md-4" style="text-align:left;padding:0;margin:0;">
-    						<input type="text" name="city" id="city" placeholder="City" value="<?php echo $arrF['city'];?>" required="" class="form-control" style="margin-bottom:5px;">
+    				<input type="text" name="city" id="city" placeholder="City" value="<?php echo $arrF['city'];?>" required="" class="form-control" style="margin-bottom:5px;">
     				</div>
     				<div class="col-md-4" style="text-align:left;padding:0;margin:0;">
-    					<?php echo generateState($arrF['state']);?>
+    				  <?php echo generateState($arrF['state']);?>
     				</div>
     				<div class="col-md-4" style="text-align:left;padding:0;margin:0;">
-    					<input type="text" name="zipcode"  id="zipcode" placeholder="Zipcode" value="<?php echo $arrF['zipcode'];?>" required="" class="form-control" style="margin-bottom:5px;">
+    					<input type="text" name="zipcode"  id="zipcode" placeholder="Zipcode" value="<?php echo $arrF['zip'];?>" required="" class="form-control" style="margin-bottom:5px;">
     				</div>
     				<input type="text" name="phone" placeholder="Phone" value="<?php echo $arrF['phone'];?>" required="" class="form-control" style="margin-bottom:5px;">
 						<?php echo generateReservationDays($arrF['reservationdays']);?>
@@ -367,8 +340,17 @@ include('footer.php');
 <script type="text/javascript">
 var map;
 var marker;
-var lat = "<?php echo $arrF['lat'];?>";
-var lng = "<?php echo $arrF['lng'];?>";
+var lat = "
+<?php 
+  echo $arrF['lat'];
+?>
+";
+var lng = "
+<?php 
+echo $arrF['lng'];
+?>
+";
+
 function initMap(){
   map = new google.maps.Map(document.getElementById('map'), 
   {

@@ -160,7 +160,7 @@ function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $pric
 	$ret = $mail->Send();
 }
 
-function onReserveOwnerMail($facilityName, $ownerEmail, $ownerName, $unit, $price, $resFromDate, $resToDate){
+function onReserveOwnerMail($facilityName, $ownerEmail, $ownerName, $unit, $price, $resFromDate, $resToDate, $customerName){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	//$toemail=$ownerEmail;
@@ -169,7 +169,7 @@ function onReserveOwnerMail($facilityName, $ownerEmail, $ownerName, $unit, $pric
 	$message .= '<tr><td>';
 	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="125px" alt="Logo" title="Logo" style="display:block"></center><br>';
 	$message .= 'Hello <b>'.$facilityName.'</b>,';
-	$message .= '<br><br>A '.$unit.' unit has been reserved from ';
+	$message .= '<br><br>A '.$unit.' unit has been reserved by '.$customerName.' from ';
 	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
 	$message .= '</td></tr>';
 	$message .= '<tr><td><br><br>';

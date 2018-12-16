@@ -1,28 +1,24 @@
 <?php
 $GError="";
 include('header.php');
-if(isset($_POST['submit']))
-{
-	if($_POST['submit'] == "Change Password")
-	{
+if(isset($_POST['submit'])){
+	if($_POST['submit'] == "Change Password"){
 		if($_POST['newpwd'] != $_POST['conpwd'])
 			$GError= "New password and confirm password mismatch.";		
-		else
-		{
-			$results = mysqli_query($conn,"select * from facility where id=".$_SESSION['lfdata']['id']." and pwd='".$_POST['curpwd']."'");	
-			if(mysqli_num_rows($results) == 0)
-			{
+		else{
+			$results = mysqli_query($conn,"select * from facility_owner where auto_id=".$_SESSION['lfdata']['auto_id']." and pwd='".$_POST['curpwd']."'");	
+			if(mysqli_num_rows($results) == 0){
 				$GError= "Wrong current password.";		
 			}
-			else
-			{
+			else{
 				$GError= "Password updated successfully.";		
-				mysqli_query($conn,"update facility set pwd='".$_POST['newpwd']."' where id='".$_SESSION['lfdata']['id']."'");
+				mysqli_query($conn,"update facility_owner set pwd='".$_POST['newpwd']."' where auto_id='".$_SESSION['lfdata']['auto_id']."'");
 				$_SESSION['lfdata']['pwd'] = $_POST['newpwd'];
 			}
 		}
 	}
 }
+
 ?>
 <!--inner block start here-->
 <div class="inner-block">
@@ -33,8 +29,7 @@ if(isset($_POST['submit']))
     			<h4>Change Password</h4>
     			<hr>
 					<?php
-					if($GError!="")
-					{
+					if($GError!=""){
 						echo "<div class=\"alert alert-info\" role=\"alert\">".$GError."</div>";
 					}
 					?>	
@@ -52,3 +47,4 @@ if(isset($_POST['submit']))
 <?php
 include('footer.php');
 ?>
+

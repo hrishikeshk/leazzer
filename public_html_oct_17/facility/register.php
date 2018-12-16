@@ -3,25 +3,25 @@ session_start();
 require_once('../mail/class.phpmailer.php');		
 include('../sql.php');
 $GError = ""; 
-if(isset($_POST['action']))
-{		
-	if($_POST['action'] == "Register")
-	{
-		$res = mysqli_query($conn,"select * from facility where emailid='".$_POST['emailid']."'");
-		if(mysqli_num_rows($res) > 0)
-		{
-			$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
-			if($arr['status'] == "PENDING")
-				$GError = register();
-			else			
-				$GError = "This emailid already registered. please login";
+if(isset($_POST['action'])){		
+	if($_POST['action'] == "Register"){
+		$res = mysqli_query($conn,"select * from facility_owner O, facility_master M where O.auto_id = M.facility_owner_id and O.emailid='".$_POST['emailid']."'");
+		if(mysqli_num_rows($res) > 0){
+			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
+	  		if($arr['status'] == "1"){
+	  			$GError = register();
+	  			break;
+	  		}
+	  		else			
+	  			$GError = "This emailid already registered. please login";
+	    }
 		}
 		else
 				$GError = register();
 	}
 }
-function register()
-{
+
+function register(){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	$toemail=$_POST['emailid']; 
@@ -46,19 +46,20 @@ function register()
 	$mail->MsgHTML($message);
 	$mail->isHTML(true);
 	$ret = $mail->Send();
-	mysqli_query($conn,"delete from facility where emailid='".$_POST['emailid']."'");
-	mysqli_query($conn,"insert into facility(firstname,lastname,companyname,phone,emailid,pwd,reservationdays,status) values(N'".
+	//mysqli_query($conn,"delete from facility_owner where emailid='".$_POST['emailid']."'");
+	mysqli_query($conn,"insert into facility_owner(firstname,lastname,companyname,phone,emailid,pwd) values(N'".
 											$_POST['fname']."','".
 											$_POST['lname']."','".
 											$_POST['companyname']."','".
 											$_POST['phone']."','".
 											$_POST['emailid']."','".
-											$_POST['password']."','3','Enabled')");
-	$resEU = mysqli_query($conn,"select * from facility where emailid='".$_POST['emailid']."'");
+											$_POST['password']."')");
+	$resEU = mysqli_query($conn,"select * from facility_owner where emailid='".$_POST['emailid']."'") or die('Failed to complete registration. Please try again.');
 	$_SESSION['lfdata'] = mysqli_fetch_array($resEU,MYSQLI_ASSOC);
 	header("Location: dashboard.php");
 	return "Thanks for registering, please update your profile.";								
 }
+
 mysqli_close($conn);
 ?>
 <!DOCTYPE HTML>

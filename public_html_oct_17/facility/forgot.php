@@ -2,24 +2,21 @@
 require_once('../mail/class.phpmailer.php');		
 include('../sql.php');
 $GError = ""; 
-if(isset($_POST['action']))
-{		
-	if($_POST['action'] == "Forgot")
-	{
-			$res = mysqli_query($conn,"SELECT * FROM facility WHERE emailid='".$_POST['emailid']."'");
-			if(mysqli_num_rows($res)!=0)
-			{
+if(isset($_POST['action'])){
+	if($_POST['action'] == "Forgot"){
+			$res = mysqli_query($conn,"SELECT * FROM facility_owner WHERE emailid='".$_POST['emailid']."'");
+			if(mysqli_num_rows($res)!=0){
 					$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 					$code = md5($_POST['emailid'].time());
-					mysqli_query($conn,"insert into forgotpwd(uid,emailid,code) values('".$arr['id']."','".$arr['emailid']."','".$code."')");
+					mysqli_query($conn,"insert into forgotpwd(uid,emailid,code) values('".$arr['auto_id']."','".$arr['emailid']."','".$code."')");
 					$GError = forgotmail($code,$arr['fname'],$arr['lname']);
 			}	
 			else 
 				$GError = "Email-id not found, please contact admin.";
 	}
 }
-function forgotmail($code,$fname,$lname)
-{
+
+function forgotmail($code,$fname,$lname){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	$toemail=$_POST['emailid']; 
@@ -76,11 +73,8 @@ mysqli_close($conn);
 				<hr>
 				<?php 
 				if($GError!="")
-				{
 					echo '<center><p style="color:#68AE00;">'.$GError.'</p></center>';
-				}
-				else
-				{
+				else{
 					echo '<form method="post" action="'.$_SERVER['PHP_SELF'].'" enctype="multipart/form-data">
 					<input type="text" name="emailid" placeholder="Email" required="">
 					<input type="submit" name="action" value="Forgot">	

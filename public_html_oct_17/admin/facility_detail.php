@@ -103,8 +103,8 @@ function dict_mapping_exists($str){
 
 function email_about_missing_dict_mapping($facility_name, $missing_in_dict){
 	$fromemail="no-reply@leazzer.com";
-	//$toemail= 'admin@leazzer.com';
-	$toemail= 'kv.hrishikesh@gmail.com';
+	$toemail= 'admin@leazzer.com';
+	//$toemail= 'kv.hrishikesh@gmail.com';
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
 	$message .= '<center><img src="https://www.leazzer.com/admin/images/reg.png" height="150px" width="150px" alt="Logo" title="Logo" style="display:block"></center><br>';

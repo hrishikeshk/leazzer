@@ -2,32 +2,27 @@
 require_once('../mail/class.phpmailer.php');		
 include('../sql.php');
 $GError = "";
-$uid = ""; 
-if(!isset($_GET['code']))
-{
+$uid = "";
+if(!isset($_GET['code'])){
 	header("Location: ../index.php");
 }
-else if(isset($_GET['code']))
-{		
+else if(isset($_GET['code'])){		
 		$res = mysqli_query($conn,"SELECT * FROM forgotpwd WHERE code='".$_GET['code']."'");
-		if(mysqli_num_rows($res)!=0)
-		{
+		if(mysqli_num_rows($res)!=0){
 				$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 				$uid= $arr['uid'];
 		}	
 		else 
 			$GError = "Incorrect code, please contact admin.";
 }
-if(isset($_POST['action']))
-{		
-	if($_POST['action'] == "Reset Password")
-	{
+
+if(isset($_POST['action'])){
+	if($_POST['action'] == "Reset Password"){
 		if($_POST['pwd'] != $_POST['cpwd'])
 			$GError= "New password and confirm password mismatch.";		
-		else
-		{
-				$GError= "Password updated successfully.";		
-				mysqli_query($conn,"update facility set pwd='".$_POST['pwd']."' where id='".$_POST['uid']."'");
+		else{
+				mysqli_query($conn,"update facility_owner set pwd='".$_POST['pwd']."' where auto_id='".$_POST['uid']."'") or die('Failed to update password in the system. Please try again in some time.');
+				$GError= "Password updated successfully.";
 		}
 	}
 }

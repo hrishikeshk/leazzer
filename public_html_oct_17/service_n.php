@@ -144,7 +144,8 @@ if(isset($_POST['action'])){
 													$_POST['unit'],
 													$_POST['price'],
 													date('m/d/Y',$reserveFromDate),
-													date('m/d/Y',$reserveToDate));
+													date('m/d/Y',$reserveToDate),
+													$arrC['firstname']." ".$arrC['lastname']);
 		}
 		echo "success";
 	}
