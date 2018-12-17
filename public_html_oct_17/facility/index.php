@@ -17,7 +17,7 @@ if(isset($_GET['action'])){
 
 if(isset($_POST['action'])){		
 	if($_POST['action'] == "Login"){
-			$res = mysqli_query($conn, "SELECT O.emailid as emailid, M.id as id,O.auto_id as auto_id, O.phone as phone, M.status as status FROM facility_owner O, facility_master M WHERE O.auto_id = M.facility_owner_id and M.facility_owner_id is not null and O.emailid='".$_POST['emailid']."' and O.pwd='".$_POST['password']."' limit 1");
+			$res = mysqli_query($conn, "SELECT O.emailid as emailid, M.id as id,O.auto_id as auto_id, O.phone as phone, M.status as status, O.pwd as pwd FROM facility_owner O, facility_master M WHERE O.auto_id = M.facility_owner_id and M.facility_owner_id is not null and O.emailid='".$_POST['emailid']."' and O.pwd='".$_POST['password']."' limit 1");
 			if(mysqli_num_rows($res) != 0){
 	  			$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 	  			if($arr['status'] == "1"){
@@ -29,7 +29,7 @@ if(isset($_POST['action'])){
 					  $GError = "Userid and/or Password may be incorrect";
 			}
 			else{
-				$res = mysqli_query($conn, "SELECT emailid, auto_id, phone FROM facility_owner where emailid='".$_POST['emailid']."' and pwd='".$_POST['password']."' limit 1");
+				$res = mysqli_query($conn, "SELECT emailid, auto_id, phone, pwd FROM facility_owner where emailid='".$_POST['emailid']."' and pwd='".$_POST['password']."' limit 1");
   			if(mysqli_num_rows($res) != 0){
 	    			$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 	    			$GError = "Logged in successfully.";

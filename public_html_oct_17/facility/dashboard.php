@@ -34,7 +34,7 @@ if(isset($_POST['submit'])){
 			
   			$fileName = md5(time()).'_'.basename($_FILES['image']['name'][$k]);
   			$extension = substr($fileName,strlen($fileName)-4,strlen($fileName));
-			
+
   			$targetFilePath = $targetDir . $fileName;
 			
   			if(!in_array($extension,$allowed_extensions)){
@@ -54,7 +54,7 @@ if(isset($_POST['submit'])){
   				if(move_uploaded_file($_FILES["image"]["tmp_name"][$k], $targetFilePath)){
   					$image_sql = "insert into image (url_fullsize, url_thumbsize, facility_id) values ('".$fileName."', '".$fileName."', '".$facility_id."')";
 
-  					mysqli_query($conn, $image_sql)) or die('Failed to insert facility image: '.mysqli_error($conn));
+  					mysqli_query($conn, $image_sql) or die('Failed to insert facility image: '.mysqli_error($conn));
   				}
   		  endforeach;
   		}
@@ -131,13 +131,87 @@ function generateState($state){
 	return $ret;						
 }
 
-$res = mysqli_query($conn,"select * from facility_master M, facility_owner O where M.facility_owner_id = O.auto_id and M.id=".$_SESSION['lfdata']['id'].'_lf') or die("Error: " . mysqli_error($conn));
+function sanitize_amenities($facility_id){
+  global $conn;
+  
+  $res = mysqli_query($conn,"select amenity from facility_amenity where facility_id='".$facility_id."'") or die('Failed to fetch facility amenities.');
+  $ams = array();
+	while($arr = mysqli_fetch_array($res, MYSQLI_ASSOC)){
+	  $ams_pa = explode("|", $arr['amenity']);
+	  $curr = '';
+	  if(count($ams_pa) == 1){
+	    $curr = $ams_pa[0];
+	  }
+	  else{
+	    $curr = $ams_pa[1];
+	  }
+    $res_opts = mysqli_query($conn, "select option_id as oid from amenity_dictionary where equivalent = '".$curr."'") or die('Failed to match facility amenities.');
+    while($arr = mysqli_fetch_array($res_opts, MYSQLI_ASSOC)){
+      $ams[] = $arr['oid'];
+    }
+	}	
+	return $ams;
+}
+
+function fetch_predefined_units(){
+  global $conn;
+  
+  $unit_select_sql 		= "select units, id from units";
+  $unit_select_result 	= mysqli_query($conn, $unit_select_sql);
+
+  $size_arr = array(); // $matched_units[1];
+  $id_arr = array(); // $matched_units[3];
+  
+  while($arr = mysqli_fetch_array($unit_select_result, MYSQLI_ASSOC)){
+    $size_arr[] = $arr['units'];
+    $id_arr[] = $arr['id'];
+  }
+  $ret = array($size_arr, $id_arr);
+  return $ret;
+}
+
+function sanitize_units($facility_id){
+  global $conn;
+  
+  $unit_select_sql 		= "select size, price, auto_id from unit where facility_id='".$facility_id."'";
+  $unit_select_result 	= mysqli_query($conn, $unit_select_sql);
+
+  $price_arr = array(); // $matched_units[0];
+  $size_arr = array(); // $matched_units[1];
+  $checked_arr = array(); //$matched_units[2];
+  $id_arr = array(); // $matched_units[3];
+
+  $predef_units = fetch_predefined_units();
+  
+  while($arr = mysqli_fetch_array($unit_select_result, MYSQLI_ASSOC)){
+    $checked_arr[] = true;
+    $size_arr[] = $arr['size'];
+    $price_arr[] = $arr['price'];
+    $id_arr[] = $arr['auto_id'];
+  }
+  
+  for($i = 0; $i < count($predef_units[0]); $i++){
+    if(in_array($predef_units[0][$i], $size_arr) == false){
+      $size_arr[] = $predef_units[0][$i];
+      $checked_arr[] = false;
+      $id_arr[] = $predef_units[1][$i];
+      $price_arr[] = '-';
+    }
+  }
+  
+  $ret = array($price_arr, $size_arr, $checked_arr, $id_arr);	  
+  return $ret;
+}
+
+$res = mysqli_query($conn,"select O.auto_id as auto_id, O.pwd as pwd, M.id as facility_id, O.companyname as companyname, O.phone as phone, M.city as city, M.state as state, M.zip as zip, O.emailid as emailid, M.searchable as searchable, M.lat as lat, M.lng as lng, M.street as street, M.region as region, M.locality as locality, M.receivereserve as receivereserve, M.reservationdays as reservationdays, M.description as description from facility_owner O, facility_master M where O.auto_id=M.facility_owner_id and M.facility_owner_id is not null and O.auto_id ='".$_SESSION['lfdata']['auto_id']."'") or die("Error: " . mysqli_error($conn));
+
 $arrF = mysqli_fetch_array($res,MYSQLI_ASSOC);
+
 $_SESSION['lfdata'] = $arrF;
 
-$fid = $_SESSION['lfdata']['id'].'_lf';
+$facility_id = $arrF['facility_id'];
 
-$image_select_sql 		= "select url_fullsize as path from image where facility_id=$fid";
+$image_select_sql 		= "select url_fullsize as path from image where facility_id='".$facility_id."'";
 $image_select_result 	= mysqli_query($conn, $image_select_sql);
 
 $facility_images = [];
@@ -149,14 +223,12 @@ if (mysqli_num_rows($image_select_result) > 0) {
 ?>
 <!--inner block start here-->
 <div class="inner-block">
-    <div class="blank"><?php if(isset($units)) : echo $units; endif;  ?>
     	<div class="blankpage-main" style="padding:.5em .5em;">
     		<?php
-    		if($GInfo != "")
-    		{
+    		if($GInfo != ""){
     			echo "<div class=\"alert alert-info\" role=\"alert\">".$GInfo."</div>";
     		}
-    		?><?php if(isset($location)) : echo $location; endif; ?>
+    		?>
     		<form method="post" action="<?php echo $_SERVER['PHP_SELF']?>" enctype="multipart/form-data">
     		<div class="col-md-4" style="border:0px solid #000;padding:0px 5px;margin:0;">
     				<h2 style="margin: 0;padding:0;"><?php echo $arrF['companyname'];?></h2>
@@ -170,7 +242,7 @@ if (mysqli_num_rows($image_select_result) > 0) {
 								
 								<?php foreach($facility_images as $key => $image): ?>
 								<div class="item <?php if($key == 0) : ?> active <?php endif; ?>">
-								  <img src="<?php echo getBaseUrl().$image; ?>" alt="" height="220">
+								  <img src="<?php echo $image; ?>" alt="" height="220">
 								</div>
 								<?php endforeach; ?>
 								
@@ -187,17 +259,17 @@ if (mysqli_num_rows($image_select_result) > 0) {
 							  </a>
 							  <?php else: ?>
 							  
-							  <img src="<?php echo getBaseUrl(); ?>../unitimages/noimage.jpg" alt="" width="300" height="300">
+							  <img src="../unitimages/noimage.jpg" alt="" width="300" height="300">
 							  
 							  <?php endif; ?>
 							</div>
-    				<div class="fileUpload btn btn-primary"><span>Choose Image</span><input type="file" class="upload" multiple name="image[]"/>
-					
+    				<div class="fileUpload btn btn-primary"><span>Choose Image(s)</span><input type="file" class="upload" multiple name="image[]"/>
+
 					</div>
 					<center>
     				</center>
-    				<input type="text" name="address1" id="address1" placeholder="Street, Locality" value="<?php echo $arrF['address1'];?>" required="" class="form-control" style="margin-bottom:5px;margin-top:5px;" onchange="getLatLng()">
-    				<input type="text" name="address2" id="address2" placeholder="Region" value="<?php echo $arrF['address2'];?>" class="form-control" style="margin-bottom:5px;">
+    				<input type="text" name="address1" id="address1" placeholder="Street, Locality" value="<?php echo $arrF['street'].', '.$arrF['locality'];?>" required="" class="form-control" style="margin-bottom:5px;margin-top:5px;" onchange="getLatLng()">
+    				<input type="text" name="address2" id="address2" placeholder="Region" value="<?php echo $arrF['region'];?>" class="form-control" style="margin-bottom:5px;">
     				<div class="col-md-4" style="text-align:left;padding:0;margin:0;">
     				<input type="text" name="city" id="city" placeholder="City" value="<?php echo $arrF['city'];?>" required="" class="form-control" style="margin-bottom:5px;">
     				</div>
@@ -210,11 +282,8 @@ if (mysqli_num_rows($image_select_result) > 0) {
     				<input type="text" name="phone" placeholder="Phone" value="<?php echo $arrF['phone'];?>" required="" class="form-control" style="margin-bottom:5px;">
 						<?php echo generateReservationDays($arrF['reservationdays']);?>
 					Receive Reservations at <input type="text" name="emailid" placeholder="Email address to receive Reservation Confirmations" value="<?php echo $arrF['emailid'];?>"  class="form-control" style="margin-bottom:5px;width:50%;display:inline;"><br>
-    				Coupon code for Customers<input type="text" name="coupon" placeholder="Coupon code"  required="" value="<?php echo $arrF['coupon_code'];?>" class="form-control" style="margin-bottom:5px;width:50%;display:inline;"><br>
-    				Coupon code for description<input type="text" name="coupon_desc" placeholder="Coupon code description" value="<?php echo $arrF['coupon_desc'];?>" required="" class="form-control" style="margin-bottom:5px;width:50%;display:inline;"><br>
     				
 			<input type="checkbox" name="searchable" style="margin-bottom:5px;display:inline;" <?php echo ($arrF['searchable']==0?"checked":"");?>> Make This Location Unsearchable<br>
-    				<input type="checkbox" name="desc" style="margin-bottom:5px;display:inline;" <?php echo ($arrF['receivereserve']==1?"checked":"");?>> We Want To Receive Text For Reservation<br>
     			 <textarea rows="4" cols="38" name="desc">
 <?php echo $arrF['description'];?>
 </textarea> 
@@ -226,15 +295,16 @@ if (mysqli_num_rows($image_select_result) > 0) {
     				<div id="map" style="height:250px"></div>
     				<input type="hidden" name="lat" id="lat" value="<?php echo $arrF['lat']?>">
     				<input type="hidden" name="lng" id="lng" value="<?php echo $arrF['lng']?>">
-    				<!--<center><p style="color:#68AE00;">Click on the map to set location.</p></center>-->
 					<hr style="margin:5px 0px 5px 0px">
 					<b>Choose Features Offered</b>
 					<hr style="margin:5px 0px 5px 0px">
 					<?php
+					$res_amenities = sanitize_amenities($facility_id);
+					
 					$res = mysqli_query($conn,"select * from options");
 					while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
 						$checked = "";
-						if(strpos(",".$arrF['options'],",".$arr['id'].",") !== false)
+						if(in_array($arr['id'], $res_amenities) == true)
 							$checked = "checked";
 						echo '<input type="checkbox" name="options[]" id="option'.$arr['id'].'" value="'.$arr['id'].'" '.$checked.'> '.$arr['opt'].'<br>';
 					}
@@ -245,32 +315,30 @@ if (mysqli_num_rows($image_select_result) > 0) {
     			<hr style="margin:5px 0px 5px 0px">
     			<b>Choose Your Products</b>
     			<hr style="margin:5px 0px 5px 0px">
-			
-    			<?php
-    			$res = mysqli_query($conn,"select * from units order by standard DESC");
-    			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
-    				$uvalue= $arr['price'];
-    				$checked = "";
-    				$pos = strpos(",".$arrF['units'],",".$arr['id']."-");
-    				if($pos !== false){
+
+          <?php
+    			$matched_units = sanitize_units($facility_id);
+    			$price_arr = $matched_units[0];
+    		  $size_arr = $matched_units[1];
+    		  $checked_arr = $matched_units[2];
+    		  $id_arr = $matched_units[3];
+    			for($i = 0; $i < count($matched_units[3]); $i++){
+    			  $checked = '';
+    				if($checked_arr[$i] == true){
     					$checked = "checked";
-    					$endpos = strpos(substr(",".$arrF['units'],$pos+(strlen($arr['id'])+2)),",");
-    					$uvalue=substr(",".$arrF['units'],$pos+(strlen($arr['id'])+2),$endpos);
-						  if(substr($uvalue,0,1) == "$")
-						  	$uvalue=substr($uvalue,1);
     				}
-    			echo '<div class="col-md-6" style="width:50%;float:left;border:0px solid #000;padding:0;margin:0;">';
-    			echo '<div class="col-md-3" style="width:70%;float:left;border:0px solid #000;padding:0;margin:0;">';
-					echo '<input type="checkbox" name="units[]" id="unit'.$arr['id'].'" value="'.$arr['id'].'" style="margin:5px;" '.$checked.'>';
-					//echo '<p style="display:inline;font-size:.9em;">'.((strlen($arr['units']) > 9)? substr($arr['units'],0,9)."..":$arr['units'])."</p>";
-					echo '<p style="display:inline;font-size:.9em;">'.$arr['units']."</p>";
-					echo '</div>';
-					echo '<div class="col-md-3" style="width:30%;float:left;border:0px solid #000;padding:0;margin:0;">';
-					echo '<input type="number" step="0.01" name="unitval'.$arr['id'].'" id="unitval'.$arr['id'].'" value="'.$uvalue.'" class="form-control"  style="display:inline;width:90%;margin:2px;padding:2px;height:25px;">';
-					echo '</div>';
-					echo '</div>';
+    			  echo '<div class="col-md-6" style="width:50%;float:left;border:0px solid #000;padding:0;margin:0;">';
+      			echo '<div class="col-md-3" style="width:70%;float:left;border:0px solid #000;padding:0;margin:0;">';
+	  				echo '<input type="checkbox" name="units[]" id="unit'.$id_arr[$i].'" value="'.$id_arr[$i].'" style="margin:5px;" '.$checked.'>';
+						echo '<p style="display:inline;font-size:.9em;">'.$size_arr[$i]."</p>";
+	  				echo '</div>';
+	  				echo '<div class="col-md-3" style="width:30%;float:left;border:0px solid #000;padding:0;margin:0;">';
+	  				echo '<input type="number" step="0.01" name="unitval'.$id_arr[$i].'" id="unitval'.$id_arr[$i].'" value="'.$price_arr[$i].'" class="form-control"  style="display:inline;width:90%;margin:2px;padding:2px;height:25px;">';
+	  				echo '</div>';
+	  				echo '</div>';
     			}
     			?>
+
     			</div>
     			<div class="clearfix"> </div>
 				
