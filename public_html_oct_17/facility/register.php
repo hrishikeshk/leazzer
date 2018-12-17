@@ -53,9 +53,17 @@ function register(){
 											$_POST['companyname']."','".
 											$_POST['phone']."','".
 											$_POST['emailid']."','".
-											$_POST['password']."')");
+											$_POST['password']."')") or die('Failed to create owner profile. Please try again in some time');
+
 	$resEU = mysqli_query($conn,"select * from facility_owner where emailid='".$_POST['emailid']."'") or die('Failed to complete registration. Please try again.');
 	$_SESSION['lfdata'] = mysqli_fetch_array($resEU,MYSQLI_ASSOC);
+	
+	mysqli_query($conn,"insert into facility_master(id, facility_owner_id, title, url, phone) values(N'".
+											$_POST['companyname']."_lf','".
+											$_SESSION['auto_id']."','".
+											$_POST['companyname']."','".
+                      "','".
+											$_POST['phone']."')") or die('Failed to create facility master entry. Please try again in some time');
 	header("Location: dashboard.php");
 	return "Thanks for registering, please update your profile.";								
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-
+<!-- 
 <html>
 
 <head>
@@ -101,4 +101,5 @@
 <?php
 include('footer.php');
 ?>
+-->
 

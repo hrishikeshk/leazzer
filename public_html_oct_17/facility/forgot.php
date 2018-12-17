@@ -34,8 +34,7 @@ function forgotmail($code,$fname,$lname){
 	$message .= '</td></tr>';
 	$message .= '</table>';
 	
-	
-	$mail = new PHPMailer(); // defaults to using php "mail()"
+	$mail = new PHPMailer();
 	$mail->CharSet = 'UTF-8';
 	$mail->AddReplyTo($fromemail,"Leazzer"); 
 	$mail->SetFrom($fromemail, "Leazzer");

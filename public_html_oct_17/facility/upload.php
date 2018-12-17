@@ -1,6 +1,6 @@
 <?php
 
-
+/*
 if(isset($_POST['submitImage']))
 
 {
@@ -21,6 +21,7 @@ if(isset($_POST['submitImage']))
 	exit();
 
 }
-
+*/
 
 ?>
+

@@ -23,8 +23,7 @@ if(isset($_POST['action'])){
 	  			if($arr['status'] == "1"){
 	  				$GError = "Logged in successfully.";
 	  				$_SESSION['lfdata']	= $arr;
-	  				//header("Location: dashboard.php");
-  					header("Location: profile.php");
+	  				header("Location: dashboard.php");
 					}
 					else
 					  $GError = "Userid and/or Password may be incorrect";
@@ -35,8 +34,7 @@ if(isset($_POST['action'])){
 	    			$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 	    			$GError = "Logged in successfully.";
 	    			$_SESSION['lfdata']	= $arr;
-	    			//header("Location: dashboard.php");
-    				header("Location: profile.php");
+	    			header("Location: dashboard.php");
 	  		}
 	  		else
 	  			$GError = "Userid and/or Password may be incorrect.";

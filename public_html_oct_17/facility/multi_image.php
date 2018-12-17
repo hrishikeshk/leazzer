@@ -6,10 +6,12 @@ $uid=$_SESSION['lfdata']['id'];
 
 ?>
 <!--inner block start here-->
+<!-- 
  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
         <script src="multiple_image_upload/script.js"></script>
-		
+		-->
 		<!-------Including CSS File------>
+       <!-- 
         <link rel="stylesheet" type="text/css" href="multiple_image_upload/style.css">
 <div class="inner-block">
     <div class="blank">
@@ -29,6 +31,7 @@ $uid=$_SESSION['lfdata']['id'];
     	</div>
     </div>
 </div>
+-->
 <!--inner block end here-->
 <?php
 include('footer.php');

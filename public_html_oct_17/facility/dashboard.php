@@ -20,7 +20,7 @@ function getBaseUrl(){
 }
 
 if(isset($_POST['submit'])){
-  $facility_id = $_SESSION['lfdata']['id'].'_lf';
+  $facility_id = $_SESSION['lfdata']['auto_id'].'_lf';
 	if($_POST['submit'] == "Save"){
     $ts = time();
     $imageFileName = ""; 
@@ -107,59 +107,9 @@ if(isset($_POST['submit'])){
 		
 	}
 	else{
-	  $query = "insert into facility_master (phone, street, region, city, state, zip, lat, lng, reservationdays, searchable, receivereserve, description, id) values (N'".$_POST['phone'].
-								"',N'".mysqli_real_escape_string($conn,$_POST['address1']).
-								"',N'".mysqli_real_escape_string($conn,$_POST['address2']).
-								"',N'".$_POST['city'].
-								"',N'".$_POST['state'].
-								"',N'".$_POST['zipcode'].
-								"','".$_POST['lat'].
-								"','".$_POST['lng'].
-								"','".$_POST['reservationdays'].
-								"','".(isset($_POST['searchable'])?0:1).
-								"','".(isset($_POST['receivereserve'])?1:0).
-								//"',options=',".$options.
-								//"',units=',".$units.
-								"','".$_POST['desc'].
-								"','".$facility_id.
-								"')";
-		mysqli_query($conn, $query) or die('Failed to insert facility details. Please try again: '.mysqli_error($conn));
+	  die('Failed to locate facility. Please register.');
 	}
 }
-
-/*
-if(isset($_POST['submit1'])){
-  if(count($_FILES['image']['name']) > 0){
-        //Loop through each file
-        for($i=0; $i<count($_FILES['image']['name']); $i++) {
-          //Get the temp file path
-            $tmpFilePath = $_FILES['image']['tmp_name'][$i];
-
-            //Make sure we have a filepath
-            if($tmpFilePath != ""){
-            
-                //save the filename
-                $shortname = $_FILES['image']['name'][$i];
-
-                //save the url and the file
-                $filePath = "uploads/" . date('d-m-Y-H-i-s').'-'.$_FILES['image']['name'][$i];
-
-                //Upload the file into the temp dir
-                if(move_uploaded_file($tmpFilePath, $filePath)) {
-
-                    $files[] = $shortname;
-                    //insert into db 
-					//echo $filePath;
-                    //use $shortname for the filename
-                    //use $filePath for the relative url to the file
-				echo $query = "update facility set image='$filePath' where id=".$_SESSION['lfdata']['id'];
-						//mysqli_query($conn,$query);
-                }
-              }
-        }
-    }
-}
-*/
 
 function generateReservationDays($days){
 	$ret = '<select name="reservationdays" id="reservationdays" required class="form-control" style="margin-bottom:5px;">';
@@ -187,7 +137,7 @@ $_SESSION['lfdata'] = $arrF;
 
 $fid = $_SESSION['lfdata']['id'].'_lf';
 
-$image_select_sql 		= "select url_fullsize from image where facility_id=$fid";
+$image_select_sql 		= "select url_fullsize as path from image where facility_id=$fid";
 $image_select_result 	= mysqli_query($conn, $image_select_sql);
 
 $facility_images = [];
@@ -340,16 +290,10 @@ include('footer.php');
 <script type="text/javascript">
 var map;
 var marker;
-var lat = "
 <?php 
-  echo $arrF['lat'];
+  echo 'var lat = "'.$arrF['lat'].'";';
+  echo 'var lng = "'.$arrF['lng'].'";';
 ?>
-";
-var lng = "
-<?php 
-echo $arrF['lng'];
-?>
-";
 
 function initMap(){
   map = new google.maps.Map(document.getElementById('map'), 
