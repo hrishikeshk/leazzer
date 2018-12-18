@@ -283,10 +283,30 @@ if (mysqli_num_rows($image_select_result) > 0) {
 						<?php echo generateReservationDays($arrF['reservationdays']);?>
 					Receive Reservations at <input type="text" name="emailid" placeholder="Email address to receive Reservation Confirmations" value="<?php echo $arrF['emailid'];?>"  class="form-control" style="margin-bottom:5px;width:50%;display:inline;"><br>
     				
-			<input type="checkbox" name="searchable" style="margin-bottom:5px;display:inline;" <?php echo ($arrF['searchable']==0?"checked":"");?>> Make This Location Unsearchable<br>
-    			 <textarea rows="4" cols="38" name="desc">
-<?php echo $arrF['description'];?>
-</textarea> 
+			<input type="checkbox" name="searchable" style="margin-bottom:5px;display:inline;" <?php echo ($arrF['searchable']==0?"checked":"");?>> Make This Location Unsearchable<br /><br />
+			    <div>
+  			    <h4>Discounts</h4><br />
+	  		    <div style="text-align:left;padding:0;margin:0;border: 1px solid black; border-radius: 7px">
+	  		    <h5 style="text-align:center">Percentage Discounts</h5><br />
+			      <input type="text" name="pdispc" id="pdispc" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"> <p style="display:inline;font-size:.9em;"> % OFF For </p>
+			      <input type="text" name="pdismo" id="pdismo" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"> <p style="display:inline;font-size:.9em;"> Month(s) </p>
+			      <br />
+			      <hr style="margin:5px 0px 5px 0px; border-width: 1px; color: black">
+			      <input type="text" name="pdispcfm" id="pdispcfm" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"> <p style="display:inline;font-size:.9em;"> % OFF First Month </p></div>
+            <br />
+	  		    <div style="text-align:left;padding:0;margin:0;border: 1px solid black; border-radius: 7px">
+	  		    <h5 style="text-align:center">Fixed Value Discounts</h5><br />
+			      <input type="text" name="pdispcfmfd" id="pdispcfmfd" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"><p style="display:inline;font-size:.9em;"> % OFF First Month </p>
+			      <br />
+			      <hr style="margin:5px 0px 5px 0px; border-width: 1px; color: black">
+			      <input type="text" name="pdispcfd" id="pdispcfd" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"> <p style="display:inline;font-size:.9em;"> % OFF For </p>
+			      <input type="text" name="pdismofd" id="pdismofd" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"><p style="display:inline;font-size:.9em;"> Month(s)</p></div>
+            <br />
+			      <div style="text-align:left;padding:0;margin:0;border: 1px solid black; border-radius: 7px">
+			      <h5 style="text-align:center">Free Months</h5><br />
+			      <input type="text" name="pdismofm" id="pdismofm" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"> <p style="display:inline;font-size:.9em;"> Month(s) free </p></div>
+			    </div>
+			    
 				</div>
     			<div class="col-md-4" style="text-align:left;padding:0px 5px;margin:0;">
     				<hr style="margin:5px 0px 5px 0px">
@@ -343,7 +363,9 @@ if (mysqli_num_rows($image_select_result) > 0) {
     			<div class="clearfix"> </div>
 				
     			<center>
+    			<!-- 
     				<button class="btn btn-success" name="submit" value="Save" style="background:#68AE00;border-color:#68AE00;padding-left:60px;padding-right:60px;margin-top:5px;">Save</button>
+    				-->
     			</center>
     			</form>
     			<div class="clearfix"> </div>
