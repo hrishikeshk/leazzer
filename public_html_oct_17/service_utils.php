@@ -282,8 +282,11 @@ function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $
   $arr_len = count($facility_unit_amenities);
   $review_count = fetch_review_count($facility_id);
   echo '<tr><td style="width:900px;padding-left:400px">';
-
-	for($i = 0; $i < min_ints($show_upfront, $arr_len); $i++){
+  $min_num = min_ints($show_upfront, $arr_len);
+  if($min_num > 0){
+    echo '<div style="text-align:left;font-weight:bold">Highlights</div>';
+  }
+	for($i = 0; $i < $min_num; $i++){
 	  $amenity_w_g = explode("|", $facility_unit_amenities[$i]);
     $amenity = $amenity_w_g[1];
 	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
@@ -585,8 +588,8 @@ function eval_filters($facility_unit_amenities, $filter_dict_opts){
     background-color: #fefefe;
     padding: 20px;
     border: 1px solid #888;
-    width: 60%; /* Could be more or less, depending on screen size */
-    height: 60%;
+    width: 50%; /* Could be more or less, depending on screen size */
+    height: 50%;
     position: fixed;
     z-index: 1;
     left: 10%;
@@ -800,7 +803,7 @@ function eval_filters($facility_unit_amenities, $filter_dict_opts){
     setTimeout(function(){
     var y = document.getElementById("modalAmenities");
       var ac = document.getElementById("amenity-container");
-      var heading = '<h5 style="text-align: center">Avail these amenities at our excellent facility</h5><br /><h4 style="text-align: center"><b>' + facilityName + '</b></h4><br /><br />';
+      var heading = '<br /><h4 style="text-align: center"><b>' + facilityName + '</b></h4>';
       var tbl_start = '<table><tr><td>';
       var tbl_end = '</td></tr></table>';
       var img = '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
