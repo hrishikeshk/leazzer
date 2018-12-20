@@ -599,7 +599,7 @@ function eval_filters($facility_unit_amenities, $filter_dict_opts){
     return true;
   for($i = 0; $i < count($filter_dict_opts); $i++){
     for($j = 0; $j < count($facility_unit_amenities); $j++){
-      if(stristr($facility_unit_amenities[$j], $filter_dict_opts[$i]) !== FALSE)
+      if((stristr($facility_unit_amenities[$j], $filter_dict_opts[$i]) !== FALSE) || (stristr($filter_dict_opts[$i], $facility_unit_amenities[$j]) !== FALSE))
         return true;
     }
   }

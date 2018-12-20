@@ -311,7 +311,7 @@ function fd_hide(){
     		$result = json_decode($result_string, true);
     		$lat = $result['results'][0]['geometry']['location']['lat'];
     		$lng = $result['results'][0]['geometry']['location']['lng'];
-    		$query = "select *,(6371 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 and title <> '' having calc_distance < 10000 order by calc_distance limit 100";
+    		$query = "select *,(6371 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 and title <> '' having calc_distance < 16 order by calc_distance limit 100";
 			}
 			else if(strpos((isset($_POST['search'])?trim($_POST['search']):""),",") !== false){
 				$searchArr = explode(",",trim($_POST['search']));

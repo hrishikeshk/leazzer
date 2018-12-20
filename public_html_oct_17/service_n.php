@@ -8,7 +8,7 @@ if(isset($_POST['action'])){
 		if($_POST['lat'] == 0 || $_POST['lng'] == 0)
 			$query = "select *, 0 as calc_distance from facility_master where searchable=1 and city is not null and state is not null limit 10";
 		else
-			$query = "select *,(6371 * acos(cos(radians(".$_POST['lat'].")) * cos(radians(lat)) * cos(radians(lng)- radians(".$_POST['lng'].")) + sin(radians(".$_POST['lat'].")) * sin(radians(lat)))) as calc_distance from facility_master having calc_distance < 10000 and searchable=1  and city is not null and state is not null order by calc_distance limit 10";
+			$query = "select *,(6371 * acos(cos(radians(".$_POST['lat'].")) * cos(radians(lat)) * cos(radians(lng)- radians(".$_POST['lng'].")) + sin(radians(".$_POST['lat'].")) * sin(radians(lat)))) as calc_distance from facility_master having calc_distance < 16 and searchable=1  and city is not null and state is not null order by calc_distance limit 10";
 
 		$res = mysqli_query($conn,$query);
 		while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
