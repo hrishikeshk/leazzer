@@ -59,7 +59,7 @@ function register(){
 	$_SESSION['lfdata'] = mysqli_fetch_array($resEU,MYSQLI_ASSOC);
 	
 	mysqli_query($conn,"insert into facility_master(id, facility_owner_id, title, url, phone) values(N'".
-											$_POST['companyname']."_lf','".
+											$_POST['companyname']."','".
 											$_SESSION['auto_id']."','".
 											$_POST['companyname']."','".
                       "','".
