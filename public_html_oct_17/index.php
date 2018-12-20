@@ -49,6 +49,17 @@ https://getbootstrap.com/docs/3.3/javascript/
 https://www.jqueryscript.net/lightbox/Lightbox-Carousel-Plugin-jQuery-slideBox.html
 https://www.w3schools.com/cssref/pr_class_position.asp
 
+https://stackoverflow.com/questions/931252/ajax-autosave-functionality
+http://daemach.blogspot.com/2007/03/autosave-jquery-plugin.html
+
+https://stackoverflow.com/questions/7321855/how-do-i-auto-submit-an-upload-form-when-a-file-is-selected/25893747
+
+https://www.simonbattersby.com/blog/using-the-jquery-autosave-plugin/
+https://www.simonbattersby.com/demos/autosave_demo5.txt
+
+https://www.simonbattersby.com/demos/autosave7.txt
+http://php.net/manual/en/reserved.variables.post.php
+
 -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
         async defer></script>

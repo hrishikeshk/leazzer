@@ -1,6 +1,5 @@
 <?php
 include('header.php');
-$GInfo = "";
 
 function getBaseUrl(){
     // output: /myproject/index.php
@@ -19,96 +18,57 @@ function getBaseUrl(){
     return $protocol.$hostName.$pathInfo['dirname']."/";
 }
 
-if(isset($_POST['submit'])){
-  $facility_id = $_SESSION['lfdata']['auto_id'].'_lf';
-	if($_POST['submit'] == "Save"){
+$res = mysqli_query($conn,"select O.auto_id as auto_id, O.pwd as pwd, M.id as facility_id, O.companyname as companyname, O.phone as phone, M.city as city, M.state as state, M.zip as zip, O.emailid as emailid, M.searchable as searchable, M.lat as lat, M.lng as lng, M.street as street, M.region as region, M.locality as locality, M.receivereserve as receivereserve, M.reservationdays as reservationdays, M.description as description from facility_owner O, facility_master M where O.auto_id=M.facility_owner_id and M.facility_owner_id is not null and O.auto_id ='".$_SESSION['lfdata']['auto_id']."'") or die("Error: " . mysqli_error($conn));
+
+$arrF = mysqli_fetch_array($res,MYSQLI_ASSOC);
+
+$_SESSION['lfdata'] = $arrF;
+
+$facility_id = $arrF['facility_id'];
+
+if(isset($_POST['db_submit'])){
+  
+  if(!empty(array_filter($_FILES['image']['name']))){
     $ts = time();
     $imageFileName = ""; 
-	
-  	$targetDir = "../images/".$facility_id."/";
-	
-  	$allowed_extensions = array(".jpg","jpeg",".png",".gif");
-  	if(!empty(array_filter($_FILES['image']['name']))){
-  	  $has_error = false;
-  		foreach($_FILES['image']['name'] as $k => $v): 
+    $targetDir = "../images/".$facility_id."/";
+    $allowed_extensions = array(".jpg","jpeg",".png",".gif");
+  	$has_error = false;
+  	foreach($_FILES['image']['name'] as $k => $v): 
 			
-  			$fileName = md5(time()).'_'.basename($_FILES['image']['name'][$k]);
-  			$extension = substr($fileName,strlen($fileName)-4,strlen($fileName));
+  		$fileName = md5(time()).'_'.basename($_FILES['image']['name'][$k]);
+  		$extension = substr($fileName,strlen($fileName)-4,strlen($fileName));
 
-  			$targetFilePath = $targetDir . $fileName;
+  		$targetFilePath = $targetDir . $fileName;
 			
-  			if(!in_array($extension,$allowed_extensions)){
-  				echo "<script>alert('Invalid format(".$extension." in ".basename($_FILES['image']['name'][$k])."). Only jpg / jpeg/ png /gif format allowed');</script>";
-  				$has_error = true;
+  		if(!in_array($extension,$allowed_extensions)){
+  			echo "<script>alert('Invalid format(".$extension." in ".basename($_FILES['image']['name'][$k])."). Only jpg / jpeg/ png /gif format allowed');</script>";
+  			$has_error = true;
+  		}
+  	endforeach;
+		
+  	if($has_error == false){
+  	  $image_sql = "delete from image where facility_id='".$facility_id."'";
+  		mysqli_query($conn, $image_sql) or die('Failed to delete prior facility images: '.mysqli_error($conn));
+  		
+  		//if(is_dir($targetDir))
+  		//  rmdir($targetDir);
+  		//mkdir($targetDir, 0644);
+  		
+    	foreach($_FILES['image']['name'] as $k => $v): 
+			
+  	  	$fileName = md5(time()).'_'.basename($_FILES['image']['name'][$k]);
+  	  	$extension = substr($fileName,strlen($fileName)-4,strlen($fileName));
+			
+  	  	$targetFilePath = $targetDir . $fileName;
+			
+  			if(move_uploaded_file($_FILES["image"]["tmp_name"][$k], $targetFilePath)){
+  				$image_sql = "insert into image (url_fullsize, url_thumbsize, facility_id) values ('".$fileName."', '".$fileName."', '".$facility_id."')";
+  				mysqli_query($conn, $image_sql) or die('Failed to insert facility image: '.mysqli_error($conn));
   			}
   		endforeach;
-		
-  		if($has_error == false){
-    		foreach($_FILES['image']['name'] as $k => $v): 
-			
-  	  		$fileName = md5(time()).'_'.basename($_FILES['image']['name'][$k]);
-  	  		$extension = substr($fileName,strlen($fileName)-4,strlen($fileName));
-			
-  	  		$targetFilePath = $targetDir . $fileName;
-			
-  				if(move_uploaded_file($_FILES["image"]["tmp_name"][$k], $targetFilePath)){
-  					$image_sql = "insert into image (url_fullsize, url_thumbsize, facility_id) values ('".$fileName."', '".$fileName."', '".$facility_id."')";
-
-  					mysqli_query($conn, $image_sql) or die('Failed to insert facility image: '.mysqli_error($conn));
-  				}
-  		  endforeach;
-  		}
-    }
-	}
-
-	$location = '';
-
-	if(isset($_POST['options']) && is_array($_POST['options']) ){
-    ////
-	}		
-	if( isset($_POST['units']) && is_array($_POST['units']) ){
-		foreach($_POST['units'] as $unit){
-			////$units.= $unit."-".$_POST['unitval'.$unit].",";	
-		}
-  }
-
-	$res = mysqli_query($conn,"select O.auto_id from facility_owner O, facility_master M where O.auto_id=M.id and M.id = '".$facility_id."' and O.emailid='".$_POST['emailid']."'");
-	if(mysqli_num_rows($res) >=  1){
-		if($_SESSION['lfdata']['emailid'] != $_POST['emailid'])
-			$GInfo = "Info : Your Userid is ".$_POST['emailid']."<br>You will receive Reservation Confirmations on - ".$_POST['emailid'];
-				
-		$query = "update facility_master set phone=N'".$_POST['phone'].
-								//"',emailid='".$_POST['emailid'].
-								"',street=N'".mysqli_real_escape_string($conn,$_POST['address1']).
-								"',region=N'".mysqli_real_escape_string($conn,$_POST['address2']).
-								"',city=N'".$_POST['city'].
-								"',state=N'".$_POST['state'].
-								"',zip=N'".$_POST['zipcode'].
-								"',lat='".$_POST['lat'].
-								"',lng='".$_POST['lng'].
-								"',reservationdays='".$_POST['reservationdays'].
-								"',searchable='".(isset($_POST['searchable'])?0:1).
-								"',receivereserve='".(isset($_POST['receivereserve'])?1:0).
-								//"',options=',".$options.
-								//"',units=',".$units.
-								"',description ='".$_POST['desc'].
-								"'";
-
-		$query .= " where id='".$facility_id."'";
-			
-		mysqli_query($conn,$query) or die('Failed to update facility details. Please try again: '.mysqli_error($conn));
-		
-		$query = "update facility_owner set phone=N'".$_POST['phone'].
-								"',emailid='".$_POST['emailid'].
-								"'";
-		$query .= " where emailid='".$_SESSION['lfdata']['emailid']."'";
-		mysqli_query($conn,$query) or die('Failed to update email and phone. Please try again: '.mysqli_error($conn));
-		$_SESSION['lfdata']['emailid'] = $_POST['emailid'];
-		
-	}
-	else{
-	  die('Failed to locate facility. Please register.');
-	}
+  	}
+  } 
 }
 
 function generateReservationDays($days){
@@ -145,7 +105,7 @@ function sanitize_amenities($facility_id){
 	  else{
 	    $curr = $ams_pa[1];
 	  }
-    $res_opts = mysqli_query($conn, "select option_id as oid from amenity_dictionary where equivalent = '".$curr."'") or die('Failed to match facility amenities.');
+    $res_opts = mysqli_query($conn, "select option_id as oid from amenity_dictionary where (equivalent like '%".$curr."%' OR INSTR('".$curr."', equivalent) > 0) and equivalent is not null and LENGTH(equivalent) > 0") or die('Failed to match facility amenities.');
     while($arr = mysqli_fetch_array($res_opts, MYSQLI_ASSOC)){
       $ams[] = $arr['oid'];
     }
@@ -195,7 +155,7 @@ function sanitize_units($facility_id){
       $size_arr[] = $predef_units[0][$i];
       $checked_arr[] = false;
       $id_arr[] = $predef_units[1][$i];
-      $price_arr[] = '-';
+      $price_arr[] = '';
     }
   }
   
@@ -203,33 +163,129 @@ function sanitize_units($facility_id){
   return $ret;
 }
 
-$res = mysqli_query($conn,"select O.auto_id as auto_id, O.pwd as pwd, M.id as facility_id, O.companyname as companyname, O.phone as phone, M.city as city, M.state as state, M.zip as zip, O.emailid as emailid, M.searchable as searchable, M.lat as lat, M.lng as lng, M.street as street, M.region as region, M.locality as locality, M.receivereserve as receivereserve, M.reservationdays as reservationdays, M.description as description from facility_owner O, facility_master M where O.auto_id=M.facility_owner_id and M.facility_owner_id is not null and O.auto_id ='".$_SESSION['lfdata']['auto_id']."'") or die("Error: " . mysqli_error($conn));
-
-$arrF = mysqli_fetch_array($res,MYSQLI_ASSOC);
-
-$_SESSION['lfdata'] = $arrF;
-
-$facility_id = $arrF['facility_id'];
-
 $image_select_sql 		= "select url_fullsize as path from image where facility_id='".$facility_id."'";
 $image_select_result 	= mysqli_query($conn, $image_select_sql);
 
 $facility_images = [];
 if (mysqli_num_rows($image_select_result) > 0) {
 	while($row = mysqli_fetch_assoc($image_select_result)) {
-	   $facility_images[] = $row['path'];
+	   $path = $row['path'];
+	   $lpos = strrpos($path, "/");
+	   if($lpos == FALSE)
+	     $facility_images[] = '../images/'.$facility_id.'/'.trim($path);
+	   else
+  	   $facility_images[] = '../images/'.$facility_id.'/'.trim(substr($path, $lpos + 1));
 	}
 }
 ?>
-<!--inner block start here-->
+<script src="js/jquery.autosave.js"></script> 
+<script type="text/javascript">
+$(function() {
+  $("input:not(.upload,.opt_inputs,.unit_price_inputs,.unit_size_inputs, .searchable_class),select").autosave({
+			url: "dpost.php",
+			method: "post",
+			grouped: false,
+    	success: function(data) {
+    	    off();
+        	//$("#save_message").html("Data saved successfully").show();
+				  //setTimeout('fadeMessage()',1500);
+    		},
+			send: function(){
+			    on();
+        	//$("#save_message").html("Saving data....");
+			},
+    		dataType: "html"
+  });
+});
+
+function on() {
+  document.getElementById("save_message").style.display = "block";
+}
+
+function off() {
+  document.getElementById("save_message").style.display = "none";
+}
+
+function fadeMessage(){
+	$('#save_message').fadeOut('slow');
+}
+
+function persist_option(option_id){
+  var elem_id = document.getElementById('option['+option_id+']');
+  if(elem_id != undefined && elem_id != null){
+    var state = elem_id.checked;
+    var res = ajaxcall('change=option&id='+option_id+'&val='+state);
+  }
+  else{
+    alert('Failed to save option updates. Please try again in some time');
+  }
+}
+
+function persist_unit_cb(unit_id, size, price){
+  var elem_id = document.getElementById('unit['+unit_id+']');
+  if(elem_id != undefined && elem_id != null){
+    var state = elem_id.checked;
+    var res = ajaxcall('change=unit&id='+unit_id+'&val='+state+'&size='+size+'&price='+price);
+  }
+  else{
+    alert('Failed to save unit checkbox updates. Please try again in some time');
+  }
+}
+
+function persist_unit_pr(unit_id, size){
+  var elem_id = document.getElementById('unitval['+unit_id+']');
+  if(elem_id != undefined && elem_id != null){
+    var price = elem_id.value;
+    var res = ajaxcall('change=unitval&id='+unit_id+'&val='+price+'&size='+size);
+  }
+  else{
+    alert('Failed to save unit price updates. Please try again in some time');
+  }
+}
+
+function persist_searchable(){
+  var elem_id = document.getElementById('searchable');
+  if(elem_id != undefined && elem_id != null){
+    var state = elem_id.checked;
+    var res = ajaxcall('change=searchable&val='+state);
+  }
+  else{
+    alert('Failed to save searchability updates. Please try again in some time');
+  }
+}
+
+function ajaxcall(datastring){
+    var res;
+    on();
+    $.ajax
+    ({	
+    		type:"POST",
+    		url:"dpost.php",
+    		data:datastring,
+    		cache:false,
+    		async:true,
+    		success: function(result){
+    		    off();
+   				 	res = result;
+   		 	},
+   		 	error: function(err){
+   		 	    off();
+   		 	    alert('Failed to invoke serverside function to db_submit... Please try again in some time' + err);
+   		 	    res = false;
+   		 	}
+    });
+    return res;
+}
+
+</script>
+<div id="save_message">
+  <div id="text_as">Saving Changes ...</div>
+</div>
+
 <div class="inner-block">
     	<div class="blankpage-main" style="padding:.5em .5em;">
-    		<?php
-    		if($GInfo != ""){
-    			echo "<div class=\"alert alert-info\" role=\"alert\">".$GInfo."</div>";
-    		}
-    		?>
-    		<form method="post" action="<?php echo $_SERVER['PHP_SELF']?>" enctype="multipart/form-data">
+    		<form method="post" id="db_form" action="dashboard.php" enctype="multipart/form-data">
+    		  <input type="hidden" name="db_submit" id="db_submit" value="db_submit">
     		<div class="col-md-4" style="border:0px solid #000;padding:0px 5px;margin:0;">
     				<h2 style="margin: 0;padding:0;"><?php echo $arrF['companyname'];?></h2>
     				<hr style="margin:5px 0px 5px 0px">
@@ -263,11 +319,11 @@ if (mysqli_num_rows($image_select_result) > 0) {
 							  
 							  <?php endif; ?>
 							</div>
-    				<div class="fileUpload btn btn-primary"><span>Choose Image(s)</span><input type="file" class="upload" multiple name="image[]"/>
-
+    			<div class="fileUpload btn btn-primary">
+    			  <span>Choose Image(s)</span>
+    			  <input type="file" class="upload" multiple name="image[]" onchange="form.submit();" />
 					</div>
-					<center>
-    				</center>
+
     				<input type="text" name="address1" id="address1" placeholder="Street, Locality" value="<?php echo $arrF['street'].', '.$arrF['locality'];?>" required="" class="form-control" style="margin-bottom:5px;margin-top:5px;" onchange="getLatLng()">
     				<input type="text" name="address2" id="address2" placeholder="Region" value="<?php echo $arrF['region'];?>" class="form-control" style="margin-bottom:5px;">
     				<div class="col-md-4" style="text-align:left;padding:0;margin:0;">
@@ -283,7 +339,7 @@ if (mysqli_num_rows($image_select_result) > 0) {
 						<?php echo generateReservationDays($arrF['reservationdays']);?>
 					Receive Reservations at <input type="text" name="emailid" placeholder="Email address to receive Reservation Confirmations" value="<?php echo $arrF['emailid'];?>"  class="form-control" style="margin-bottom:5px;width:50%;display:inline;"><br>
     				
-			<input type="checkbox" name="searchable" style="margin-bottom:5px;display:inline;" <?php echo ($arrF['searchable']==0?"checked":"");?>> Make This Location Unsearchable<br /><br />
+			<input class="searchable_class" type="checkbox" name="searchable" id="searchable" value="searchableval" style="margin-bottom:5px;display:inline;" <?php echo ($arrF['searchable']==0?"checked":"");?> onchange="persist_searchable();"> Make This Location Unsearchable<br /><br />
 			    <div>
   			    <h4>Discounts</h4><br />
 	  		    <div style="text-align:left;padding:0;margin:0;border: 1px solid black; border-radius: 7px">
@@ -326,11 +382,12 @@ if (mysqli_num_rows($image_select_result) > 0) {
 						$checked = "";
 						if(in_array($arr['id'], $res_amenities) == true)
 							$checked = "checked";
-						echo '<input type="checkbox" name="options[]" id="option'.$arr['id'].'" value="'.$arr['id'].'" '.$checked.'> '.$arr['opt'].'<br>';
+						echo '<input class="opt_inputs" type="checkbox" name="option['.$arr['id'].']" id="option['.$arr['id'].']" value="'.$arr['id'].'" '.$checked.' onchange="persist_option(\''.$arr['id'].'\');"> '.$arr['opt'].'<br>';
+
 					}
 					?>
-					
-    			</div>    		
+
+    		</div>    		
 				<div class="col-md-4" style="border:0px solid #000;padding:0px 5px;margin:0;">
     			<hr style="margin:5px 0px 5px 0px">
     			<b>Choose Your Products</b>
@@ -347,13 +404,14 @@ if (mysqli_num_rows($image_select_result) > 0) {
     				if($checked_arr[$i] == true){
     					$checked = "checked";
     				}
+    				$esc_size = str_replace("'", "\'", $size_arr[$i]);
     			  echo '<div class="col-md-6" style="width:50%;float:left;border:0px solid #000;padding:0;margin:0;">';
       			echo '<div class="col-md-3" style="width:70%;float:left;border:0px solid #000;padding:0;margin:0;">';
-	  				echo '<input type="checkbox" name="units[]" id="unit'.$id_arr[$i].'" value="'.$id_arr[$i].'" style="margin:5px;" '.$checked.'>';
+	  				echo '<input class="unit_size_inputs" type="checkbox" name="unit['.$id_arr[$i].']" id="unit['.$id_arr[$i].']" value="'.$id_arr[$i].'" style="margin:5px;" '.$checked.' onchange="persist_unit_cb(\''.$id_arr[$i].'\',\''.$esc_size.'\',\''.$price_arr[$i].'\');">';
 						echo '<p style="display:inline;font-size:.9em;">'.$size_arr[$i]."</p>";
 	  				echo '</div>';
 	  				echo '<div class="col-md-3" style="width:30%;float:left;border:0px solid #000;padding:0;margin:0;">';
-	  				echo '<input type="number" step="0.01" name="unitval'.$id_arr[$i].'" id="unitval'.$id_arr[$i].'" value="'.$price_arr[$i].'" class="form-control"  style="display:inline;width:90%;margin:2px;padding:2px;height:25px;">';
+	  				echo '<input type="number" step="0.01" name="unitval['.$id_arr[$i].']" id="unitval['.$id_arr[$i].']" value="'.$price_arr[$i].'" class="form-control unit_price_inputs" style="display:inline;width:90%;margin:2px;padding:2px;height:25px;" onchange="persist_unit_pr(\''.$id_arr[$i].'\',\''.$esc_size.'\');">';
 	  				echo '</div>';
 	  				echo '</div>';
     			}
@@ -362,11 +420,6 @@ if (mysqli_num_rows($image_select_result) > 0) {
     			</div>
     			<div class="clearfix"> </div>
 				
-    			<center>
-    			<!-- 
-    				<button class="btn btn-success" name="submit" value="Save" style="background:#68AE00;border-color:#68AE00;padding-left:60px;padding-right:60px;margin-top:5px;">Save</button>
-    				-->
-    			</center>
     			</form>
     			<div class="clearfix"> </div>
     	</div>
@@ -378,6 +431,14 @@ include('footer.php');
 ?>
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&callback=initMap"  async defer></script>
 <script type="text/javascript">
+/*
+var img_inputs = document.getElementsByClassName("upload");
+for(i = 0; i < img_inputs.length; i++){
+  img_inputs[i].onchange = function() {
+    document.getElementById("db_form").submit();
+  }
+};
+*/
 var map;
 var marker;
 <?php 
@@ -452,6 +513,30 @@ function getLatLng(){
     height : 30px;
     width:100%;
     filter: alpha(opacity=0);
+}
+
+#save_message {
+  position: fixed; /* Sit on top of the page content */
+  display: none; /* Hidden by default */
+  width: 100%; /* Full width (cover the whole page) */
+  height: 100%; /* Full height (cover the whole page) */
+  top: 0; 
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5); /* Black background with opacity */
+  z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+  cursor: pointer; /* Add a pointer on hover */
+}
+
+#text_as{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 50px;
+  color: white;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
 }
 
 </style>
