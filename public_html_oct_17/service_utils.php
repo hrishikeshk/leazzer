@@ -536,13 +536,45 @@ function fetch_priority_unit_amenities($facility_id, $unit_info_arr){
 	return $unit_amenities;
 }
 
-function fetch_facility_amenities($facility_id){
+function construct_addl_discounts($arrFM){
+  $ret = array();
+  
+  $pdispc = $arrFM['pdispc'];
+  $pdismo = $arrFM['pdismo'];
+  if(isset($pdispc) && $pdispc > 0 && isset($pdismo) && $pdismo > 0)
+    $ret[] = 'Discounts|'.$pdispc.' % OFF For '.$pdismo.' Month(s)';
+  
+  $pdispcfm = $arrFM['pdispcfm'];
+  if(isset($pdispcfm) && $pdispcfm > 0)
+    $ret[] = 'Discounts|'.$pdispcfm.' % OFF First Month';
+    
+  $pdispcfmfd = $arrFM['pdispcfmfd'];
+  if(isset($pdispcfmfd) && $pdispcfmfd > 0)
+    $ret[] = 'Discounts|$'.$pdispcfmfd.' OFF First Month';
+    
+  $pdispcfd = $arrFM['pdispcfd'];
+  $pdismofd = $arrFM['pdismofd'];
+  if(isset($pdispcfd) && $pdispcfd > 0 && isset($pdismofd) && $pdismofd > 0)
+    $ret[] = 'Discounts|$'.$pdispcfd.' OFF For '.$pdismofd.' Month(s)';
+    
+  $pdismofm = $arrFM['pdismofm'];
+  if(isset($pdismofm) && $pdismofm > 0)
+    $ret[] = 'Discounts|$'.$pdismofm.' OFF First Month';
+    
+  return $ret;
+}
+
+function fetch_facility_amenities($facility_id, $arrFM){
   global $conn;
   $resFA = mysqli_query($conn, "SELECT amenity as fac_amenity FROM facility_amenity where facility_id='".$facility_id."'");
   
   $amenities = array();
   while($arrFA = mysqli_fetch_array($resFA, MYSQLI_ASSOC)){
 		$amenities[] = $arrFA['fac_amenity'];
+	}
+	$arr_dfm = construct_addl_discounts($arrFM);
+	for($i = 0; $i < count($arr_dfm); $i++){
+	  $amenities[] = $arr_dfm[$i];
 	}
 	return a_unique($amenities);
 }
@@ -589,7 +621,7 @@ function eval_filters($facility_unit_amenities, $filter_dict_opts){
     padding: 20px;
     border: 1px solid #888;
     width: 50%; /* Could be more or less, depending on screen size */
-    height: 50%;
+    height: 60%;
     position: fixed;
     z-index: 1;
     left: 10%;
@@ -804,7 +836,7 @@ function eval_filters($facility_unit_amenities, $filter_dict_opts){
     var y = document.getElementById("modalAmenities");
       var ac = document.getElementById("amenity-container");
       var heading = '<br /><h4 style="text-align: center"><b>' + facilityName + '</b></h4>';
-      var tbl_start = '<table><tr><td>';
+      var tbl_start = '<table><tr><td style="vertical-align:top">';
       var tbl_end = '</td></tr></table>';
       var img = '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
       var data = '';
@@ -823,7 +855,7 @@ function eval_filters($facility_unit_amenities, $filter_dict_opts){
             rows++;
           }
           if(rows > 5){
-            data += '</td><td>';
+            data += '</td><td style="vertical-align:top; padding-left:10px">';
             rows = 0;
           }
         }

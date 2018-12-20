@@ -329,7 +329,7 @@ function fd_hide(){
 
 			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
         $facility_id = $arr['id'];				
-				$facility_unit_amenities = fetch_facility_amenities($facility_id);
+				$facility_unit_amenities = fetch_facility_amenities($facility_id, $arr);
 
         if(count($filter_dict_opts) == 0 || eval_filters($facility_unit_amenities, $filter_dict_opts) == true){
     		  $arr_imgs = fetch_image_url($facility_id);

@@ -291,7 +291,12 @@ function ajaxcall(datastring){
     				<hr style="margin:5px 0px 5px 0px">
 							
 							<div id="myCarousel" class="carousel slide" data-ride="carousel">
-							
+							  <!-- a class="close carousel-control" href="#myCarousel" / -->
+							  <!-- button type="button" class="close" aria-label="Close" onclick="alert("Hi");">
+							    <span aria-hidden="true">
+							      &times;
+							    </span>
+							  </button -->
 								<?php if(count($facility_images) > 0): ?>
 							  <!-- Wrapper for slides -->
 							  <div class="carousel-inner">
@@ -352,10 +357,10 @@ function ajaxcall(datastring){
             <br />
 	  		    <div style="text-align:left;padding:0;margin:0;border: 1px solid black; border-radius: 7px">
 	  		    <h5 style="text-align:center">Fixed Value Discounts</h5><br />
-			      <input type="number" step = "1" pattern = "\d+" min="0" max = "100" name="pdispcfmfd" id="pdispcfmfd" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"><p style="display:inline;font-size:.9em;"> % OFF First Month </p>
+			      <input type="number" step = "1" pattern = "\d+" min="0" max = "100" name="pdispcfmfd" id="pdispcfmfd" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"><p style="display:inline;font-size:.9em;"> OFF First Month </p>
 			      <br />
 			      <hr style="margin:5px 0px 5px 0px; border-width: 1px; color: black">
-			      <input type="number" step = "1" pattern = "\d+" min="0" max = "100" name="pdispcfd" id="pdispcfd" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"> <p style="display:inline;font-size:.9em;"> % OFF For </p>
+			      <input type="number" step = "1" pattern = "\d+" min="0" max = "100" name="pdispcfd" id="pdispcfd" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"> <p style="display:inline;font-size:.9em;"> OFF For </p>
 			      <input type="number" step = "1" pattern = "\d+" min="0" max = "12" name="pdismofd" id="pdismofd" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px"><p style="display:inline;font-size:.9em;"> Month(s)</p></div>
             <br />
 			      <div style="text-align:left;padding:0;margin:0;border: 1px solid black; border-radius: 7px">
