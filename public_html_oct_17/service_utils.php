@@ -85,7 +85,7 @@ function save_phone($cid, $phone){
 
 function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ownerEmail, $ownerName, $userPhone, $unit, $price, $resFromDate, $resToDate, $phone){
 	global $conn,$GError;
-	$fromemail="no-reply@leazzer.com"; 
+	$fromemail="no-reply@leazzer.com";
 	$toemail= 'admin@leazzer.com';
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
@@ -123,23 +123,27 @@ function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $pric
 	$toemail=$custEmail; 
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
-	$message .= 'Hello <b>'.$custName.'</b>,';
+	$message .= 'Dear <b>'.$custName.'</b>,';
+	{
+	  $expected_path = "images/gwc.png";
+	  $message .= '<center><img src="https://www.leazzer.com/'.$expected_path.'" height="150px" width="175px" alt="Reservation Done" title="uiLogo" style="display:block"></center><br />';
+	}
 	$message .= '<br><br>Congratulations. A '.$unit.' unit reservation has been confirmed at '.$companyName.' for you at the price of $'.$price.' per month. You must move in between dates '.$resFromDate.' to '.$resToDate;
 	
 	if(strlen($image) > 0){
 	  $image_name = extract_image_name($image);
 	  $expected_path = "images/".$facility_id.'/'.$image_name;
 	  if(strlen($image_name) > 0 && file_exists($expected_path))
-			$message .= '<center><img src="https://www.leazzer.com/'.$expected_path.'" height="120px" width="125px" alt="uiLogo" title="uiLogo" style="display:block"></center><br>';
+			$message .= '<center><img src="https://www.leazzer.com/'.$expected_path.'" height="180px" width="200px" alt="Reservation Done" title="uiLogo" style="display:block"></center><br />';
 		else if(file_exists("unitimages/".$image))
-			$message .= '<center><img src="https://www.leazzer.com/unitimages/'.$image.'" height="120px" width="125px" alt="uiLogo" title="uiLogo" style="display:block"></center><br>';
+			$message .= '<center><img src="https://www.leazzer.com/unitimages/'.$image.'" height="180px" width="200px" alt="uiLogo" title="uiLogo" style="display:block"></center><br />';
 		else if(stristr($image, 'images.selfstorage.com') === FALSE)
-		  $message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="120px" width="125px" alt="pnaLogo" title="pnaLogo" style="display:block"></center><br>';
+		  $message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="180px" width="200px" alt="pnaLogo" title="pnaLogo" style="display:block"></center><br />';
 		else
-			$message .= '<center><img src="https:'.$image.'" height="120px" width="125px" alt="ssLogo" title="ssLogo" style="display:block"></center><br>';
+			$message .= '<center><img src="https:'.$image.'" height="180px" width="200px" alt="ssLogo" title="ssLogo" style="display:block"></center><br />';
 	}
 	else
-		$message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="120px" width="125px" alt="npnaLogo" title="npnaLogo" style="display:block"></center><br>';
+		$message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="180px" width="200px" alt="npnaLogo" title="npnaLogo" style="display:block"></center><br>';
 		
 	$message .= $fAddress;
 	$message .= '</td></tr>';
@@ -167,7 +171,7 @@ function onReserveOwnerMail($facilityName, $ownerEmail, $ownerName, $unit, $pric
 	$toemail='owners@leazzer.com';
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
-	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="125px" alt="Logo" title="Logo" style="display:block"></center><br>';
+	$message .= '<center><img src="https://www.leazzer.com/images/gwo.png" height="150px" width="175px" alt="Logo" title="Logo" style="display:block"></center><br>';
 	$message .= 'Hello <b>'.$facilityName.'</b>,';
 	$message .= '<br><br>A '.$unit.' unit has been reserved by '.$customerName.' from ';
 	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
