@@ -605,7 +605,38 @@ function eval_filters($facility_unit_amenities, $filter_dict_opts){
   }
   return false;
 }
-  	
+
+function file_get_contents_curl($url){
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_HEADER, 0);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //Set curl to return the data instead of printing it to the browser.
+  curl_setopt($ch, CURLOPT_URL, $url);
+  $data = curl_exec($ch);
+  curl_close($ch);
+  return $data;
+}
+
+function get_lat_lng($loc){
+  $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".trim($loc)."&sensor=false";
+	$result_string = file_get_contents_curl($url);
+  $result = json_decode($result_string, true);
+  $lat = $result['results'][0]['geometry']['location']['lat'];
+  $lng = $result['results'][0]['geometry']['location']['lng'];
+  return array($lat, $lng);
+}
+
+function calculate_distance($loc1, $loc2){
+  $ll1 = get_lat_lng($loc1);
+  $ll2 = get_lat_lng($loc2);
+  
+  return round((3959 * acos(cos(deg2rad($ll1[0])) * cos(deg2rad($ll2[0])) * cos(deg2rad($ll2[1])- deg2rad($ll1[1])) + sin(deg2rad($ll1[0])) * sin(deg2rad($ll2[0])))), 1);
+}
+
+function calculate_distance_ll($lat, $lng, $loc){
+  $ll = get_lat_lng($loc);
+  return round((3959 * acos(cos(deg2rad($ll[0])) * cos(deg2rad($lat)) * cos(deg2rad($lng)- deg2rad($ll[1])) + sin(deg2rad($ll[0])) * sin(deg2rad($lat)))), 1);
+}
+
 ?>
 
 <style>

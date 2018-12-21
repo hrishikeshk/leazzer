@@ -47,16 +47,6 @@ function showOpt($arr){
 	echo "</p>";
 }
 
-function file_get_contents_curl($url){
-  $ch = curl_init();
-  curl_setopt($ch, CURLOPT_HEADER, 0);
-  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //Set curl to return the data instead of printing it to the browser.
-  curl_setopt($ch, CURLOPT_URL, $url);
-  $data = curl_exec($ch);
-  curl_close($ch);
-  return $data;
-}
-
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -311,7 +301,7 @@ function fd_hide(){
     		$result = json_decode($result_string, true);
     		$lat = $result['results'][0]['geometry']['location']['lat'];
     		$lng = $result['results'][0]['geometry']['location']['lng'];
-    		$query = "select *,(6371 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 and title <> '' having calc_distance < 16 order by calc_distance limit 100";
+    		$query = "select *,(3959 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 and title <> '' having calc_distance < 25 order by calc_distance limit 100";
 			}
 			else if(strpos((isset($_POST['search'])?trim($_POST['search']):""),",") !== false){
 				$searchArr = explode(",",trim($_POST['search']));
@@ -332,6 +322,11 @@ function fd_hide(){
 				$facility_unit_amenities = fetch_facility_amenities($facility_id, $arr);
 
         if(count($filter_dict_opts) == 0 || eval_filters($facility_unit_amenities, $filter_dict_opts) == true){
+          $calc_distance = 0;
+          if(isset($arr['calc_distance']) && $arr['calc_distance'] > 0)
+    			  $calc_distance = round($arr['calc_distance'], 1);
+    			else if(is_null($arr['lat']) == false && is_null($arr['lng']) == false && is_numeric($arr['lat']) && is_numeric($arr['lng']))
+    			  $calc_distance = calculate_distance_ll($arr['lat'], $arr['lng'], $_POST['search']);
     		  $arr_imgs = fetch_image_url($facility_id);
 	    	  $unit_info_arr = fetch_units($facility_id);
 	    	  
@@ -365,7 +360,10 @@ function fd_hide(){
 	  		
 	    		echo '<tr><td><b>'.$arr['title'].'</b><br>';
 	    		echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
-	  		
+	    		
+	  		  if($calc_distance > 0)
+    			  echo $calc_distance.' miles away<br />';
+	  
 	    		if(has_priority_amenity($facility_unit_amenities, array('climate')))
 	    		  echo '<img src="images/cc.jpg" title="climate control equipped" style="min-height:40px;width:40px;" />';
 	  		
