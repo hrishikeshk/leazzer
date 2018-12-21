@@ -144,7 +144,7 @@ function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $pric
 	}
 	else
 		$message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="180px" width="200px" alt="npnaLogo" title="npnaLogo" style="display:block"></center><br>';
-		
+
 	$message .= $fAddress;
 	$message .= '</td></tr>';
 	$message .= '<tr><td><br><br>';

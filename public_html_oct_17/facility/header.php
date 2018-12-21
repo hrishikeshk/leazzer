@@ -12,8 +12,8 @@ if(!isset($_SESSION['lfdata']))
 $GError = "";
 $pos = strpos($_SERVER['REQUEST_URI'],"profile.php");
 if($pos === false){
-	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['phone']) == ""))
-		header("Location: profile.php");
+	//if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['phone']) == ""))
+		//header("Location: profile.php");
 }
 else {
 	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['phone']) == ""))
