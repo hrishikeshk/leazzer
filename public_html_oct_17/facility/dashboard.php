@@ -353,12 +353,12 @@ function process_image_delete(idx){
     				<hr style="margin:5px 0px 5px 0px">
 
     				<?php
-    				  echo '<img src="images/trash.png" style="margin-left:90%" height="40px" width="40px" onclick="process_image_delete($(\'#myCarousel .item\').index($(\'#myCarousel .item.active\')));" />';
+    				  echo '<img src="images/trash.png" style="margin-left:90%" height="40px; cursor:pointer" width="40px" onclick="process_image_delete($(\'#myCarousel .item\').index($(\'#myCarousel .item.active\')));"  />';
     				?>
     				
 							<!-- img src="images/trash.png" style="margin-left:90%" height="40px" width="40px" onclick="alert('active: ' + $('#myCarousel .item').index($('#myCarousel .item.active')));" / -->
 							
-							<div id="myCarousel" class="carousel slide" data-ride="carousel">
+							<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
 							  <!-- a class="close carousel-control" href="#myCarousel" / -->
 							  <!-- button type="button" class="close" aria-label="Close" onclick="alert("Hi");">
 							    <span aria-hidden="true">
