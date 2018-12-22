@@ -10,6 +10,19 @@ if(!isset($_SESSION['lfdata']))
 	header("Location: index.php");
 
 $GError = "";
+$pwd_change = false;
+$pos = strpos($_SERVER['REQUEST_URI'],"settings.php");
+if($pos === false){
+	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['pwd']) == "excited123!"))
+		header("Location: settings.php");
+}
+else {
+	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['pwd']) == "excited123!")){
+		$GError = "Please change your password.";
+		$pwd_change = true;
+	}
+}
+
 $pos = strpos($_SERVER['REQUEST_URI'],"profile.php");
 if($pos === false){
 	//if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['phone']) == ""))
@@ -19,15 +32,7 @@ else {
 	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['phone']) == ""))
 		$GError = "Please enter phone number.";
 }
-$pos = strpos($_SERVER['REQUEST_URI'],"settings.php");
-if($pos === false){
-	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['pwd']) == "excited123!"))
-		header("Location: settings.php");
-}
-else {
-	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['pwd']) == "excited123!"))
-		$GError = "Please change your password.";
-}
+
 include('../sql.php');
 ?>
 <!DOCTYPE HTML>

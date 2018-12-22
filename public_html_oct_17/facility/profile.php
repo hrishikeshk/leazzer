@@ -11,17 +11,24 @@ if(isset($_POST['submit'])){
 								"',phone=N'".$_POST['phone']."'";
 					
 			$query .= " where id='".$_SESSION['lfdata']['auto_id']."'";
-			mysqli_query($conn,$query);
-			$resC = mysqli_query($conn,"select * from facility_owner where auto_id='".$_SESSION['lfdata']['auto_id']."'");
-			$_SESSION['lfdata'] = mysqli_fetch_array($resC,MYSQLI_ASSOC);
-				$GError = "Updated successfully.";
+			mysqli_query($conn, $query);
+			
+			$query = "update facility_master set phone='".$_POST['phone']."'";
+					
+			$query .= " where id='".$_SESSION['lfdata']['auto_id']."'";
+			mysqli_query($conn, $query);
+			
+			$resC = mysqli_query($conn,"select O.emailid as emailid, M.id as id, O.auto_id as auto_id, M.phone as phone, M.status as status, O.pwd as pwd FROM facility_owner O, facility_master M WHERE O.auto_id = M.facility_owner_id and M.facility_owner_id is not null and O.auto_id='".$_SESSION['lfdata']['auto_id']."'");
+			$_SESSION['lfdata'] = mysqli_fetch_array($resC, MYSQLI_ASSOC);
+			
+			$GError = "Updated successfully.";
 		}
 		else
 			$GError = "Emailid already exists.";
 	}
 }
 
-$resUP = mysqli_query($conn,"select * from facility_owner where auto_id=".$_SESSION['lfdata']['auto_id']);	
+$resUP = mysqli_query($conn,"select O.emailid as emailid, M.phone as phone, O.firstname as firstname, O.lastname as lastname FROM facility_owner O, facility_master M WHERE O.auto_id = M.facility_owner_id and M.facility_owner_id is not null and O.auto_id=".$_SESSION['lfdata']['auto_id']);
 $arrUP = mysqli_fetch_array($resUP,MYSQLI_ASSOC);
 ?>
 <!--inner block start here-->
@@ -35,7 +42,7 @@ $arrUP = mysqli_fetch_array($resUP,MYSQLI_ASSOC);
 					<?php
 					if($GError!="")
 						echo "<div class=\"alert alert-info\" role=\"alert\">".$GError."</div>";
-					?>	
+					?>
 					<form name="updateprofilefrm" id="updateprofilefrm" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">	
 						<?php
 						echo '<table width="90%" border=0>';
