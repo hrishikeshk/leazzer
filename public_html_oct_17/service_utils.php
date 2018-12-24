@@ -621,7 +621,7 @@ function file_get_contents_curl($url){
 }
 
 function get_lat_lng($loc){
-  $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".trim($loc)."&sensor=false";
+  $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".urlencode(trim($loc))."&sensor=false";
 	$result_string = file_get_contents_curl($url);
   $result = json_decode($result_string, true);
   $lat = $result['results'][0]['geometry']['location']['lat'];
@@ -635,9 +635,10 @@ function calculate_distance($loc1, $loc2){
   
   return round((3959 * acos(cos(deg2rad($ll1[0])) * cos(deg2rad($ll2[0])) * cos(deg2rad($ll2[1])- deg2rad($ll1[1])) + sin(deg2rad($ll1[0])) * sin(deg2rad($ll2[0])))), 1);
 }
-
+// (3959 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat))))
 function calculate_distance_ll($lat, $lng, $loc){
   $ll = get_lat_lng($loc);
+  //return (3959 * acos(cos(deg2rad($ll[0])) * cos(deg2rad($lat)) * cos(deg2rad($lng)- deg2rad($ll[1])) + sin(deg2rad($ll[0])) * sin(deg2rad($lat))));
   return round((3959 * acos(cos(deg2rad($ll[0])) * cos(deg2rad($lat)) * cos(deg2rad($lng)- deg2rad($ll[1])) + sin(deg2rad($ll[0])) * sin(deg2rad($lat)))), 1);
 }
 

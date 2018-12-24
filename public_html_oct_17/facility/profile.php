@@ -18,7 +18,7 @@ if(isset($_POST['submit'])){
 			$query .= " where id='".$_SESSION['lfdata']['auto_id']."'";
 			mysqli_query($conn, $query);
 			
-			$resC = mysqli_query($conn,"select O.emailid as emailid, M.id as id, O.auto_id as auto_id, M.phone as phone, M.status as status, O.pwd as pwd FROM facility_owner O, facility_master M WHERE O.auto_id = M.facility_owner_id and M.facility_owner_id is not null and O.auto_id='".$_SESSION['lfdata']['auto_id']."'");
+			$resC = mysqli_query($conn,"select O.emailid as emailid, M.id as id, O.auto_id as auto_id, M.phone as phone, M.status as status, O.pwd as pwd O.firstname as firstname, O.lastname as lastname FROM facility_owner O, facility_master M WHERE O.auto_id = M.facility_owner_id and M.facility_owner_id is not null and O.auto_id='".$_SESSION['lfdata']['auto_id']."'");
 			$_SESSION['lfdata'] = mysqli_fetch_array($resC, MYSQLI_ASSOC);
 			
 			$GError = "Updated successfully.";
@@ -49,7 +49,7 @@ $arrUP = mysqli_fetch_array($resUP,MYSQLI_ASSOC);
 						echo '<tr><td class="tdheading">Emailid:</td><td><input type="text" name="emailid" placeholder="EmailID" value="'.$arrUP['emailid'].'" required="" class="form-control"><br></td></tr>';
 						echo '<tr><td class="tdheading">First Name:</td><td><input type="text" name="fname" placeholder="First Name" value="'.$arrUP['firstname'].'" required="" class="form-control"><br></td></tr>';
 						echo '<tr><td class="tdheading">Last Name:</td><td><input type="text" name="lname" placeholder="Last name" value="'.$arrUP['lastname'].'"required="" class="form-control"><br></td></tr>';
-						echo '<tr><td class="tdheading">Phone:</td><td><input type="text" name="phone" placeholder="Phone" required="" value="'.$arrUP['phone'].'" class="form-control"><br></td></tr>';
+						echo '<tr><td class="tdheading">Facility Phone:</td><td><input type="text" name="phone" placeholder="Facility Phone" required="" value="'.$arrUP['phone'].'" class="form-control"><br></td></tr>';
 						echo '</table>';
 						?>
 						<br>
