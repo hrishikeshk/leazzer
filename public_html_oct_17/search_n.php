@@ -86,6 +86,17 @@
   	    $query_str .= '&';
   	  $query_str .= "options_s=".$_GET['options_s'];
   	}
+  	
+  	if(isset($_POST['slat'])){
+  	  if(strlen($query_str) > 0)
+  	    $query_str .= '&';
+  	  $query_str .= "slat=".$_POST['slat'];
+  	}
+  	if(isset($_POST['slng'])){
+  	  if(strlen($query_str) > 0)
+  	    $query_str .= '&';
+  	  $query_str .= "slng=".$_POST['slng'];
+  	}
   	return $query_str;
   }
 ?>

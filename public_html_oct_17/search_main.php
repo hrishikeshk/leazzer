@@ -81,6 +81,30 @@ function showOpt($arr){
 <!--//skycons-icons-->
 <script type="text/javascript">
 
+function get_ll(position){
+  if (navigator.geolocation){
+  	navigator.geolocation.getCurrentPosition(showPosition,showError);
+  }
+	//load_ll(position.coords.latitude,position.coords.longitude);
+}
+
+function showPosition(position){
+	load_ll(position.coords.latitude,position.coords.longitude);
+}
+
+function showError(error){
+}
+
+function load_ll(lat, lng){
+  var ilat = document.getElementById('slat');
+  var ilng = document.getElementById('slng');
+  
+  if(ilat != null && ilat != undefined && ilng != null && ilng != undefined){
+    ilat.value=lat;
+    ilng.value=lng;
+  }
+}
+
 function validatePhone(phone){
   if(phone == undefined || phone == null || phone.length != 10)
     return false;
@@ -194,6 +218,90 @@ function fd_hide(){
     $filter_vals = fetch_option_vals($_SESSION['filter']);
   }
 
+function show_results($arr, $filter_dict_opts){
+  $calc_distance = $arr['calc_distance'];
+  $facility_id = $arr['id'];
+	$facility_unit_amenities = fetch_facility_amenities($facility_id, $arr);
+
+  if(count($filter_dict_opts) == 0 || eval_filters($facility_unit_amenities, $filter_dict_opts) == true){
+
+    $arr_imgs = fetch_image_url($facility_id);
+	  $unit_info_arr = fetch_units($facility_id);
+	  
+	  $from_unit_amenities = fetch_priority_unit_amenities($facility_id, $unit_info_arr);
+
+    $facility_unit_amenities = a_unique(a_merge($from_unit_amenities, $facility_unit_amenities));
+    $priority_amenities = arrange_priority_with_group($facility_unit_amenities);
+        
+    echo '<tr style="margin:0px;padding:0px;border:0px solid #000;background:none;">';
+	  echo '<td style="background:none;margin:0px;padding:5px;border:0px solid #000;">';
+	  			
+	  echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
+	  echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
+	  $image_file_name = extract_image_name($arr_imgs['url_thumbsize']);
+	  $expected_image_path = "images/".$facility_id."/".$image_file_name;
+	  echo '<a href="javascript:showMorePhotos('.$facility_id.')">';
+	  if(file_exists($expected_image_path))
+	    echo '<img src="'.$expected_image_path.'" style="min-height:120px;width:120px;">';
+	  else if(strlen($arr_imgs['url_thumbsize']) > 0)
+	    echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
+	  else
+	    echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
+
+	  echo '</a>';
+	  echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More Photos</a>';
+	  echo '</td>';
+    
+	  echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
+	    		
+	  echo '<table>';
+	    		
+	  echo '<tr><td><b>'.$arr['title'].'</b><br>';
+	  echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
+	      		
+	  if($calc_distance > 0)
+      echo $calc_distance.' miles away<br />';
+    else
+      echo '0.1 miles away<br />';
+	    
+	  if(has_priority_amenity($facility_unit_amenities, array('climate')))
+	    echo '<img src="images/cc.jpg" title="climate control equipped" style="min-height:40px;width:40px;" />';
+	    		
+	  if(has_priority_amenity($facility_unit_amenities, array('security', 'camera', 'video camera')))
+	    echo '<img src="images/secam.png" title="security camera monitoring" style="min-height:40px;width:40px;;margin-left:4px" />';
+  
+	  echo '</td>';
+//    
+    echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div></td>';
+//
+	  echo '</tr>';
+
+    show_amenities($facility_id, $priority_amenities, 5, $arr['title']);
+        
+    echo '</table>';
+        
+    echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
+
+	  echo '<div id="dateday_'.$facility_id.'" class="login-block" name="dateday_'.$facility_id.'" style="margin:0px;text-align:left;padding:0;">';
+	  echo '<p id="mdatemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
+	  echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div><br />';
+
+	  echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
+
+	  show_units($facility_id, $unit_info_arr, 5, $arr['reservationdays']);
+
+	  echo'</td></tr></table>';
+    echo '</td></tr>';
+    	  	
+	}
+}
+
+function cmp($a, $b) {
+  if($a['calc_distance'] < $b['calc_distance'])
+    return -1;
+  return 1;
+}
+
 ?>
 <div class="page-container">	
    <div class="left-content">
@@ -205,7 +313,9 @@ function fd_hide(){
 								<form method="post" action="search_n.php" enctype="multipart/form-data">
 								<center>
 								<a href="index.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/></a>
-								<input name="search" type="text" placeholder="Zip or Address" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>" required="" style="width:50%;display:inline;margin:0;">
+								<input name="search" type="text" placeholder="Zip or Address or Near me" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>" required="" style="width:50%;display:inline;margin:0;">
+								<input name="slat" id="slat" type="hidden" value="" />
+								<input name="slng" id="slng" type="hidden" value="" />
 								<button onClick="fd_show();" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button>
 								<!--button data-toggle="modal" data-target="#myModal" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button -->
 								<button type="submit" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-search"></i></button>
@@ -265,6 +375,7 @@ function fd_hide(){
 					$(".header-main").removeClass("fixed");
 				}
 			 });
+			 get_ll();
 		});
 		</script>
 <!-- /script-for sticky-nav -->
@@ -295,7 +406,10 @@ function fd_hide(){
 		</thead>
 		<?php
 			$query = "";
-			if(is_numeric(isset($_POST['search'])?trim($_POST['search']):"")){
+			if((stristr($_POST['search'], "near") !== FALSE) && (isset($_POST['slat']) && isset($_POST['slng']))){
+  			$query = "select *,(3959 * acos(cos(radians(".$_POST['slat'].")) * cos(radians(lat)) * cos(radians(lng)- radians(".$_POST['slng'].")) + sin(radians(".$_POST['slat'].")) * sin(radians(lat)))) as calc_distance from facility_master having calc_distance < 25 and searchable=1  and city is not null and state is not null and lat is not null and lng is not null order by calc_distance limit 10";
+			}
+			else if(is_numeric(isset($_POST['search'])?trim($_POST['search']):"")){
 				$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".trim($_POST['search'])."&sensor=false";
 				$result_string = file_get_contents_curl($url);
     		$result = json_decode($result_string, true);
@@ -310,93 +424,31 @@ function fd_hide(){
 			else{
 				$query = "select * from facility_master where searchable=1 and lat is not null and lng is not null and title <> '' and (title LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%') order by title LIMIT 100";
 			}
-			
 			$res = mysqli_query($conn,$query);
 			
 			$filter_dict_opts = array();
 			if(count($filter) > 0)
 			  $filter_dict_opts = calc_from_amenity_dict($filter);
 
+      $results_arr = array();
 			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
-        $facility_id = $arr['id'];				
-				$facility_unit_amenities = fetch_facility_amenities($facility_id, $arr);
-
-        if(count($filter_dict_opts) == 0 || eval_filters($facility_unit_amenities, $filter_dict_opts) == true){
-          $calc_distance = 0;
-          if(isset($arr['calc_distance']) && $arr['calc_distance'] > 0){
-    			  $calc_distance = round($arr['calc_distance'], 1);
-    			}
-    			else if(is_null($arr['lat']) == false && is_null($arr['lng']) == false && is_numeric($arr['lat']) && is_numeric($arr['lng'])){
-    			  $calc_distance = calculate_distance_ll($arr['lat'], $arr['lng'], $_POST['search']);
-    			}
-    		  $arr_imgs = fetch_image_url($facility_id);
-	    	  $unit_info_arr = fetch_units($facility_id);
-	    	  
-	    	  $from_unit_amenities = fetch_priority_unit_amenities($facility_id, $unit_info_arr);
-
-          $facility_unit_amenities = a_unique(a_merge($from_unit_amenities, $facility_unit_amenities));
-          $priority_amenities = arrange_priority_with_group($facility_unit_amenities);
-        
-          echo '<tr style="margin:0px;padding:0px;border:0px solid #000;background:none;">';
-	  			echo '<td style="background:none;margin:0px;padding:5px;border:0px solid #000;">';
-	  			
-	    		echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
-	    		echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
-	    		$image_file_name = extract_image_name($arr_imgs['url_thumbsize']);
-	    		$expected_image_path = "images/".$facility_id."/".$image_file_name;
-	    		echo '<a href="javascript:showMorePhotos('.$facility_id.')">';
-	    		if(file_exists($expected_image_path))
-	    			echo '<img src="'.$expected_image_path.'" style="min-height:120px;width:120px;">';
-	    		else if(strlen($arr_imgs['url_thumbsize']) > 0)
-	    			echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
-	    		else
-	    		  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
-	  		
-	    		echo '</a>';
-	    		echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More Photos</a>';
-	    		echo '</td>';
-  
-	    		echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
-	  		
-	    		echo '<table>';
-	  		
-	    		echo '<tr><td><b>'.$arr['title'].'</b><br>';
-	    		echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
-	    		
-	  		  if($calc_distance > 0)
-    			  echo $calc_distance.' miles away<br />';
-    			else
-    			  echo '0.1 miles away<br />';
-	  
-	    		if(has_priority_amenity($facility_unit_amenities, array('climate')))
-	    		  echo '<img src="images/cc.jpg" title="climate control equipped" style="min-height:40px;width:40px;" />';
-	  		
-	    		if(has_priority_amenity($facility_unit_amenities, array('security', 'camera', 'video camera')))
-	    		  echo '<img src="images/secam.png" title="security camera monitoring" style="min-height:40px;width:40px;;margin-left:4px" />';
-
-	    		echo '</td>';
-//  
-          echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div></td>';
-//
-	    		echo '</tr>';
-	  		
-          show_amenities($facility_id, $priority_amenities, 5, $arr['title']);
-        
-          echo '</table>';
-        
-          echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
-	  		
-	    		echo '<div id="dateday_'.$facility_id.'" class="login-block" name="dateday_'.$facility_id.'" style="margin:0px;text-align:left;padding:0;">';
-	    		echo '<p id="mdatemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
-	    		echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div><br />';
-						
-	    		echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
-
-	    		show_units($facility_id, $unit_info_arr, 5, $arr['reservationdays']);
-
-	    		echo'</td></tr></table>';
-  	  		echo '</td></tr>';
-	  		}
+			  $calc_distance = 0;
+        if(isset($arr['calc_distance']) && $arr['calc_distance'] > 0){
+      		$calc_distance = round($arr['calc_distance'], 1);
+      	}
+      	else if(is_null($arr['lat']) == false && is_null($arr['lng']) == false && is_numeric($arr['lat']) && is_numeric($arr['lng'])){
+    		  $calc_distance = calculate_distance_ll($arr['lat'], $arr['lng'], $_POST['search']);
+    	  }
+			  if($calc_distance >= 25)
+			    continue;
+        $arr['calc_distance'] = $calc_distance;
+        $results_arr[] = $arr;
+			}
+			
+			usort($results_arr, 'cmp');
+			
+			for($i = 0; $i < count($results_arr); $i++){
+			  show_results($results_arr[$i], $filter_dict_opts);
 			}
 		?>
 		</table>		
