@@ -19,6 +19,19 @@
         async defer></script>
 </head>
 <body>
+  <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+    <ul class="nav navbar-nav navbar-right">
+  		<li><a href="facility/register.php">Add Facility</a></li>
+	  	<li><a href="facility/dashboard.php"><?php echo (isset($_SESSION['lfdata'])?$_SESSION['lfdata']['firstname']:"Owner Login");?></a></li>
+      <li><a href="customer/dashboard.php"><?php echo (isset($_SESSION['lcdata'])?$_SESSION['lcdata']['firstname']:"Login");?></a></li>
+      <li><a href="faq.php">FAQ</a></li>
+      <li><a href="contactus.php">Contact Us</a></li>
+      <?php
+      if(isset($_SESSION['lcdata']) || isset($_SESSION['lfdata']))
+      	echo '<li><a href="index.php?action=logout">Logout</a></li>';
+      ?>
+    </ul>
+  </div><!-- /.navbar-collapse -->
 <div class="inner-block" style="padding:2em;">
     <div class="blank" style="min-height: 0;">
     	<div class="blankpage-main" id="searchmain"style="padding:1em 1em;">

@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
 <head>
 <title>Leazzer</title>
@@ -20,10 +19,9 @@
   <div class="container">
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
-
- 	  <a href="index.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/>
  	  </a>
- 	  <h1 style="float: right">Terms of use</h1>
+ 	  <h1 style="text-align:center">Contact Us</h1>
+ 	  <hr style="height:1px;border:none;color:#44f;background-color:#44f;"></hr>
  	</div>
 	</div>
 </nav>
@@ -33,36 +31,38 @@
 session_start();
 include('sql.php');
 
-function fetch_footer(){
-	global $conn;
-	$ret = "";
-			
-	$res = mysqli_query($conn,"select * from admin_configuration where name='termsuse'");
-	if(mysqli_num_rows($res) > 0){
-		$arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
-		$ret .= $arr['data_value'];	
-	}
-	else{
-		$ret = "TODO: Add terms of use...";
-	}
-	return $ret;
-}
-
-echo fetch_footer();
 ?>
-
-</div>
-
+<table>
+  <tr>
+    <td>
+<a href="index.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:50px;" alt="Logo"/>
+    </td>
+    <td style="padding-left:50px">
+      <div id="cu">
+  Owners email us at <a href="mailto:admin@leazzer.com">admin@leazzer.com</a> <br />
+  Renters email us at <a href="mailto:contact@leazzer.com">contact@leazzer.com</a> <br />
+  For General Enquiries call -> 47-Leazzer-7<br />
+      </div>
+    </td>
+  </tr>
+</table>
 <!--scrolling js-->
 		<script src="js/jquery.nicescroll.js"></script>
 		<script src="js/scripts.js"></script>
 <!--//scrolling js-->
 <script src="js/bootstrap.js"> </script>
 
-<p>
-<a href="index.php"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/>
+<br /><br />
+<p style="margin-left:25px">
 <a href="index.php">Back to home page<a/>
 </p>
+<br /><br />
+<div class="copyright" style="">
+	<div class="container">
+		<p>© <?php echo date("Y",time());?> Leazzer. All rights reserved | <a href="/global_footer.php">Privacy Policy</a> | <a href="/global_footer_tu.php">Terms of use</a>
+    </p>
+	</div>
+</div>
 
 </body>
 </html>

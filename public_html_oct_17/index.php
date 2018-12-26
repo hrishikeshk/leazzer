@@ -87,7 +87,9 @@ http://php.net/manual/en/reserved.variables.post.php
 		<li><a href="facility/register.php">Add Facility</a></li>
 		<li><a href="facility/dashboard.php"><?php echo (isset($_SESSION['lfdata'])?$_SESSION['lfdata']['firstname']:"Owner Login");?></a></li>
     <li><a href="customer/dashboard.php"><?php echo (isset($_SESSION['lcdata'])?$_SESSION['lcdata']['firstname']:"Login");?></a></li>
-    <?php 
+    <li><a href="faq.php">FAQ</a></li>
+    <li><a href="contactus.php">Contact Us</a></li>
+    <?php
     if(isset($_SESSION['lcdata']) || isset($_SESSION['lfdata']))
     	echo '<li><a href="index.php?action=logout">Logout</a></li>';
     ?>
