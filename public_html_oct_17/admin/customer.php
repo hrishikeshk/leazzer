@@ -1,9 +1,37 @@
 <?php
+require_once('../mail/class.phpmailer.php');
+
 include('../sql.php');
-if(isset($_GET['action']))
-{
-		if($_GET['action'] == "export")
-		{
+
+function onSurveyCustomer($facility_id, $facility_name, $custEmail, $custName, $link){
+	$fromemail="no-reply@leazzer.com"; 
+	$toemail = $custEmail; 
+	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
+	$message .= '<tr><td>';
+	$message .= 'Hello <b>'.$custName.'</b>,';
+	$message .= '<br><br>Please complete survey below for your experience with '.$facility_name.': ';
+	
+	$message .= $link;
+	$message .= '</td></tr>';
+	$message .= '<tr><td><br><br>';
+	$message .= 'Thank You,<br>&mdash; Leazzer';
+	$message .= '</td></tr>';
+	$message .= '</table>';
+
+	$mail = new PHPMailer();
+	$mail->CharSet = 'UTF-8';
+	$mail->AddReplyTo($fromemail,"Leazzer"); 
+	$mail->SetFrom($fromemail, "Leazzer");
+	$mail->AddAddress($toemail, substr($toemail,0,strpos($toemail,"@")));
+	$mail->Subject    = "Leazzer Survey";
+	$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; 
+	$mail->MsgHTML($message);
+	$mail->isHTML(true);
+	$ret = $mail->Send();
+}
+
+if(isset($_GET['action'])){
+		if($_GET['action'] == "export"){
 			$now = gmdate("D, d M Y H:i:s");
 	    header("Expires: Tue, 03 Jul 2001 06:00:00 GMT");
 	    header("Cache-Control: max-age=0, no-cache, must-revalidate, proxy-revalidate");
@@ -22,10 +50,8 @@ if(isset($_GET['action']))
 		  $df = fopen("php://output", 'w');
 	    $res = mysqli_query($conn,"select * from customer");
 	    $cnt =0;
-			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC))
-			{
-				if($cnt == 0)
-				{
+			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
+				if($cnt == 0){
 					 fputcsv($df, array_keys($arr));
 					 $cnt++;
 				}
@@ -36,24 +62,32 @@ if(isset($_GET['action']))
 		  die();
 		}
 }
+
 include('header.php');
-if(isset($_GET['action']))
-{
-	if($_GET['action'] == "delete")
-	{
+if(isset($_GET['action'])){
+	if($_GET['action'] == "delete"){
 			mysqli_query($conn,"delete from customer where id=".$_GET['id']);
 			$GError = "Deleted successfully.";
 	}
 }
-if(isset($_POST['action']))
-{
-	if($_POST['action'] == "update")
-	{
+
+if(isset($_POST['action'])){
+	if($_POST['action'] == "update"){
 		$query = "update customer set status='".$_POST['status']."'";
 		$query .= " where id=".$_POST['submit'];
 		mysqli_query($conn,$query);
 		$GError = "Edited successfully.";
 	}
+	else if($_POST['action'] == "Survey"){
+	  $fac_split = explode('|', $_POST['facility_name']);
+	  $code = md5($fac_split[1].'|'.$_POST['cid'].'surveycode');
+	  $link = 'https://www.leazzer.com/review_add.php?code='.$code.'&fid='.$fac_split[1].'&cid='.$_POST['cid'];
+	  //$link = 'https://www.leazzer.com/review_add.php?code='.$code.'&fid='.$fac_split[1].'&cid='.$_POST['cid'];
+	  onSurveyCustomer($fac_split[1], $fac_split[0], $_POST['emailid'], $_POST['customer_name'], $link);
+	  $GError = "Sent Survey Request Successfully.";
+	}
+	else
+	  error_log('None: '.$_POST['action']);
 }
 
 ?>
@@ -103,9 +137,49 @@ if(isset($_POST['action']))
 				  </div>
 				</div>
 			<!---END-->
+			
+			
+			<!---START SURVEY-->
+				<div id="myModalSurvey" class="modal fade" role="dialog">
+				  <div class="modal-dialog">
+				    <!-- Modal content-->
+				    <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
+				    <div class="modal-content">
+				      <div class="modal-body">
+				        <p>
+							<center>
+								<br>
+								<table style="width:90%">
+									<tr>
+										<td style="vertical-align: top;text-align: right;width:30%;"><b>Email :&nbsp;</b></td>
+										<td><input class="form-control" placeholder="Email" type="text" name="emailid" id="emailid" required style="margin-bottom:0px;display:inline;width:100%;" /><br><br></td>
+										</tr>													
+										<tr><td style="vertical-align: top;text-align: right;width:30%;"><b>Customer Name :&nbsp;</b></td>
+										<td><input class="form-control" placeholder="Customer Name" name="customer_name" id="customer_name" 
+										style="margin-bottom:0px;display:inline;width:100%;" readonly></input><br><br></td></tr>
+										<tr><td style="vertical-align: top;text-align: right;width:30%;"><b>Facility Name(s) :&nbsp;</b></td>
+										<td><select class="form-control" name="facility_name" id="facility_name" required style="margin-bottom:0px;display:inline;width:100%;">
+										</select></td>
+									</tr>
+								</table>
+								<input type="hidden" name="action" id="saction" value="Survey">
+								<input type="hidden" name="cid" id="cid" value="cid">
+							</center>
+				        </p>
+				      </div>
+				      <div class="modal-footer">
+				      	<button class="btn btn-primary" name="submit" id="submit" value="Send Survey" style="background:#68AE00;border-color:#68AE00;">Send Survey</button>
+				        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				      </div>
+				    </div>
+						</form>
+				  </div>
+				</div>
+			<!---END SURVEY -->
+			
+			
 				<?php
-					if($GError!="")
-					{
+					if($GError!=""){
 						echo "<div class=\"alert alert-info\" role=\"alert\">";
 						echo $GError;
 						echo "</div>";
@@ -118,7 +192,9 @@ if(isset($_POST['action']))
 						<th width=50px>FirstName</th>
 						<th>Last Name</th>
 						<th width=30px>Status</th>
-						<th width=20px>Edit</th></tr>
+						<th width=20px>Edit</th>
+						<th width=30px>Survey</th>
+						</tr>
 					</thead>
 				    </tbody>
 					</table>		
@@ -139,36 +215,48 @@ $(document).ready(function()
             type: 'POST'
         },
        "columns":[            
-			{"data": "firstname"},	
-            {"data": "lastname"},
-            {"data": "status",
-            	"render":function(data,type,row,meta)
-            	{
-					return (data=="Enabled"?"Yes":"No");
-				}
-			},
-            {"data": "id",
-            	"render":function(data,type,row,meta)
-            	{
-					return "<a href=\"#\" data-toggle=\"modal\" data-target=\"#myModal\" onclick=\"editfacility("+data+")\"><i class=\"fa fa-pencil\"></i></a>";
-				}
-			}]
+			            {"data": "firstname"},	
+                  {"data": "lastname"},
+                  {"data": "status",
+                   "render":function(data,type,row,meta){
+            					return (data=="Enabled"?"Yes":"No");
+				            }
+			            },
+                  {"data": "id",
+                 	 "render":function(data,type,row,meta){
+			            		return "<a href=\"#\" data-toggle=\"modal\" data-target=\"#myModal\" onclick=\"editfacility("+data+")\"><i class=\"fa fa-pencil\"></i></a>";
+				            }
+			            },
+			            {"data": "id",
+			             "render":function(data,type,row,meta){
+			            		return "<a href=\"#\" data-toggle=\"modal\" data-target=\"#myModalSurvey\" onclick=\"surveyCustomer("+data+")\"><i class=\"fa fa-pencil\"></i></a>";
+				            }
+			            }
+			 ]
     });
 });
-$("#myModal").on("hidden.bs.modal", function () 
-{
+$("#myModal").on("hidden.bs.modal", function (){
     resetLayout();
-});			
-function resetLayout()
-{
+});
+
+$("#myModalSurvey").on("hidden.bs.modal", function (){
+    resetLayoutSurvey();
+});
+
+function resetLayout(){
 	document.getElementById("email").value = "";
 	document.getElementById("details").innerHTML = "";
 	document.getElementById("status").value = "Enabled";
 	document.getElementById("action").value = "update";
 	document.getElementById("submit").innerHTML = "update";
 }
-function editfacility(id)
-{
+
+function resetLayoutSurvey(){
+	document.getElementById("emailid").value = "";
+	document.getElementById("customer_name").value = "";
+}
+
+function editfacility(id){
 	var res = ajaxcall("action=getcustomer&id="+id);
 	var resArr = res.split("[-]");
 	document.getElementById("email").value = resArr[0];
@@ -179,8 +267,34 @@ function editfacility(id)
 	document.getElementById("submit").innerHTML = "Update";
 }
 
-function ajaxcall(datastring)
-{
+function surveyCustomer(id){
+	var res = ajaxcall("action=getcustomerReserves&customerid="+id);
+	var resArr = JSON.parse(res);
+	var cn = document.getElementById("customer_name");
+	var em = document.getElementById("emailid");
+	var fn = document.getElementById("facility_name");
+	var cid = document.getElementById("cid");
+	for(i = 0; i < resArr.length; i++){
+	  var row = resArr[i];
+	  fn.options[fn.options.length] = new Option(row[0], row[0] + '|' + row[1]);
+	}
+	if(resArr.length > 0){
+	  if(resArr[0][3].indexOf(resArr[0][2]) == -1)
+	    cn.value = resArr[0][2] + " " + resArr[0][3];
+	  else
+	    cn.value = resArr[0][3];
+	  em.value = resArr[0][4];
+	  cid.value = resArr[0][5];
+	}
+	//document.getElementById("facility_name").value = resArr[0];
+	//document.getElementById("facility_id").innerHTML = resArr[1];
+	//document.getElementById("customer_name").value = resArr[2]+" "+resArr[3];
+	//document.getElementById("emailid").value = resArr[4];
+	//document.getElementById("submit").value = id;
+	//document.getElementById("submit").innerHTML = "Send Survey";
+}
+
+function ajaxcall(datastring){
     var res;
     $.ajax
     ({	
@@ -201,3 +315,4 @@ function ajaxcall(datastring)
 <?php
 include('footer.php');
 ?>
+

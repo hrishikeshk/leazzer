@@ -32,6 +32,18 @@ if(isset($_POST['action'])){
 			echo $arr['emailid']."[-]".$arr['firstname']."[-]".$arr['lastname']."[-]".$arr['phone']."[-]".$arr['status'];
 		}	
 	}
+	
+	if($_POST['action'] == "getcustomerReserves"){
+		$res = mysqli_query($conn, "select distinct M.title as facility_name, M.id as facility_id, C.firstname as firstname, C.lastname as lastname, C.emailid as emailid, C.id as cid from reserve R, customer C, facility_master M where R.cid=C.id and R.fid=M.id and R.cid='".$_POST['customerid']."'");
+		$ret = array();
+		while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
+			//echo $arr['facility_name']."[-]".$arr['facility_id']."[-]".$arr['firstname']."[-]".$arr['lastname']."[-]".$arr['emailid'];
+			$row = array($arr['facility_name'], $arr['facility_id'], $arr['firstname'], $arr['lastname'], $arr['emailid'], $arr['cid']);
+			$ret[] = $row;
+		}
+		echo json_encode($ret);
+	}
+	
 	if($_POST['action'] == "getunit"){
 		$res = mysqli_query($conn,"select * from units where id='".$_POST['id']."'");
 		if($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
