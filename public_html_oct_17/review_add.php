@@ -98,11 +98,10 @@ include('sql.php');
 		  else if(isset($_POST['comment']) && isset($_SESSION['rakey'])){
 		    $customer_name = $_SESSION['rakey']['ln'];
 		    if(stristr($_SESSION['rakey']['ln'], $_SESSION['rakey']['fn']) == FALSE)
-		      $customer_name = $_SESSION['rakey']['ln']." ".$_SESSION['rakey']['ln'];
+		      $customer_name = $_SESSION['rakey']['fn']." ".$_SESSION['rakey']['ln'];
 
-		    $res = mysqli_query($conn, "insert into review(facility_id, listing_avail_id, rating, message, nickname, timestamp) values ('".$_SESSION['rakey']['fid']."', '".$_SESSION['rakey']['fid']."', '".$_POST['stars']."', '".$_POST['comment']."', '".$customer_name."', now())") or die('Failed to submit Review. Please try again after some time.');
+		    $res = mysqli_query($conn, "insert into review(facility_id, listing_avail_id, rating, message, nickname, timestamp) values ('".$_SESSION['rakey']['fid']."', '".$_SESSION['rakey']['fid']."_lf', '".$_POST['stars']."', '".$_POST['comment']."', '".$customer_name."', now())") or die('Failed to submit Review. Please try again after some time.');
 		    header("Location: reviews.php?facility_id=".$_SESSION['rakey']['fid']);
-
 		  }
 		  else{
         header("Location: index.php");

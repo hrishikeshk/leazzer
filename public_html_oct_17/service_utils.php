@@ -125,8 +125,9 @@ function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $pric
 	$message .= '<tr><td>';
 	$message .= 'Dear <b>'.$custName.'</b>,';
 	{
-	  $expected_path = "images/gwc.png";
-	  $message .= '<center><img src="https://www.leazzer.com/'.$expected_path.'" height="150px" width="175px" alt="Reservation Done" title="uiLogo" style="display:block"></center><br />';
+	  //$expected_path = "images/gwc.png";
+	  $expected_path = "images/emsurvey.png";
+	  $message .= '<center><img src="https://www.leazzer.com/'.$expected_path.'" height="175px" width="240px" alt="Reservation Done" title="uiLogo" style="display:block"></center><br />';
 	}
 	$message .= '<br><br>Congratulations. A '.$unit.' unit reservation has been confirmed at '.$companyName.' for you at the price of $'.$price.' per month. You must move in between dates '.$resFromDate.' to '.$resToDate;
 	
@@ -171,7 +172,8 @@ function onReserveOwnerMail($facilityName, $ownerEmail, $ownerName, $unit, $pric
 	$toemail='owners@leazzer.com';
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
-	$message .= '<center><img src="https://www.leazzer.com/images/gwo.png" height="150px" width="175px" alt="Logo" title="Logo" style="display:block"></center><br>';
+	//$message .= '<center><img src="https://www.leazzer.com/images/gwo.png" height="150px" width="175px" alt="Logo" title="Logo" style="display:block"></center><br>';
+	$message .= '<center><img src="https://www.leazzer.com/images/emsurvey.png" height="175px" width="240px" alt="Logo" title="Logo" style="display:block"></center><br>';
 	$message .= 'Hello <b>'.$facilityName.'</b>,';
 	$message .= '<br><br>A '.$unit.' unit has been reserved by '.$customerName.' from ';
 	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';

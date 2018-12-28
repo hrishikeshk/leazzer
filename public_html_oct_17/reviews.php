@@ -4,7 +4,7 @@ include('sql.php');
 
 function fetch_reviews($facility_id){
   global $conn;
-  $res = mysqli_query($conn,"select * from review where facility_id='".$facility_id."'");
+  $res = mysqli_query($conn,"select * from review where facility_id='".$facility_id."' order by timestamp desc, auto_id desc");
   return $res;
 }
 
@@ -26,7 +26,9 @@ function reformat_date($txt){
   //echo '</b>';
 }
 
-function obfuscate_name($name){
+function obfuscate_name($name, $laid){
+  if(strstr($laid, '_lf') !== FALSE)
+    return $name;
   $tok = strtok($name, " ");
   if($tok == false || strlen($tok) == 0)
     return 'Anonymous';
@@ -89,7 +91,7 @@ function obfuscate_name($name){
       while($arr = mysqli_fetch_array($res, MYSQLI_ASSOC)){
         echo '<table style="font-size: .9em;margin-bottom: 5px;margin-left: 75px;width:80%;box-shadow: 5px 5px 5px #888888;">';
         echo '<tr style="margin-left:0px;text-align:left"><td>';
-        echo '<br /><br /><img src="images/anon.png" height=25px width=25px> '.obfuscate_name($arr['nickname']).'<br />';
+        echo '<br /><br /><img src="images/anon.png" height=25px width=25px> '.obfuscate_name($arr['nickname'], $arr['listing_avail_id']).'<br />';
         show_stars($arr['rating']);
         echo $arr['title'].'<br />';
         reformat_date($arr['timestamp']);
@@ -103,7 +105,7 @@ function obfuscate_name($name){
   <div style="font-size: .7em;margin-right:150px;text-align:right">*Based on reviews collected from third-party sites</div>
 </div>
 
-<div class="copyright" style="position:absolute;bottom:0">
+<div class="copyright" style="position:relative;bottom:0">
 	<div class="container">
 		<p>© <?php echo date("Y",time());?> Leazzer. All rights reserved | <a href="/global_footer.php">Privacy Policy</a> | <a href="/global_footer_tu.php">Terms of use</a>
     </p>
