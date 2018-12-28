@@ -313,7 +313,7 @@ function cmp($a, $b) {
 								<form method="post" action="search_n.php" enctype="multipart/form-data">
 								<center>
 								<a href="index.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/></a>
-								<input name="search" type="text" placeholder="Zip or Address or Near me" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>" required="" style="width:50%;display:inline;margin:0;">
+								<input name="search" type="text" placeholder="Near me, City or Zip" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>" required="" style="width:50%;display:inline;margin:0;">
 								<input name="slat" id="slat" type="hidden" value="" />
 								<input name="slng" id="slng" type="hidden" value="" />
 								<button onClick="fd_show();" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button>

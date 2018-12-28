@@ -107,7 +107,10 @@ http://php.net/manual/en/reserved.variables.post.php
 
 	  	<div id="pac-card">
 
-			  <input class="text" name="search" id="searchTextField" type="text" placeholder="Zip or City" required="">
+			  <input class="text" name="search" id="searchTextField" type="text" placeholder="Near me, City or Zip" required="">
+			  <input class="text" name="slat" id="slat" type="hidden">
+        <input class="text" name="slng" id="slng" type="hidden">
+        
 				<input type="submit" value="Find Storage" style="margin-left: 10px;">
 				  <div class="clearfix"></div>
 	  			<br><a href="helpmechoose.php" style="color:#000;text-shadow: 1px 1px 1px #555;">Help me choose units</a><br><br>
@@ -149,6 +152,9 @@ $(document).ready(function(){
 });
 
 function showPosition(position){
+  $("#slat").val(position.coords.latitude);
+  $("#slng").val(position.coords.longitude);
+  
 	nearStorage(position.coords.latitude,position.coords.longitude);
 }
 
