@@ -18,7 +18,7 @@ if(isset($_POST['action'])){
       //$facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
       $facility_unit_amenities = fetch_facility_amenities($facility_id, $arr);
       $from_unit_amenities = fetch_priority_unit_amenities($facility_id, $unit_info_arr);
-      $facility_unit_amenities = a_unique(a_merge($from_unit_amenities, $facility_unit_amenities));
+      $facility_unit_amenities = a_unique(a_merge(get23($from_unit_amenities), $facility_unit_amenities));
       $priority_amenities = arrange_priority_with_group($facility_unit_amenities);
       
 			echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
@@ -75,7 +75,7 @@ if(isset($_POST['action'])){
 						
 			echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
 
-			show_units($facility_id, $unit_info_arr, 5, $arr['reservationdays']);
+			show_units($facility_id, $unit_info_arr, 5, $arr['reservationdays'], $from_unit_amenities, $arr['title'], $facility_unit_amenities);
 
 			echo'</td></tr></table>';
 		}

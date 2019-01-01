@@ -230,7 +230,7 @@ function show_results($arr, $filter_dict_opts){
 	  
 	  $from_unit_amenities = fetch_priority_unit_amenities($facility_id, $unit_info_arr);
 
-    $facility_unit_amenities = a_unique(a_merge($from_unit_amenities, $facility_unit_amenities));
+    $facility_unit_amenities = a_unique(a_merge(get23($from_unit_amenities), $facility_unit_amenities));
     $priority_amenities = arrange_priority_with_group($facility_unit_amenities);
         
     echo '<tr style="margin:0px;padding:0px;border:0px solid #000;background:none;">';
@@ -288,7 +288,7 @@ function show_results($arr, $filter_dict_opts){
 
 	  echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
 
-	  show_units($facility_id, $unit_info_arr, 5, $arr['reservationdays']);
+	  show_units($facility_id, $unit_info_arr, 5, $arr['reservationdays'], $from_unit_amenities, $arr['title'], $facility_unit_amenities);
 
 	  echo'</td></tr></table>';
     echo '</td></tr>';

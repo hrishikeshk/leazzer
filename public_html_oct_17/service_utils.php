@@ -318,10 +318,26 @@ function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $
 	echo '</td></tr>';
 }
 
-function show_unit_detail($arrFU, $facility_id, $rdays){
+function has_unit_priority_amenities($ua_arr, $uid){
+  $ret = false;
+  for($i = 0; $i < count($ua_arr); $i++){
+    $hda = explode("~", $ua_arr[$i]);
+    if($hda[0] == $uid)
+      return true;
+  }
+  return $ret;
+}
+
+function show_unit_detail($arrFU, $facility_id, $rdays, $has_ua, $facilityName, $facility_unit_amenities){
   echo '<div class="col-md-1" style="width:10%;text-align:center;margin-bottom: 5px">';
 	echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
 	echo '<p style="text-align:center;width:80%;display:inline-block;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
+	$show_fire = 'visibility:hidden';
+	if($has_ua == true){
+	  $show_fire = 'visibility:visible';
+	}
+	echo '<div class="blink-image" style="margin-bottom:10px"><a href="javascript:popupMoreLessAmenities(\''.$facilityName.'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="'.$show_fire.'"><img src="images/fire.png" title="Click For Unit Amenities !" style="width:20px;height:20px;visibility:inherit"></a></div>';
+
 	$phone = 'unknown';
 	if(isset($_SESSION['lcdata']['phone']))
 	  $phone = $_SESSION['lcdata']['phone'];
@@ -332,18 +348,18 @@ function show_unit_detail($arrFU, $facility_id, $rdays){
 										$arrFU['price'].'\',\''.$phone.'\');">Reserve</button></div>';
 }
 
-function show_units($facility_id, $arr_arr_FU, $show_upfront, $rdays){
+function show_units($facility_id, $arr_arr_FU, $show_upfront, $rdays, $ua_arr, $facilityName, $facility_unit_amenities){
 
   echo '<div id="unitstbl_'.$facility_id.'" style="width:100%">';
   $arr_len = count($arr_arr_FU);
 	for($i = 0; $i < min_ints($arr_len, $show_upfront); $i++){
 	  $arrFU = $arr_arr_FU[$i];
-	  show_unit_detail($arrFU, $facility_id, $rdays);
+	  show_unit_detail($arrFU, $facility_id, $rdays, has_unit_priority_amenities($ua_arr, $arrFU['id']), $facilityName, $facility_unit_amenities);
 	}
 	echo '<div id="unit_more_show'.$facility_id.'" style="display:none">';
 	for($i = $show_upfront; $i < $arr_len; $i++){
 	  $arrFU = $arr_arr_FU[$i];
-		show_unit_detail($arrFU, $facility_id, $rdays);
+		show_unit_detail($arrFU, $facility_id, $rdays, has_unit_priority_amenities($ua_arr, $arrFU['id']), $facilityName,  $facility_unit_amenities);
 	}
 	echo '</div>';
 	
@@ -522,6 +538,15 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 	return a_unique(a_merge($unit_amenities, $amenities));
 }
 
+function get23($arr_ua){
+  $ret = array();
+  for($i = 0; $i < count($arr_ua); $i++){
+    $ae = explode("~", $arr_ua[$i]);
+    $ret[] = $ae[1];
+  }
+  return $ret;
+}
+
 function fetch_priority_unit_amenities($facility_id, $unit_info_arr){
   global $conn;
 	$unit_amenities = array();
@@ -532,13 +557,13 @@ function fetch_priority_unit_amenities($facility_id, $unit_info_arr){
 	  $unit_str .= ', '.$unit_info_arr[$i]['id'];
 	}
 	$unit_str .= ')';
-	$query_str = "SELECT distinct amenity as ua FROM unit_amenity where (amenity like '%limate%' OR amenity like '%emperature%' OR amenity like '%iscount%') and unit_id in ".$unit_str;
+	$query_str = "SELECT distinct amenity as ua, unit_id as uid FROM unit_amenity where (amenity like '%limate%' OR amenity like '%emperature%' OR amenity like '%iscount%') and unit_id in ".$unit_str;
 	
   $resUA = mysqli_query($conn, $query_str);
   if(mysqli_num_rows($resUA) == 0)
 	  return $unit_amenities;
 	while($ua = mysqli_fetch_array($resUA, MYSQLI_ASSOC))
-	  $unit_amenities[] = 'Other|'.$ua['ua'];
+	  $unit_amenities[] = $ua['uid'].'~Other|'.$ua['ua'];
 	return $unit_amenities;
 }
 
@@ -831,6 +856,61 @@ function calculate_distance_ll($lat, $lng, $loc){
 @media only screen and (max-width: 300px) {
   .prev, .next,.text {font-size: 11px}
 }
+
+@-moz-keyframes blink {
+    0% {
+        opacity:1;
+    }
+    50% {
+        opacity:0;
+    }
+    100% {
+        opacity:1;
+    }
+} 
+
+@-webkit-keyframes blink {
+    0% {
+        opacity:1;
+    }
+    50% {
+        opacity:0;
+    }
+    100% {
+        opacity:1;
+    }
+}
+/* IE */
+@-ms-keyframes blink {
+    0% {
+        opacity:1;
+    }
+    50% {
+        opacity:0;
+    }
+    100% {
+        opacity:1;
+    }
+} 
+/* Opera and prob css3 final iteration */
+@keyframes blink {
+    0% {
+        opacity:1;
+    }
+    50% {
+        opacity:0;
+    }
+    100% {
+        opacity:1;
+    }
+} 
+.blink-image {
+    -moz-animation: blink normal 2s infinite ease-in-out; /* Firefox */
+    -webkit-animation: blink normal 2s infinite ease-in-out; /* Webkit */
+    -ms-animation: blink normal 2s infinite ease-in-out; /* IE */
+    animation: blink normal 2s infinite ease-in-out; /* Opera and prob css3 final iteration */
+}
+
 </style>
 
 <script type="text/javascript">
