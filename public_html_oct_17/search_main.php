@@ -465,6 +465,7 @@ function cmp($a, $b) {
 		<!--//scrolling js-->
 <script src="facility/js/bootstrap.js"> </script>
 <!-- mother grid end here-->
+<script type="text/javascript" src="https://my.hellobar.com/0a1f374fa79bc3ef32b08e041d0e29da4e404a80.js"></script>
 
 </body>
 </html>
