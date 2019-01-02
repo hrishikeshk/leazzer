@@ -8,10 +8,10 @@ function onSurveyCustomer($facility_id, $facility_name, $custEmail, $custName, $
 	$toemail = $custEmail; 
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
-	$message .= '<center><img src="https://www.leazzer.com/images/emsurvey.png" height="175px" width="240px" alt="Survey Do" title="uiLogo" style="display:block"></center><br />';
+	$message .= '<center><img src="https://www.leazzer.com/images/emsurvey2.png" height="250px" width="400px" alt="Survey Do" title="uiLogo" style="display:block"></center><br />';
 	$message .= 'Hello <b>'.$custName.'</b>,';
-	$message .= '<br><br>Please complete survey below for your experience with '.$facility_name.': ';
-	
+	$message .= '<br><br>Please help us with your valuable feedback for '.$facility_name.': ';
+
 	$message .= $link;
 	$message .= '</td></tr>';
 	$message .= '<tr><td><br><br>';
@@ -87,8 +87,8 @@ if(isset($_POST['action'])){
     //$link = '<center><table border="0" cellpadding="0" cellspacing="0" align="center" style="background:#3e3547;border-radius:4px;border:1px solid #bbbbbb;color:#ffffff;font-size:14px;letter-spacing:1px;padding:10px 18px"><tr><td><a target="_blank" rel="nofollow" style="color:#ffffff;text-decoration:none;" href="'.$url.'">Submit Survey</a></td></tr></table></center>';
     //$link = '<form target="_blank" action="'.$url.'"><button type="button" id="submit" name="submit">Submit Survey</button></form>';
 
-    $link = '<u><a target="_blank" rel="nofollow" style="color:#0000ff;text-decoration:none;" href="'.$url.'">Submit Survey</a></u>';
-    
+    $link = '<br /><br /><center><table border="0" cellpadding="0" cellspacing="0" align="center" style="background:#00ff00;border-radius:4px;border:1px solid #bbbbbb;color:#000000;font-size:14px;letter-spacing:1px;padding:10px 18px"><tr><td><a target="_blank" rel="nofollow" style="text-decoration:none;cursor:pointer;color:#000000" href="'.$url.'">Help now</a></td></tr></table></center>';
+
 	  //$link = https://www.leazzer.com/review_add.php?code='.$code.'&fid='.$fac_split[1].'&cid='.$_POST['cid'];
 	  onSurveyCustomer($fac_split[1], $fac_split[0], $_POST['emailid'], $_POST['customer_name'], $link);
 	  $GError = "Sent Survey Request Successfully.";
