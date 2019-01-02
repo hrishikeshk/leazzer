@@ -415,14 +415,14 @@ function cmp($a, $b) {
     		$result = json_decode($result_string, true);
     		$lat = $result['results'][0]['geometry']['location']['lat'];
     		$lng = $result['results'][0]['geometry']['location']['lng'];
-    		$query = "select *,(3959 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 and title <> '' and lat is not null and lng is not null having calc_distance < 25 order by calc_distance limit 100";
+    		$query = "select *,(3959 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 and lat is not null and lng is not null having calc_distance < 25 order by calc_distance limit 30";
 			}
 			else if(strpos((isset($_POST['search'])?trim($_POST['search']):""),",") !== false){
 				$searchArr = explode(",",trim($_POST['search']));
-				$query = "select * from facility_master where searchable=1 and lat is not null and lng is not null and title <> '' and (title LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%') LIMIT 100";
+				$query = "select * from facility_master where searchable=1 and lat is not null and lng is not null and (title LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%') LIMIT 30";
 			}
 			else{
-				$query = "select * from facility_master where searchable=1 and lat is not null and lng is not null and title <> '' and (title LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%') order by title LIMIT 100";
+				$query = "select * from facility_master where searchable=1 and lat is not null and lng is not null and (title LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%') order by title LIMIT 30";
 			}
 			$res = mysqli_query($conn,$query);
 			
@@ -465,8 +465,6 @@ function cmp($a, $b) {
 		<!--//scrolling js-->
 <script src="facility/js/bootstrap.js"> </script>
 <!-- mother grid end here-->
-<script type="text/javascript" src="https://my.hellobar.com/0a1f374fa79bc3ef32b08e041d0e29da4e404a80.js"></script>
-
 </body>
 </html>
 
