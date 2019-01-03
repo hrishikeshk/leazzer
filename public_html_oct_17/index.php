@@ -60,6 +60,14 @@ https://www.simonbattersby.com/demos/autosave_demo5.txt
 https://www.simonbattersby.com/demos/autosave7.txt
 http://php.net/manual/en/reserved.variables.post.php
 
+--
+https://stackoverflow.com/questions/4195937/what-are-some-good-php-performance-tips
+single quotes preferred over double quotes
+mark functions static explicitly
+use var instead of count(array) in loops
+php version upgrade
+profile to know laggards and bottlenecks.
+
 -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
         async defer></script>
