@@ -56,16 +56,16 @@
   function relay_posts(){
     $query_str = '';
   	if(isset($_POST['search']))
-  	  $query_str .= "search=".$_POST['search'];
+  	  $query_str .= "search=".htmlspecialchars($_POST['search'], ENT_QUOTES);
   	if(isset($_POST['action'])){
   	  if(strlen($query_str) > 0)
   	    $query_str .= '&';
-  	  $query_str .= "action=".$_POST['action'];
+  	  $query_str .= "action=".htmlspecialchars($_POST['action'], ENT_QUOTES);
   	}
   	if(isset($_POST['id'])){
   	  if(strlen($query_str) > 0)
   	    $query_str .= '&';
-  	  $query_str .= "id=".$_POST['id'];
+  	  $query_str .= "id=".htmlspecialchars($_POST['id'], ENT_QUOTES);
   	}
   	if(isset($_POST['options'])){
   	  if(strlen($query_str) > 0)
@@ -78,16 +78,16 @@
   	  $query_str .= "options_s=".$_POST['options_s'];
   	}
   	if(isset($_GET['search']))
-  	  $query_str .= "search=".$_GET['search'];
+  	  $query_str .= "search=".htmlspecialchars($_GET['search'], ENT_QUOTES);
   	if(isset($_GET['action'])){
   	  if(strlen($query_str) > 0)
   	    $query_str .= '&';
-  	  $query_str .= "action=".$_GET['action'];
+  	  $query_str .= "action=".htmlspecialchars($_GET['action'], ENT_QUOTES);
   	}
   	if(isset($_GET['id'])){
   	  if(strlen($query_str) > 0)
   	    $query_str .= '&';
-  	  $query_str .= "id=".$_GET['id'];
+  	  $query_str .= "id=".htmlspecialchars($_GET['id'], ENT_QUOTES);
   	}
   	if(isset($_GET['options'])){
   	  if(strlen($query_str) > 0)
@@ -103,12 +103,12 @@
   	if(isset($_POST['slat'])){
   	  if(strlen($query_str) > 0)
   	    $query_str .= '&';
-  	  $query_str .= "slat=".$_POST['slat'];
+  	  $query_str .= "slat=".htmlspecialchars($_POST['slat'], ENT_QUOTES);
   	}
   	if(isset($_POST['slng'])){
   	  if(strlen($query_str) > 0)
   	    $query_str .= '&';
-  	  $query_str .= "slng=".$_POST['slng'];
+  	  $query_str .= "slng=".htmlspecialchars($_POST['slng'], ENT_QUOTES);
   	}
   	return $query_str;
   }
@@ -151,7 +151,7 @@ function ajaxcall_search(datastring){
    				 	res = result;
    		 	},
    		 	error: function(err){
-   		 	    alert('Failed to invoke serverside function(in search)... Please try again in some time' + err);
+   		 	    alert('Failed to invoke serverside function(in search)... Please try again in some time');
    		 	    res = false;
    		 	}
     });

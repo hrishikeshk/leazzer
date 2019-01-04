@@ -24,7 +24,7 @@ function insert_facility_owner($email){
 function extract_image_name($ss_path){
   // eg- //images.selfstorage.com/large-compress/108715518314b760ec6.jpg
   $lpos = strrpos($ss_path, "/");
-  return trim(substr($ss_path, $lpos + 1));
+  return htmlspecialchars(trim(substr($ss_path, $lpos + 1)), ENT_QUOTES);
 }
 
 function fetch_image_url($facility_id){
@@ -92,13 +92,13 @@ function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ow
 	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="150px" alt="Logo" title="Logo" style="display:block"></center><br>';
 	$message .= 'Hello Admin !<br />';
 	
-	$message .= '<b><u>Facility Name</u> - '.$facilityName.'<br />';
-	$message .= '<b><u>Facility Address</u> - '.$facilityAddress.'<br />';
-	$message .= '<u>Facility Phone Number</u> - '.$facilityPhone.'<br />';
-	$message .= '<u>User Phone Number</u> - '.$userPhone.'<br /></b>';
+	$message .= '<b><u>Facility Name</u> - '.htmlspecialchars($facilityName, ENT_QUOTES).'<br />';
+	$message .= '<b><u>Facility Address</u> - '.htmlspecialchars($facilityAddress, ENT_QUOTES).'<br />';
+	$message .= '<u>Facility Phone Number</u> - '.htmlspecialchars($facilityPhone, ENT_QUOTES).'<br />';
+	$message .= '<u>User Phone Number</u> - '.htmlspecialchars($userPhone, ENT_QUOTES).'<br /></b>';
 	
-	$message .= '<br><br>A '.$unit.' unit has been reserved from ';
-	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
+	$message .= '<br><br>A '.htmlspecialchars($unit).' unit has been reserved from ';
+	$message .= htmlspecialchars($resFromDate).' to '.htmlspecialchars($resToDate).' for the price of $'.htmlspecialchars($price, ENT_QUOTES).' per month.<br>';
 	$message .= '</td></tr>';
 	$message .= '<tr><td><br><br>';
 	$message .= 'Sincerely,<br>&mdash; Leazzer';
@@ -120,7 +120,7 @@ function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ow
 function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $price, $companyName, $resFromDate, $resToDate, $image, $fAddress){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
-	$toemail=$custEmail; 
+	$toemail = $custEmail; 
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
 	$message .= 'Dear <b>'.$custName.'</b>,';
@@ -129,7 +129,7 @@ function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $pric
 	  $expected_path = "images/emsurvey.png";
 	  $message .= '<center><img src="https://www.leazzer.com/'.$expected_path.'" height="175px" width="240px" alt="Reservation Done" title="uiLogo" style="display:block"></center><br />';
 	}
-	$message .= '<br><br>Congratulations. A '.$unit.' unit reservation has been confirmed at '.$companyName.' for you at the price of $'.$price.' per month. You must move in between dates '.$resFromDate.' to '.$resToDate;
+	$message .= '<br><br>Congratulations. A '.htmlspecialchars($unit).' unit reservation has been confirmed at '.htmlspecialchars($companyName, ENT_QUOTES).' for you at the price of $'.htmlspecialchars($price, ENT_QUOTES).' per month. You must move in between dates '.htmlspecialchars($resFromDate).' to '.htmlspecialchars($resToDate);
 	
 	if(strlen($image) > 0){
 	  $image_name = extract_image_name($image);
@@ -146,7 +146,7 @@ function onReserveCustomerMail($facility_id, $custEmail, $custName, $unit, $pric
 	else
 		$message .= '<center><img src="https://www.leazzer.com/unitimages/pna.jpg" height="180px" width="200px" alt="npnaLogo" title="npnaLogo" style="display:block"></center><br>';
 
-	$message .= $fAddress;
+	$message .= htmlspecialchars($fAddress, ENT_QUOTES);
 	$message .= '</td></tr>';
 	$message .= '<tr><td><br><br>';
 	$message .= 'Sincerely,<br>&mdash; Leazzer';
@@ -174,9 +174,9 @@ function onReserveOwnerMail($facilityName, $ownerEmail, $ownerName, $unit, $pric
 	$message .= '<tr><td>';
 	//$message .= '<center><img src="https://www.leazzer.com/images/gwo.png" height="150px" width="175px" alt="Logo" title="Logo" style="display:block"></center><br>';
 	$message .= '<center><img src="https://www.leazzer.com/images/emsurvey.png" height="175px" width="240px" alt="Logo" title="Logo" style="display:block"></center><br>';
-	$message .= 'Hello <b>'.$facilityName.'</b>,';
-	$message .= '<br><br>A '.$unit.' unit has been reserved by '.$customerName.' from ';
-	$message .= $resFromDate.' to '.$resToDate.' for the price of $'.$price.' per month.<br>';
+	$message .= 'Hello <b>'.htmlspecialchars($facilityName, ENT_QUOTES).'</b>,';
+	$message .= '<br><br>A '.htmlspecialchars($unit).' unit has been reserved by '.htmlspecialchars($customerName, ENT_QUOTES).' from ';
+	$message .= htmlspecialchars($resFromDate).' to '.htmlspecialchars($resToDate).' for the price of $'.htmlspecialchars($price, ENT_QUOTES).' per month.<br>';
 	$message .= '</td></tr>';
 	$message .= '<tr><td><br><br>';
 	$message .= 'Sincerely,<br>&mdash; Leazzer';
@@ -274,7 +274,7 @@ function popup_amenities($facility_id, $facility_unit_amenities){
   $arr_len = count($facility_unit_amenities);
   $inner_data = 'new Array(';
 	for($i = 0; $i < $arr_len; $i++){
-	  $amenity = $facility_unit_amenities[$i];
+	  $amenity = htmlspecialchars($facility_unit_amenities[$i], ENT_QUOTES);
 		$inner_data .= '\''.'  '.str_replace('"', '&quot;', $amenity).'<br />\',';
 	}
 	$inner_data .= '\'<br />\')';
@@ -284,7 +284,7 @@ function popup_amenities($facility_id, $facility_unit_amenities){
 function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $facilityName){
 
   $facility_unit_amenities = a_filter($facility_unit_amenities, "climate");
-  
+
   $arr_len = count($facility_unit_amenities);
   $review_count = fetch_review_count($facility_id);
   echo '<tr><td style="width:900px;padding-left:400px">';
@@ -294,15 +294,15 @@ function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $
   }
 	for($i = 0; $i < $min_num; $i++){
 	  $amenity_w_g = explode("|", $facility_unit_amenities[$i]);
-    $amenity = $amenity_w_g[1];
+    $amenity = htmlspecialchars($amenity_w_g[1], ENT_QUOTES);
 	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
 		echo '  '.$amenity.'<br />';
 	}
-	
+
 	echo '<div id="unit_more_amenities'.$facility_id.'" style="display:none">';
 	for($i = $show_upfront; $i < $arr_len; $i++){
 	  $amenity_w_g = explode("|", $facility_unit_amenities[$i]);
-    $amenity = $amenity_w_g[1];
+    $amenity = htmlspecialchars($amenity_w_g[1], ENT_QUOTES);
 	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px;" />  '.$amenity.'<br />';
 	}
 	echo '</div>';
@@ -313,7 +313,7 @@ function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $
 	
 	if($arr_len > $show_upfront){
 	  //echo '<a id="switchMoreLess'.$facility_id.'" href="javascript:showMoreLessAmenities('.$facility_id.')" style="display:block"> &gt;&gt;</a>';
-	  echo '<a href="javascript:popupMoreLessAmenities(\''.$facilityName.'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="display:block">      &gt;&gt;</a>';
+	  echo '<a href="javascript:popupMoreLessAmenities(\''.htmlspecialchars($facilityName, ENT_QUOTES).'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="display:block">      &gt;&gt;</a>';
 	}
 	echo '</td></tr>';
 }
@@ -330,22 +330,22 @@ function has_unit_priority_amenities($ua_arr, $uid){
 
 function show_unit_detail($arrFU, $facility_id, $rdays, $has_ua, $facilityName, $facility_unit_amenities){
   echo '<div class="col-md-1" style="width:10%;text-align:center;margin-bottom: 5px">';
-	echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":$arrFU['img']).'" style="vertical-align: top;width:50px;height:50px">';
-	echo '<p style="text-align:center;width:80%;display:inline-block;margin:0;font-size:.8em;white-space: nowrap;"><b>'.$arrFU['size'].'</b><br>$'.$arrFU['price'].'</p>';
+	echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":htmlspecialchars($arrFU['img'], ENT_QUOTES)).'" style="vertical-align: top;width:50px;height:50px">';
+	echo '<p style="text-align:center;width:80%;display:inline-block;margin:0;font-size:.8em;white-space: nowrap;"><b>'.htmlspecialchars($arrFU['size']).'</b><br>$'.htmlspecialchars($arrFU['price'], ENT_QUOTES).'</p>';
 	$show_fire = 'visibility:hidden';
 	if($has_ua == true){
 	  $show_fire = 'visibility:visible';
 	}
-	echo '<div class="blink-image" style="margin-bottom:10px"><a href="javascript:popupMoreLessAmenities(\''.$facilityName.'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="'.$show_fire.'"><img src="images/fire.png" title="Click For Unit Amenities !" style="width:20px;height:20px;visibility:inherit"></a></div>';
+	echo '<div class="blink-image" style="margin-bottom:10px"><a href="javascript:popupMoreLessAmenities(\''.htmlspecialchars($facilityName, ENT_QUOTES).'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="'.$show_fire.'"><img src="images/fire.png" title="Click For Unit Amenities !" style="width:20px;height:20px;visibility:inherit"></a></div>';
 
 	$phone = 'unknown';
 	if(isset($_SESSION['lcdata']['phone']))
-	  $phone = $_SESSION['lcdata']['phone'];
+	  $phone = htmlspecialchars($_SESSION['lcdata']['phone'], ENT_QUOTES);
 	echo '<button type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;font-size: 1.0em;display:inline;padding:4px;" onClick="onUnitClick(this,'.
 										(isset($_SESSION['lcdata'])?$_SESSION['lcdata']['id']:"0").','.
-										$facility_id.',\''.$rdays.'\',\''.
-										urlencode($arrFU['size']).'\',\''.
-										$arrFU['price'].'\',\''.$phone.'\');">Reserve</button></div>';
+										$facility_id.',\''.htmlspecialchars($rdays, ENT_QUOTES).'\',\''.
+										urlencode(htmlspecialchars($arrFU['size'])).'\',\''.
+										htmlspecialchars($arrFU['price'], ENT_QUOTES).'\',\''.$phone.'\');">Reserve</button></div>';
 }
 
 function show_units($facility_id, $arr_arr_FU, $show_upfront, $rdays, $ua_arr, $facilityName, $facility_unit_amenities){
@@ -978,7 +978,7 @@ function calculate_distance_ll($lat, $lng, $loc){
           }
         }
       }
-      
+
       ac.innerHTML = (heading + tbl_start + data + tbl_end);
       y.style.display = "block";
     }, 1000);
@@ -996,7 +996,7 @@ function calculate_distance_ll($lat, $lng, $loc){
       a_moreless.innerHTML = " &gt;&gt;";
     }
   }
-  
+
   function ajaxcall_photos(datastring){
     var res;
     $.ajax

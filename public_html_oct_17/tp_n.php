@@ -12,7 +12,7 @@
   function extract_image_name($ss_path){
     // eg- //images.selfstorage.com/large-compress/108715518314b760ec6.jpg
     $lpos = strrpos($ss_path, "/");
-    return trim(substr($ss_path, $lpos + 1));
+    return htmlspecialchars(trim(substr($ss_path, $lpos + 1)), ENT_QUOTES);
   }
 
   function fetch_facility_images($facility_id){

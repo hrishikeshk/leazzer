@@ -91,17 +91,17 @@ function obfuscate_name($name, $laid){
       while($arr = mysqli_fetch_array($res, MYSQLI_ASSOC)){
         echo '<table style="font-size: .9em;margin-bottom: 5px;margin-left: 75px;width:80%;box-shadow: 5px 5px 5px #888888;">';
         echo '<tr style="margin-left:0px;text-align:left"><td>';
-        echo '<br /><br /><img src="images/anon.png" height=25px width=25px> '.obfuscate_name($arr['nickname'], $arr['listing_avail_id']).'<br />';
+        echo '<br /><br /><img src="images/anon.png" height=25px width=25px> '.obfuscate_name(htmlspecialchars($arr['nickname'], ENT_QUOTES), htmlspecialchars($arr['listing_avail_id'], ENT_QUOTES)).'<br />';
         show_stars($arr['rating']);
-        echo $arr['title'].'<br />';
-        reformat_date($arr['timestamp']);
+        echo htmlspecialchars($arr['title'], ENT_QUOTES).'<br />';
+        reformat_date(htmlspecialchars($arr['timestamp']));
         echo ' - <b style="color:green">Published on Leazzer.com</b><br />';
-        echo $arr['message'];
+        echo htmlspecialchars($arr['message'], ENT_QUOTES);
         echo '</td></tr>';
         echo '</table>';
       }
     ?>
-    
+
   <div style="font-size: .7em;margin-right:150px;text-align:right">*Based on reviews collected from third-party sites</div>
 </div>
 
@@ -115,10 +115,6 @@ function obfuscate_name($name, $laid){
 <script src="js/jquery.easing.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" />
-
-<!-- Start of HubSpot Embed Code -->
-<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/5051579.js"></script>
-<!-- End of HubSpot Embed Code -->
 
 </body>
 </html>

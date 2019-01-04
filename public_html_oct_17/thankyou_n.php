@@ -81,21 +81,21 @@ include('sql.php');
 			if((mysqli_num_rows($resC) > 0) && (mysqli_num_rows($resF) > 0)){
 				$arrC = mysqli_fetch_array($resC, MYSQLI_ASSOC);
 				$arrF = mysqli_fetch_array($resF, MYSQLI_ASSOC);
-				echo '<b>Congratulations, your unit(s) of '.$_GET['unit'].' has been reserved at '.$arrF['title'].' for you from '.date('m/d/Y',$reserveFromDate).
-					 ' until '.date('m/d/Y',$reserveToDate).' for the price of $'.$_GET['price'].' at the following location<br>';
+				echo '<b>Congratulations, your unit(s) of '.htmlspecialchars($_GET['unit']).' has been reserved at '.htmlspecialchars($arrF['title'], ENT_QUOTES).' for you from '.date('m/d/Y',$reserveFromDate).
+					 ' until '.date('m/d/Y',$reserveToDate).' for the price of $'.htmlspecialchars($_GET['price'], ENT_QUOTES).' at the following location<br>';
 				echo '<br>';
 				if(mysqli_num_rows($resI) != 0){
 				  $arrI = mysqli_fetch_array($resI, MYSQLI_ASSOC);
 					if(file_exists("images/".$_GET['fid']."/".$arrI['url_fullsize']))
-						echo '<center><img src="//leazzer.com/images/"'.$_GET['fid'].'"/"'.$arrI['url_fullsize'].'" width="250px" height="250px"></center><br>';
+						echo '<center><img src="//leazzer.com/images/"'.htmlspecialchars($_GET['fid'], ENT_QUOTES).'"/"'.htmlspecialchars($arrI['url_fullsize'], ENT_QUOTES).'" width="250px" height="250px"></center><br>';
 					else
-						echo '<center><img src="https:'.$arrI['url_fullsize'].'" width="250px" height="250px"></center><br>';
+						echo '<center><img src="https:'.htmlspecialchars($arrI['url_fullsize'], ENT_QUOTES).'" width="250px" height="250px"></center><br>';
 				}
 				else
 					echo '<center><img src="//leazzer.com/unitimages/pna.jpg" width="250px" height="250px"></center><br>';
 				echo '<br>';				
-				echo $arrF['title']."<br>";
-				echo $arrF['street']." ".$arrF['locality']."<br>".$arrF['city']." ".$arrF['state']." - ".$arrF['zip'];
+				echo htmlspecialchars($arrF['title'], ENT_QUOTES)."<br>";
+				echo htmlspecialchars($arrF['street']." ".$arrF['locality'].", ".$arrF['city']." ".$arrF['state']." - ".$arrF['zip'], ENT_QUOTES);
 				if((isset($_SERVER["HTTP_REFERER"]) && (strpos($_SERVER["HTTP_REFERER"],"search.php")!==false)) || 
 						(isset($_GET['ref']) && ($_GET['ref']=="search")))
 					echo '<h5><a href="search_n.php" style="color:#68AE00;">Go Back Search</a></h5>';
@@ -154,7 +154,7 @@ function ajaxcall(datastring){
    				 	res=result;
    		 	},
    		 	error: function(err){
-   		 	    alert('Failed to invoke post login reservation serverside function... Please try again in some time' + err);
+   		 	    alert('Failed to invoke post login reservation serverside function... Please try again in some time');
    		 	    res = false;
    		 	}
     });
@@ -162,8 +162,6 @@ function ajaxcall(datastring){
 }
 
 </script>
-<!-- Start of HubSpot Embed Code -->
-<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/5051579.js"></script>
-<!-- End of HubSpot Embed Code -->
+
 </body>
 </html>                        

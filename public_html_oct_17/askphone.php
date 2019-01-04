@@ -97,15 +97,15 @@ include('sql.php');
   			//$reserveFromDate = mktime(0, 0, 0, $rdateArr[0], $rdateArr[1], $rdateArr[2]);
 	  		//$reserveToDate = strtotime("+".$_GET['rdays']." days", $reserveFromDate);
         if(isset($_GET['fid']))
-          $_SESSION['res_fid'] = $_GET['fid'];
+          $_SESSION['res_fid'] = htmlspecialchars($_GET['fid'], ENT_QUOTES);
         if(isset($_GET['rdays']))
-          $_SESSION['res_rdays'] = $_GET['rdays'];
+          $_SESSION['res_rdays'] = htmlspecialchars($_GET['rdays'], ENT_QUOTES);
         if(isset($_GET['rdate']))
-          $_SESSION['res_rdate'] = $_GET['rdate'];
+          $_SESSION['res_rdate'] = htmlspecialchars($_GET['rdate'], ENT_QUOTES);
         if(isset($_GET['unit']))
-          $_SESSION['res_unit'] = $_GET['unit'];
+          $_SESSION['res_unit'] = htmlspecialchars($_GET['unit']);
         if(isset($_GET['price']))
-          $_SESSION['res_price'] = $_GET['price'];
+          $_SESSION['res_price'] = htmlspecialchars($_GET['price'], ENT_QUOTES);
         
 
         if(isset($_POST['action']) && $_POST['action'] == 'Complete Reservation' && isset($_POST['phone']) && strlen($_POST['phone']) != 10)

@@ -12,7 +12,7 @@ if(isset($_POST['action'])){
 
 		$res = mysqli_query($conn,$query);
 		while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
-		  $facility_id = $arr['id'];
+		  $facility_id = htmlspecialchars($arr['id'], ENT_QUOTES);
 		  $arr_imgs = fetch_image_url($facility_id);
 		  $unit_info_arr = fetch_units($facility_id);
       //$facility_unit_amenities = fetch_consolidate_amenities($facility_id, $unit_info_arr);
@@ -29,7 +29,7 @@ if(isset($_POST['action'])){
 			if(file_exists($expected_image_path))
 				echo '<img src="'.$expected_image_path.'" style="min-height:120px;width:120px;">';
 			else if(strlen($arr_imgs['url_thumbsize']) > 0)
-				echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
+				echo '<img src="https:'.htmlspecialchars($arr_imgs['url_thumbsize'], ENT_QUOTES).'" style="min-height:120px;width:120px;">';
 			else
 			  echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
 			
@@ -41,8 +41,8 @@ if(isset($_POST['action'])){
 			
 			echo '<table>';
 			
-			echo '<tr><td><b>'.$arr['title'].'</b><br>';
-			echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
+			echo '<tr><td><b>'.htmlspecialchars($arr['title']).'</b><br>';
+			echo htmlspecialchars($arr['city'].",".$arr['state']." ".$arr['zip'], ENT_QUOTES).'<br />';
 			if(isset($arr['calc_distance']) && $arr['calc_distance'] > 0){
 			  $rounded = round($arr['calc_distance'], 1);
 			  if($rounded > 0)
@@ -59,10 +59,10 @@ if(isset($_POST['action'])){
 			
 			echo '</td>';
 //
-      echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div></td>';
+      echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.htmlspecialchars($arr['reservationdays'], ENT_QUOTES).' days</div></td>';
 //
 			echo '</tr>';
-			
+
       show_amenities($facility_id, $priority_amenities, 5, $arr['title']);
       
       echo '</table>';
@@ -81,14 +81,14 @@ if(isset($_POST['action'])){
 		}
 	}
 	else if($_POST['action'] == "sessionreserve"){
-		$_SESSION['res_fid'] = $_POST['fid'];
-		$_SESSION['res_cid'] = $_POST['cid'];
-		$_SESSION['res_rdays'] = $_POST['rdays'];
-		$_SESSION['res_rdate'] = $_POST['rdate'];
-		$_SESSION['res_unit'] = $_POST['unit'];
-		$_SESSION['res_price'] = $_POST['price'];
+		$_SESSION['res_fid'] = htmlspecialchars($_POST['fid'], ENT_QUOTES);
+		$_SESSION['res_cid'] = htmlspecialchars($_POST['cid'], ENT_QUOTES);
+		$_SESSION['res_rdays'] = htmlspecialchars($_POST['rdays'], ENT_QUOTES);
+		$_SESSION['res_rdate'] = htmlspecialchars($_POST['rdate'], ENT_QUOTES);
+		$_SESSION['res_unit'] = htmlspecialchars($_POST['unit']);
+		$_SESSION['res_price'] = htmlspecialchars($_POST['price'], ENT_QUOTES);
 		if(isset($_POST['phone']) && strlen($_POST['phone']) == 10)
-  		$_SESSION['res_phone'] = $_POST['phone'];
+  		$_SESSION['res_phone'] = htmlspecialchars($_POST['phone'], ENT_QUOTES);
   	else
   	  $_SESSION['res_phone'] = 'unknown';
   	//error_log('service_n session_reserve - '.$_POST['phone'].', session - '.$_SESSION['res_phone']);
@@ -124,7 +124,7 @@ if(isset($_POST['action'])){
 			//error_log('service_n reserve - '.$phone.', session: '.$_SESSION['res_phone'].', posted: '.$_POST['phone']);
 			$img_paths_arr = calc_img_path($arrF['id']);
 			$img_path = $img_paths_arr['url_fullsize'];
-			$facilityAddress = $arrF['street'].", ".($arrF['locality']==""?"":$arrF['region']."<br>").$arrF['city'].", ".$arrF['state']." - ".$arrF['zip'];
+			$facilityAddress = $arrF['street'].", ".($arrF['locality']==""?"":$arrF['region'].", ").$arrF['city'].", ".$arrF['state']." - ".$arrF['zip'];
 			onReserveAdminMail( $arrF['title'],
 			                    $facilityAddress,
 			                    $arrF['phone'],

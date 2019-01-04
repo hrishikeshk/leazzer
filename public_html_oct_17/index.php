@@ -8,14 +8,14 @@ if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
 }
 */
 session_start();
-if(isset($_GET['action']) && ($_GET['action'] == "logout"))
-{
+if(isset($_GET['action']) && ($_GET['action'] == "logout")){
 	if(isset($_SESSION['lfdata']))
 		unset($_SESSION['lfdata']);
 	if(isset($_SESSION['lcdata']))
 		unset($_SESSION['lcdata']);
 		session_destroy();
 }
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -67,6 +67,10 @@ mark functions static explicitly
 use var instead of count(array) in loops
 php version upgrade
 profile to know laggards and bottlenecks.
+ensure unique js and css libs download and use.
+--
+https://security.stackexchange.com/questions/66252/encodeuricomponent-in-a-unquoted-html-attribute
+https://phpsecurity.readthedocs.io/en/latest/Cross-Site-Scripting-(XSS).html
 
 -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
@@ -268,7 +272,7 @@ function ajaxcall(datastring){
    				 	res = result;
    		 	},
    		 	error: function(err){
-   		 	    alert('Failed to invoke serverside function... Please try again in some time' + err);
+   		 	    alert('Failed to invoke serverside function... Please try again in some time');
    		 	    res = false;
    		 	}
     });
@@ -288,7 +292,7 @@ function ajaxcall_ap(datastring){
    				 	res = result;
    		 	},
    		 	error: function(err){
-   		 	    alert('Failed to invoke serverside function( to ask phone)... Please try again in some time' + err);
+   		 	    alert('Failed to invoke serverside function( to ask phone)... Please try again in some time');
    		 	    res = false;
    		 	}
     });

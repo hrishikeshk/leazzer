@@ -8,17 +8,17 @@ $filter = array();
 if((!isset($_POST['search'])) && isset($_SESSION['search']))
 	$_POST['search']= $_SESSION['search'];
 else if(isset($_POST['search']))
-	$_SESSION['search']= $_POST['search'];
+	$_SESSION['search']= htmlspecialchars($_POST['search'], ENT_QUOTES);
 
 if(isset($_POST['action'])){
-  
+
 	if($_POST['action'] == "removefilter" && isset($_SESSION['filter'])){
 	
 		$newFilterArr = array();
  		for($i=0;$i<count($_SESSION['filter']);$i++){
  			if($_SESSION['filter'][$i] != $_POST['id'])
  				array_push($newFilterArr,$_SESSION['filter'][$i]);
-		}			
+		}
 		$_SESSION['filter'] = $newFilterArr;
 	}
 }
@@ -220,7 +220,7 @@ function fd_hide(){
 
 function show_results($arr, $filter_dict_opts){
   $calc_distance = $arr['calc_distance'];
-  $facility_id = $arr['id'];
+  $facility_id = htmlspecialchars($arr['id'], ENT_QUOTES);
 	$facility_unit_amenities = fetch_facility_amenities($facility_id, $arr);
 
   if(count($filter_dict_opts) == 0 || eval_filters($facility_unit_amenities, $filter_dict_opts) == true){
@@ -232,7 +232,7 @@ function show_results($arr, $filter_dict_opts){
 
     $facility_unit_amenities = a_unique(a_merge(get23($from_unit_amenities), $facility_unit_amenities));
     $priority_amenities = arrange_priority_with_group($facility_unit_amenities);
-        
+
     echo '<tr style="margin:0px;padding:0px;border:0px solid #000;background:none;">';
 	  echo '<td style="background:none;margin:0px;padding:5px;border:0px solid #000;">';
 	  			
@@ -244,7 +244,7 @@ function show_results($arr, $filter_dict_opts){
 	  if(file_exists($expected_image_path))
 	    echo '<img src="'.$expected_image_path.'" style="min-height:120px;width:120px;">';
 	  else if(strlen($arr_imgs['url_thumbsize']) > 0)
-	    echo '<img src="https:'.$arr_imgs['url_thumbsize'].'" style="min-height:120px;width:120px;">';
+	    echo '<img src="https:'.htmlspecialchars($arr_imgs['url_thumbsize'], ENT_QUOTES).'" style="min-height:120px;width:120px;">';
 	  else
 	    echo '<img src="unitimages/pna.jpg" style="min-height:120px;width:120px;">';
 
@@ -256,9 +256,9 @@ function show_results($arr, $filter_dict_opts){
 	    		
 	  echo '<table>';
 	    		
-	  echo '<tr><td><b>'.$arr['title'].'</b><br>';
-	  echo $arr['city'].",".$arr['state']." ".$arr['zip'].'<br />';
-	      		
+	  echo '<tr><td><b>'.htmlspecialchars($arr['title'], ENT_QUOTES).'</b><br>';
+	  echo htmlspecialchars($arr['city'].",".$arr['state']." ".$arr['zip'], ENT_QUOTES).'<br />';
+
 	  if($calc_distance > 0)
       echo $calc_distance.' miles away<br />';
     else
@@ -277,7 +277,7 @@ function show_results($arr, $filter_dict_opts){
 	  echo '</tr>';
 
     show_amenities($facility_id, $priority_amenities, 5, $arr['title']);
-        
+
     echo '</table>';
         
     echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;text-align:left">';
@@ -345,10 +345,10 @@ function cmp($a, $b) {
       								if(isset($_SESSION['filter']) && (in_array($arr['id'], $_SESSION['filter'])))
       									$checked = "checked";
       								echo '<input type="checkbox" style="margin-right:5px;" name="options[]" value="'.
-      											$arr['id'].'" '.$checked.'>'.$arr['opt'].'<br>';
+      											$arr['id'].'" '.$checked.'>'.htmlspecialchars($arr['opt'], ENT_QUOTES).'<br>';
       							}
       						?>
-      						<input type="hidden" name="search" id="search" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>">
+      						<input type="hidden" name="search" id="search" value="<?php echo (isset($_POST['search'])?htmlspecialchars($_POST['search'], ENT_QUOTES):"");?>">
       						<input type="hidden" name="action" id="action" value="applyfilter">
 				        </p>
 				      </div>
@@ -390,8 +390,8 @@ function cmp($a, $b) {
 			   		for($i=0;$i<count($filter_vals);$i++){
 			   			echo '<div style="background:#eee;display:inline-block;padding:5px;margin:2px;">'.
 			   						$filter_vals[$i].
-			   						' <a href="search_n.php?action=removefilter&id='.$_SESSION['filter'][$i].'" style="color:#68AE00;"><i class="fa fa-close"></i></a></div>';
-			   						
+			   						' <a href="search_n.php?action=removefilter&id='.htmlspecialchars($_SESSION['filter'][$i], ENT_QUOTES).'" style="color:#68AE00;"><i class="fa fa-close"></i></a></div>';
+
 			   			$filter[] = $_SESSION['filter'][$i];
 			   		}
 
