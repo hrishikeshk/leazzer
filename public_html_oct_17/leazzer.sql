@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Dec 16, 2018 at 07:58 AM
+-- Generation Time: Jan 04, 2019 at 05:28 AM
 -- Server version: 5.6.39-cll-lve
 -- PHP Version: 5.6.30
 
@@ -21,6 +21,7 @@ SET time_zone = "+00:00";
 --
 -- Database: `leazzer`
 --
+DROP DATABASE IF EXISTS `leazzer`;
 CREATE DATABASE IF NOT EXISTS `leazzer` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `leazzer`;
 
@@ -30,10 +31,12 @@ USE `leazzer`;
 -- Table structure for table `admin`
 --
 
-CREATE TABLE `admin` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `admin`;
+CREATE TABLE IF NOT EXISTS `admin` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(200) NOT NULL,
-  `password` varchar(200) NOT NULL
+  `password` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -42,9 +45,11 @@ CREATE TABLE `admin` (
 -- Table structure for table `admin_configuration`
 --
 
-CREATE TABLE `admin_configuration` (
+DROP TABLE IF EXISTS `admin_configuration`;
+CREATE TABLE IF NOT EXISTS `admin_configuration` (
   `name` varchar(255) NOT NULL,
-  `data_value` longtext NOT NULL
+  `data_value` longtext NOT NULL,
+  PRIMARY KEY (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -53,10 +58,12 @@ CREATE TABLE `admin_configuration` (
 -- Table structure for table `amenity_dictionary`
 --
 
-CREATE TABLE `amenity_dictionary` (
-  `auto_id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `amenity_dictionary`;
+CREATE TABLE IF NOT EXISTS `amenity_dictionary` (
+  `auto_id` int(11) NOT NULL AUTO_INCREMENT,
   `option_id` int(11) NOT NULL,
-  `equivalent` varchar(100) NOT NULL
+  `equivalent` varchar(100) NOT NULL,
+  PRIMARY KEY (`auto_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -65,15 +72,17 @@ CREATE TABLE `amenity_dictionary` (
 -- Table structure for table `customer`
 --
 
-CREATE TABLE `customer` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `customer`;
+CREATE TABLE IF NOT EXISTS `customer` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `firstname` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lastname` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `emailid` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
   `pwd` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `logintype` varchar(100) COLLATE utf8_unicode_ci DEFAULT NULL,
   `phone` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
-  `status` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL
+  `status` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -82,8 +91,9 @@ CREATE TABLE `customer` (
 -- Table structure for table `facility`
 --
 
-CREATE TABLE `facility` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `facility`;
+CREATE TABLE IF NOT EXISTS `facility` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `firstname` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `lastname` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `emailid` varchar(250) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -108,7 +118,8 @@ CREATE TABLE `facility` (
   `description` varchar(300) COLLATE utf8_unicode_ci NOT NULL,
   `coupon_code` varchar(25) COLLATE utf8_unicode_ci NOT NULL,
   `coupon_desc` varchar(300) COLLATE utf8_unicode_ci NOT NULL,
-  `sub_images` varchar(800) COLLATE utf8_unicode_ci NOT NULL
+  `sub_images` varchar(800) COLLATE utf8_unicode_ci NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -117,9 +128,11 @@ CREATE TABLE `facility` (
 -- Table structure for table `facility_amenity`
 --
 
-CREATE TABLE `facility_amenity` (
+DROP TABLE IF EXISTS `facility_amenity`;
+CREATE TABLE IF NOT EXISTS `facility_amenity` (
   `facility_id` varchar(20) NOT NULL,
-  `amenity` varchar(100) NOT NULL
+  `amenity` varchar(100) NOT NULL,
+  KEY `fac_amenity_id` (`facility_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -128,11 +141,13 @@ CREATE TABLE `facility_amenity` (
 -- Table structure for table `facility_images`
 --
 
-CREATE TABLE `facility_images` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `facility_images`;
+CREATE TABLE IF NOT EXISTS `facility_images` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `facility_id` int(11) NOT NULL,
   `path` varchar(127) NOT NULL,
-  `status` tinyint(1) NOT NULL DEFAULT '1'
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -141,8 +156,9 @@ CREATE TABLE `facility_images` (
 -- Table structure for table `facility_master`
 --
 
-CREATE TABLE `facility_master` (
-  `auto_id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `facility_master`;
+CREATE TABLE IF NOT EXISTS `facility_master` (
+  `auto_id` int(11) NOT NULL AUTO_INCREMENT,
   `id` varchar(20) NOT NULL,
   `facility_owner_id` int(11) DEFAULT NULL,
   `title` varchar(100) NOT NULL,
@@ -163,7 +179,17 @@ CREATE TABLE `facility_master` (
   `searchable` int(11) NOT NULL DEFAULT '1',
   `status` int(11) DEFAULT '1',
   `reservationdays` int(11) DEFAULT '3',
-  `receivereserve` int(11) DEFAULT '1'
+  `receivereserve` int(11) DEFAULT '1',
+  `pdispc` int(11) DEFAULT NULL,
+  `pdismo` int(11) DEFAULT NULL,
+  `pdispcfm` int(11) DEFAULT NULL,
+  `pdispcfmfd` int(11) DEFAULT NULL,
+  `pdispcfd` int(11) DEFAULT NULL,
+  `pdismofd` int(11) DEFAULT NULL,
+  `pdismofm` int(11) DEFAULT NULL,
+  PRIMARY KEY (`auto_id`),
+  UNIQUE KEY `id` (`id`),
+  KEY `slatlng` (`searchable`) USING BTREE
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -172,15 +198,18 @@ CREATE TABLE `facility_master` (
 -- Table structure for table `facility_owner`
 --
 
-CREATE TABLE `facility_owner` (
-  `auto_id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `facility_owner`;
+CREATE TABLE IF NOT EXISTS `facility_owner` (
+  `auto_id` int(11) NOT NULL AUTO_INCREMENT,
   `companyname` varchar(300) DEFAULT NULL,
   `firstname` varchar(200) DEFAULT NULL,
   `lastname` varchar(200) DEFAULT NULL,
   `pwd` varchar(250) DEFAULT NULL,
   `emailid` varchar(200) NOT NULL,
   `logintype` varchar(100) DEFAULT NULL,
-  `phone` varchar(200) DEFAULT NULL
+  `phone` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`auto_id`),
+  UNIQUE KEY `emailid` (`emailid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -189,11 +218,13 @@ CREATE TABLE `facility_owner` (
 -- Table structure for table `forgotpwd`
 --
 
-CREATE TABLE `forgotpwd` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `forgotpwd`;
+CREATE TABLE IF NOT EXISTS `forgotpwd` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `uid` int(11) DEFAULT NULL,
   `emailid` varchar(200) NOT NULL,
-  `code` text
+  `code` text,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -202,11 +233,14 @@ CREATE TABLE `forgotpwd` (
 -- Table structure for table `image`
 --
 
-CREATE TABLE `image` (
-  `auto_id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `image`;
+CREATE TABLE IF NOT EXISTS `image` (
+  `auto_id` int(11) NOT NULL AUTO_INCREMENT,
   `url_fullsize` varchar(100) DEFAULT NULL,
   `url_thumbsize` varchar(100) DEFAULT NULL,
-  `facility_id` varchar(20) NOT NULL
+  `facility_id` varchar(20) NOT NULL,
+  PRIMARY KEY (`auto_id`),
+  KEY `img_fac_id_2` (`facility_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -215,9 +249,11 @@ CREATE TABLE `image` (
 -- Table structure for table `options`
 --
 
-CREATE TABLE `options` (
-  `id` int(11) NOT NULL,
-  `opt` varchar(200) NOT NULL
+DROP TABLE IF EXISTS `options`;
+CREATE TABLE IF NOT EXISTS `options` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `opt` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -226,13 +262,15 @@ CREATE TABLE `options` (
 -- Table structure for table `reserve`
 --
 
-CREATE TABLE `reserve` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `reserve`;
+CREATE TABLE IF NOT EXISTS `reserve` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `cid` int(11) DEFAULT NULL,
   `reservefromdate` decimal(18,0) DEFAULT NULL,
   `reservetodate` decimal(18,0) DEFAULT NULL,
   `fid` int(11) DEFAULT NULL,
-  `units` text COLLATE utf8_unicode_ci
+  `units` text COLLATE utf8_unicode_ci,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
@@ -241,8 +279,9 @@ CREATE TABLE `reserve` (
 -- Table structure for table `review`
 --
 
-CREATE TABLE `review` (
-  `auto_id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `review`;
+CREATE TABLE IF NOT EXISTS `review` (
+  `auto_id` int(11) NOT NULL AUTO_INCREMENT,
   `facility_id` varchar(20) NOT NULL,
   `listing_avail_id` varchar(20) NOT NULL,
   `rating` double DEFAULT NULL,
@@ -251,7 +290,9 @@ CREATE TABLE `review` (
   `excerpt` varchar(1000) DEFAULT NULL,
   `nickname` varchar(100) DEFAULT NULL,
   `timestamp` date DEFAULT NULL,
-  `stars` varchar(100) DEFAULT NULL
+  `stars` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`auto_id`),
+  KEY `review_fac_id` (`facility_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -260,14 +301,17 @@ CREATE TABLE `review` (
 -- Table structure for table `unit`
 --
 
-CREATE TABLE `unit` (
-  `auto_id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `unit`;
+CREATE TABLE IF NOT EXISTS `unit` (
+  `auto_id` int(11) NOT NULL AUTO_INCREMENT,
   `facility_id` varchar(20) NOT NULL,
   `size` varchar(50) NOT NULL,
   `price` double DEFAULT NULL,
   `description` varchar(1000) DEFAULT NULL,
   `promo` varchar(1000) DEFAULT NULL,
-  `price_freq` varchar(100) DEFAULT NULL
+  `price_freq` varchar(100) DEFAULT NULL,
+  PRIMARY KEY (`auto_id`),
+  KEY `unit_facId_size_2` (`facility_id`,`size`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -276,13 +320,16 @@ CREATE TABLE `unit` (
 -- Table structure for table `units`
 --
 
-CREATE TABLE `units` (
-  `id` int(11) NOT NULL,
+DROP TABLE IF EXISTS `units`;
+CREATE TABLE IF NOT EXISTS `units` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `units` varchar(200) NOT NULL,
   `images` text,
   `standard` int(2) DEFAULT NULL,
   `description` text,
-  `price` varchar(100) NOT NULL
+  `price` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `units_size` (`units`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
@@ -291,194 +338,12 @@ CREATE TABLE `units` (
 -- Table structure for table `unit_amenity`
 --
 
-CREATE TABLE `unit_amenity` (
+DROP TABLE IF EXISTS `unit_amenity`;
+CREATE TABLE IF NOT EXISTS `unit_amenity` (
   `unit_id` int(11) NOT NULL,
-  `amenity` varchar(100) NOT NULL
+  `amenity` varchar(100) NOT NULL,
+  KEY `ua_unit_id_amenity` (`unit_id`,`amenity`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `admin`
---
-ALTER TABLE `admin`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `admin_configuration`
---
-ALTER TABLE `admin_configuration`
-  ADD PRIMARY KEY (`name`);
-
---
--- Indexes for table `amenity_dictionary`
---
-ALTER TABLE `amenity_dictionary`
-  ADD PRIMARY KEY (`auto_id`);
-
---
--- Indexes for table `customer`
---
-ALTER TABLE `customer`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `facility`
---
-ALTER TABLE `facility`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `facility_images`
---
-ALTER TABLE `facility_images`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `facility_master`
---
-ALTER TABLE `facility_master`
-  ADD PRIMARY KEY (`auto_id`),
-  ADD UNIQUE KEY `id` (`id`);
-
---
--- Indexes for table `facility_owner`
---
-ALTER TABLE `facility_owner`
-  ADD PRIMARY KEY (`auto_id`),
-  ADD UNIQUE KEY `emailid` (`emailid`);
-
---
--- Indexes for table `forgotpwd`
---
-ALTER TABLE `forgotpwd`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `image`
---
-ALTER TABLE `image`
-  ADD PRIMARY KEY (`auto_id`);
-
---
--- Indexes for table `options`
---
-ALTER TABLE `options`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `reserve`
---
-ALTER TABLE `reserve`
-  ADD PRIMARY KEY (`id`);
-
---
--- Indexes for table `review`
---
-ALTER TABLE `review`
-  ADD PRIMARY KEY (`auto_id`);
-
---
--- Indexes for table `unit`
---
-ALTER TABLE `unit`
-  ADD PRIMARY KEY (`auto_id`);
-
---
--- Indexes for table `units`
---
-ALTER TABLE `units`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `admin`
---
-ALTER TABLE `admin`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
-
---
--- AUTO_INCREMENT for table `amenity_dictionary`
---
-ALTER TABLE `amenity_dictionary`
-  MODIFY `auto_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
-
---
--- AUTO_INCREMENT for table `customer`
---
-ALTER TABLE `customer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
-
---
--- AUTO_INCREMENT for table `facility`
---
-ALTER TABLE `facility`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=362;
-
---
--- AUTO_INCREMENT for table `facility_images`
---
-ALTER TABLE `facility_images`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
-
---
--- AUTO_INCREMENT for table `facility_master`
---
-ALTER TABLE `facility_master`
-  MODIFY `auto_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=489;
-
---
--- AUTO_INCREMENT for table `facility_owner`
---
-ALTER TABLE `facility_owner`
-  MODIFY `auto_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
-
---
--- AUTO_INCREMENT for table `forgotpwd`
---
-ALTER TABLE `forgotpwd`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT for table `image`
---
-ALTER TABLE `image`
-  MODIFY `auto_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2128;
-
---
--- AUTO_INCREMENT for table `options`
---
-ALTER TABLE `options`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
-
---
--- AUTO_INCREMENT for table `reserve`
---
-ALTER TABLE `reserve`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=163;
-
---
--- AUTO_INCREMENT for table `review`
---
-ALTER TABLE `review`
-  MODIFY `auto_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=358;
-
---
--- AUTO_INCREMENT for table `unit`
---
-ALTER TABLE `unit`
-  MODIFY `auto_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3791;
-
---
--- AUTO_INCREMENT for table `units`
---
-ALTER TABLE `units`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=575;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
