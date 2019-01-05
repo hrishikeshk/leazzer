@@ -3,13 +3,10 @@ session_start();
 require_once('../mail/class.phpmailer.php');		
 include('../sql.php');
 $GError = ""; 
-if(isset($_POST['action']))
-{		
-	if($_POST['action'] == "Register")
-	{
-		$res = mysqli_query($conn,"select * from customer where emailid='".$_POST['emailid']."'");
-		if(mysqli_num_rows($res) > 0)
-		{
+if(isset($_POST['action'])){		
+	if($_POST['action'] == "Register"){
+		$res = mysqli_query($conn,"select * from customer where emailid='".mysqli_real_escape_string($conn, $_POST['emailid'])."'");
+		if(mysqli_num_rows($res) > 0){
 			$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 			if($arr['status'] == "PENDING")
 				$GError = register();
@@ -20,8 +17,8 @@ if(isset($_POST['action']))
 				$GError = register();
 	}
 }
-function register()
-{
+
+function register(){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	$toemail=$_POST['emailid']; 
@@ -35,7 +32,7 @@ function register()
 	$message .= 'Thank you,<br>&mdash; Leazzer';
 	$message .= '</td></tr>';
 	$message .= '</table>';
-	
+
 	$mail = new PHPMailer(); // defaults to using php "mail()"
 	$mail->CharSet = 'UTF-8';
 	$mail->AddReplyTo($fromemail,"Leazzer Registration"); 
@@ -48,16 +45,17 @@ function register()
 	$ret = $mail->Send();
 	mysqli_query($conn,"delete from customer where emailid='".$_POST['emailid']."'");
 	mysqli_query($conn,"insert into customer(firstname,lastname,phone,emailid,pwd,status,logintype) values(N'".
-											$_POST['fname']."',N'".
-											$_POST['lname']."',N'".
-											$_POST['phone']."',N'".
-											$_POST['emailid']."','".
-											$_POST['password']."','Enabled','normal')");
-	$resEU = mysqli_query($conn,"select * from customer where emailid='".$_POST['emailid']."'");
+											mysqli_real_escape_string($conn, $_POST['fname'])."',N'".
+											mysqli_real_escape_string($conn, $_POST['lname'])."',N'".
+											mysqli_real_escape_string($conn, $_POST['phone'])."',N'".
+											mysqli_real_escape_string($conn, $_POST['emailid'])."','".
+											mysqli_real_escape_string($conn, $_POST['password'])."','Enabled','normal')");
+	$resEU = mysqli_query($conn,"select * from customer where emailid='".mysqli_real_escape_string($conn, $_POST['emailid'])."'");
 	$_SESSION['lcdata'] = mysqli_fetch_array($resEU,MYSQLI_ASSOC);
 	header("Location: dashboard.php");
 	return "Thanks for registering, please update your profile.";								
 }
+
 mysqli_close($conn);
 ?>
 <!DOCTYPE HTML>
@@ -105,10 +103,6 @@ mysqli_close($conn);
 		<!--//scrolling js-->
 <script src="js/bootstrap.js"> </script>
 <!-- mother grid end here-->
-
-<!-- Start of HubSpot Embed Code -->
-<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/5051579.js"></script>
-<!-- End of HubSpot Embed Code -->
 
 </body>
 </html>

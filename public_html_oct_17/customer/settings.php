@@ -1,23 +1,20 @@
 <?php
 $GError="";
 include('header.php');
-if(isset($_POST['submit']))
-{
-	if($_POST['submit'] == "Change Password")
-	{
+if(isset($_POST['submit'])){
+	if($_POST['submit'] == "Change Password"){
 		if($_POST['newpwd'] != $_POST['conpwd'])
 			$GError= "New password and confirm password mismatch.";		
-		else
-		{
-			$results = mysqli_query($conn,"select * from customer where id=".$_SESSION['lcdata']['id']." and pwd='".$_POST['curpwd']."'");	
-			if(mysqli_num_rows($results) == 0)
-			{
+		else{
+			$results = mysqli_query($conn,"select * from customer where id='".mysqli_real_escape_string($conn, $_SESSION['lcdata']['id'])."' and pwd='".mysqli_real_escape_string($conn, $_POST['curpwd'])."'");	
+			if(mysqli_num_rows($results) == 0){
 				$GError= "Wrong current password.";		
 			}
-			else
-			{
-				$GError= "Password updated successfully.";		
-				mysqli_query($conn,"update customer set pwd='".$_POST['newpwd']."' where id='".$_SESSION['lcdata']['id']."'");
+			else{
+				$GError= "Password Updated Successfully.";
+				error_log("pwd before: ".$_POST['newpwd']);
+				error_log("pwd after: ".mysqli_real_escape_string($conn, $_POST['newpwd']));
+				mysqli_query($conn,"update customer set pwd='".mysqli_real_escape_string($conn, $_POST['newpwd'])."' where id='".mysqli_real_escape_string($conn, $_SESSION['lcdata']['id'])."'");
 				$_SESSION['lcdata']['pwd'] = $_POST['newpwd'];
 			}
 		}
@@ -33,8 +30,7 @@ if(isset($_POST['submit']))
     			<h4>Change Password</h4>
     			<hr>
 					<?php
-					if($GError!="")
-					{
+					if($GError!=""){
 						echo "<div class=\"alert alert-info\" role=\"alert\">".$GError."</div>";
 					}
 					?>	
@@ -52,3 +48,4 @@ if(isset($_POST['submit']))
 <?php
 include('footer.php');
 ?>
+

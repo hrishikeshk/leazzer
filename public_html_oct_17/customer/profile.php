@@ -1,23 +1,21 @@
 <?php
 $GUError="";
 include('header.php');
-if(isset($_POST['submit']))
-{
-	if($_POST['submit'] == "Update Profile")
-	{
+if(isset($_POST['submit'])){
+	if($_POST['submit'] == "Update Profile"){
 		//emailid=N'".$_POST['emailid']."',
-		$query = "update customer set firstname=N'".$_POST['fname'].
-							"',lastname=N'".$_POST['lname'].
-							"',phone=N'".$_POST['phone']."'";
-				
-		$query .= " where id='".$_SESSION['lcdata']['id']."'";
+		$query = "update customer set firstname=N'".mysqli_real_escape_string($conn, $_POST['fname']).
+							"',lastname=N'".mysqli_real_escape_string($conn, $_POST['lname']).
+							"',phone=N'".mysqli_real_escape_string($conn, $_POST['phone'])."'";
+
+		$query .= " where id='".mysqli_real_escape_string($conn, $_SESSION['lcdata']['id'])."'";
 		mysqli_query($conn,$query);
-		$resC = mysqli_query($conn,"select * from customer where id='".$_SESSION['lcdata']['id']."'");
+		$resC = mysqli_query($conn,"select * from customer where id='".mysqli_real_escape_string($conn, $_SESSION['lcdata']['id'])."'");
 		$_SESSION['lcdata'] = mysqli_fetch_array($resC,MYSQLI_ASSOC);
 		$GUError = "Updated successfully.";
 	}
 }
-$resUP = mysqli_query($conn,"select * from customer where id=".$_SESSION['lcdata']['id']);	
+$resUP = mysqli_query($conn,"select * from customer where id='".mysqli_real_escape_string($conn, $_SESSION['lcdata']['id'])."'");
 $arrUP = mysqli_fetch_array($resUP,MYSQLI_ASSOC);
 ?>
 <!--inner block start here-->
@@ -29,8 +27,7 @@ $arrUP = mysqli_fetch_array($resUP,MYSQLI_ASSOC);
     			<h4>Update Profile</h4>
     			<hr>
 					<?php
-					if($GUError!="")
-					{
+					if($GUError!=""){
 						echo "<div class=\"alert alert-info\" role=\"alert\">".$GUError."</div>";
 					}
 					?>	

@@ -1,25 +1,24 @@
 <?php
-if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
-{
+if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on")){
 	$url = "https://". $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 	header("Location: $url");
 	exit;
 }
+
 session_start();
-if(!isset($_SESSION['lcdata']))
-{
+if(!isset($_SESSION['lcdata'])){
 	header("Location: index.php");
 	exit();
 }
+
 $pos = strpos($_SERVER['REQUEST_URI'],"profile.php");
-if($pos === false)
-{
-	if(trim($_SESSION['lcdata']['phone']) == "")
-	{
+if($pos === false){
+	if(trim($_SESSION['lcdata']['phone']) == ""){
 		header("Location: profile.php");
 		exit();
 	}
 }
+
 include('../sql.php');
 $GError = "";
 ?>
@@ -100,3 +99,4 @@ $GError = "";
 		});
 		</script>
 <!-- /script-for sticky-nav -->
+

@@ -1,6 +1,5 @@
 <?php
-if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
-{
+if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on")){
 	$url = "https://". $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'];
 	header("Location: $url");
 	exit;
@@ -8,55 +7,46 @@ if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
 session_start();
 include('../sql.php');
 $GError = ""; 
-if(isset($_GET['action']))
-{
-	if($_GET['action'] == "logout")
-	{
+if(isset($_GET['action'])){
+	if($_GET['action'] == "logout"){
 		unset($_SESSION['lcdata']);
 		//session_destroy();
 	}
 }
-if(isset($_POST['action']))
-{
-	if($_POST['action'] == "OLogin")
-	{
-			$res = mysqli_query($conn,"SELECT * FROM customer WHERE emailid='".$_POST['email']."'");
-			if(mysqli_num_rows($res)!=0)
-			{
+if(isset($_POST['action'])){
+	if($_POST['action'] == "OLogin"){
+			$res = mysqli_query($conn,"SELECT * FROM customer WHERE emailid='".mysqli_real_escape_string($conn, $_POST['email'])."'");
+			if(mysqli_num_rows($res)!=0){
 				processLogin($res);
 			}
-			else
-			{
+			else{
 				mysqli_query($conn,"INSERT INTO customer(firstname,lastname,emailid,pwd,logintype,phone,status) values('".
-													 $_POST['fname']."','".
-													 $_POST['lname']."','".
-													 $_POST['email']."','','".
-													 $_POST['acctype']."','','Enabled')");
-				$res = mysqli_query($conn,"SELECT * FROM customer WHERE emailid='".$_POST['email']."'");
+													 mysqli_real_escape_string($conn, $_POST['fname'])."','".
+													 mysqli_real_escape_string($conn, $_POST['lname'])."','".
+													 mysqli_real_escape_string($conn, $_POST['email'])."','','".
+													 mysqli_real_escape_string($conn, $_POST['acctype'])."','','Enabled')");
+				$res = mysqli_query($conn,"SELECT * FROM customer WHERE emailid='".mysqli_real_escape_string($conn, $_POST['email'])."'");
 				processLogin($res);
 			}
 	}
-	else if($_POST['action'] == "Sign In")
-	{
-			$res = mysqli_query($conn,"SELECT * FROM customer WHERE emailid='".$_POST['emailid']."' and pwd='".$_POST['password']."' and status='Enabled'");
-			if(mysqli_num_rows($res)!=0)
-			{
+	else if($_POST['action'] == "Sign In"){
+			$res = mysqli_query($conn,"SELECT * FROM customer WHERE emailid='".mysqli_real_escape_string($conn, $_POST['emailid'])."' and pwd='".mysqli_real_escape_string($conn, $_POST['password'])."' and status='Enabled'");
+			if(mysqli_num_rows($res)!=0){
 					processLogin($res);
 			}	
 			else 
 				$GError = "Userid and/or Password may be incorrect";
 	}
 }
-function processLogin($res)
-{
+
+function processLogin($res){
 	global $conn;
 	$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 	$GError = "Logged in successfully.";
 	$_SESSION['lcdata']	= $arr;
 	
 	$reserve = "";
-	if(isset($_SESSION['res_fid']))
-	{
+	if(isset($_SESSION['res_fid'])){
 		$reserve = "&fid=".$_SESSION['res_fid'].
 							"&cid=".$_SESSION['lcdata']['id'].
 							"&rdays=".$_SESSION['res_rdays'].
@@ -64,12 +54,11 @@ function processLogin($res)
 							"&unit=".$_SESSION['res_unit'].
 							"&price=".$_SESSION['res_price'];
 	}
-	
-	
+
 	if(isset($_GET["action"]) && ($_GET["action"] == "search"))
-		header("Location: ../thankyou.php?ref=index".$reserve);
+		header("Location: ../thankyou_n.php?ref=index".$reserve);
 	else if(isset($_POST["reffer"]) && (strpos($_POST["reffer"],"search.php")!==false))
-		header("Location: ../thankyou.php?ref=search".$reserve);
+		header("Location: ../thankyou_n.php?ref=search".$reserve);
 	else
 		header("Location: dashboard.php");
 }
@@ -92,8 +81,7 @@ function processLogin($res)
 <link href="css/font-awesome.css" rel="stylesheet"> 
 <link href='fonts/fonts.css' rel='stylesheet' type='text/css'>
 <script>
-	window.fbAsyncInit = function() 
-  {
+	window.fbAsyncInit = function(){
     FB.init({
       appId      : '347743159096213',
       cookie     : true,  
@@ -109,7 +97,7 @@ function processLogin($res)
     });*/
   };
   // Load the SDK asynchronously
-  (function(d, s, id) {
+  (function(d, s, id){
     var js, fjs = d.getElementsByTagName(s)[0];
     if (d.getElementById(id)) return;
     js = d.createElement(s); js.id = id;
@@ -117,32 +105,24 @@ function processLogin($res)
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
   
-  function onFBLogin()
-  {
-  	FB.login(function(response) 
-  	{
-	    if (response.authResponse) 
-	    {
+  function onFBLogin(){
+  	FB.login(function(response) {
+	    if (response.authResponse){
 	    	getFBUserData();
 	  	} 
-    	else 
-    	{
+    	else{
     		 console.log('User cancelled login or did not fully authorize.');
     	}
 		},{scope:'email'});
   }
-  function getFBUserData()
-  {
+  function getFBUserData(){
   	FB.api('/me',{locale:'en_US',fields:'id,first_name,last_name,email'},
-  	function(response)
-  	{
+  	function(response){
   		//console.log(response.first_name+" --- "+response.last_name+" --- "+response.email);
-  		if(response.email == "" || response.email == null || response.email == "undefined")
-  		{
+  		if(response.email == "" || response.email == null || response.email == "undefined"){
   			$("#status").html("Unable to get required details contact admin.");
   		}
-  		else
-  		{
+  		else{
   			$("#hfname").val(response.first_name);
   			$("#hlname").val(response.last_name);
   			$("#hemail").val(response.email);
@@ -150,27 +130,21 @@ function processLogin($res)
   			$("#haction").val("OLogin");
   			$("#hiddenform").submit();
   		}
-  
   	});
   }
 </script>
 <script>
-function onSuccess(googleUser) 
-{
+function onSuccess(googleUser){
     var profile = googleUser.getBasicProfile();
-    gapi.client.load('plus', 'v1', function () 
-    {
+    gapi.client.load('plus', 'v1', function (){
         var request = gapi.client.plus.people.get({
             'userId': 'me'
         });
-        request.execute(function (resp) 
-        {
-        	if(resp.emails[0].value == "" || resp.emails[0].value == null || resp.emails[0].value == "undefined")
-		  		{
+        request.execute(function (resp){
+        	if(resp.emails[0].value == "" || resp.emails[0].value == null || resp.emails[0].value == "undefined"){
 		  			$("#status").html("Unable to get required details contact admin.");
 		  		}
-		  		else
-		  		{
+		  		else{
        			$("#hfname").val(resp.name.givenName);
 	  				$("#hlname").val(resp.displayName);
 	  				$("#hemail").val(resp.emails[0].value);
@@ -181,10 +155,11 @@ function onSuccess(googleUser)
         });
     });
 }
-function onFailure(error) {
+function onFailure(error){
     //alert("Error -- "+error);
 }
-function renderButton() {
+
+function renderButton(){
     gapi.signin2.render('gSignIn', {
         'scope': 'profile email',
         'width': 250,
@@ -195,13 +170,15 @@ function renderButton() {
         'onfailure': onFailure
     });
 }
-function signOut() {
+
+function signOut(){
     var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
         //$('.userContent').html('');
         //$('#gSignIn').slideDown('slow');
     });
-}	
+}
+
 window.onbeforeunload = function(e){
   gapi.auth2.getAuthInstance().signOut();
 };
@@ -248,8 +225,7 @@ window.onbeforeunload = function(e){
 				<?php
 				if(isset($_SERVER["HTTP_REFERER"]) && (strpos($_SERVER["HTTP_REFERER"],"search.php")!==false))
 					echo '<h5><a href="../search.php">Go Back Search</a></h5>';
-				else
-				{
+				else{
 					if(isset($_POST["reffer"]) && (strpos($_POST["reffer"],"search.php")!==false))
 						echo '<h5><a href="../search.php">Go Back Search</a></h5>';
 					else
@@ -276,14 +252,6 @@ window.onbeforeunload = function(e){
 <script src="js/bootstrap.js"> </script>
 <!-- mother grid end here-->
 
-<!-- Start of HubSpot Embed Code -->
-<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/5051579.js"></script>
-<!-- End of HubSpot Embed Code -->
-
 </body>
 </html>
 
-
-                      
-						
-				

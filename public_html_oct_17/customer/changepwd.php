@@ -3,34 +3,30 @@ require_once('../mail/class.phpmailer.php');
 include('../sql.php');
 $GError = "";
 $uid = ""; 
-if(!isset($_GET['code']))
-{
+if(!isset($_GET['code'])){
 	header("Location: ../index.php");
 }
-else if(isset($_GET['code']))
-{		
-		$res = mysqli_query($conn,"SELECT * FROM forgotpwd WHERE code='".$_GET['code']."'");
-		if(mysqli_num_rows($res)!=0)
-		{
+else if(isset($_GET['code'])){
+		$res = mysqli_query($conn,"SELECT * FROM forgotpwd WHERE code='".mysqli_real_escape_string($conn, $_GET['code'])."'");
+		if(mysqli_num_rows($res)!=0){
 				$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 				$uid= $arr['uid'];
 		}	
 		else 
 			$GError = "Incorrect code, please contact admin.";
 }
-if(isset($_POST['action']))
-{		
-	if($_POST['action'] == "Reset Password")
-	{
+
+if(isset($_POST['action'])){		
+	if($_POST['action'] == "Reset Password"){
 		if($_POST['pwd'] != $_POST['cpwd'])
 			$GError= "New password and confirm password mismatch.";		
-		else
-		{
+		else{
 				$GError= "Password updated successfully.";		
-				mysqli_query($conn,"update customer set pwd='".$_POST['pwd']."' where id='".$_POST['uid']."'");
+				mysqli_query($conn,"update customer set pwd='".mysqli_real_escape_string($conn, $_POST['pwd'])."' where id='".mysqli_real_escape_string($conn, $_POST['uid'])."'");
 		}
 	}
 }
+
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -53,13 +49,11 @@ if(isset($_POST['action']))
 				<center><h1>Reset Password</h1></center>
 				<hr>
 				<?php 
-				if($GError!="")
-				{
+				if($GError!=""){
 					echo '<center><p style="color:#68AE00;">'.$GError.'</p></center>';
 				}
 				if($GError == "" ||
-					 $GError == "New password and confirm password mismatch.")
-				{
+					 $GError == "New password and confirm password mismatch."){
 					echo '<form method="post" action="'.$_SERVER['PHP_SELF'].'?code='.$_GET['code'].'" enctype="multipart/form-data">
 					<input type="password" name="pwd" placeholder="Password" required="">
 					<input type="password" name="cpwd" placeholder="Confirm Password" required="">
@@ -80,13 +74,6 @@ if(isset($_POST['action']))
 <script src="js/bootstrap.js"> </script>
 <!-- mother grid end here-->
 
-<!-- Start of HubSpot Embed Code -->
-<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/5051579.js"></script>
-<!-- End of HubSpot Embed Code -->
-
 </body>
 </html>
 
-
-                      
-						
