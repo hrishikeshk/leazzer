@@ -3,32 +3,32 @@ $GError="";
 include('header.php');
 if(isset($_POST['submit'])){
 	if($_POST['submit'] == "Update Profile"){
-		$res = mysqli_query($conn,"select * from facility_owner where emailid='".$_POST['emailid']."'");	
-		if(mysqli_num_rows($res) ==  0){
-			$query = "update facility_owner set emailid=N'".$_POST['emailid'].
-								"',firstname=N'".$_POST['fname'].
-								"',lastname=N'".$_POST['lname'].
-								"',phone=N'".$_POST['phone']."'";
-					
-			$query .= " where id='".$_SESSION['lfdata']['auto_id']."'";
+		$res = mysqli_query($conn,"select * from facility_owner where emailid='".mysqli_real_escape_string($conn, $_POST['emailid'])."'");	
+		if(mysqli_num_rows($res) ==  1){
+			$query = "update facility_owner set emailid=N'".mysqli_real_escape_string($conn, $_POST['emailid']).
+								"',firstname=N'".mysqli_real_escape_string($conn, $_POST['fname']).
+								"',lastname=N'".mysqli_real_escape_string($conn, $_POST['lname']).
+								"',phone=N'".mysqli_real_escape_string($conn, $_POST['phone'])."'";
+
+			$query .= " where auto_id='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."'";
 			mysqli_query($conn, $query);
 			
-			$query = "update facility_master set phone='".$_POST['phone']."'";
-					
-			$query .= " where id='".$_SESSION['lfdata']['auto_id']."'";
+			$query = "update facility_master set phone='".mysqli_real_escape_string($conn, $_POST['phone'])."'";
+
+			$query .= " where facility_owner_id='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."'";
 			mysqli_query($conn, $query);
-			
-			$resC = mysqli_query($conn,"select O.emailid as emailid, M.id as id, O.auto_id as auto_id, M.phone as phone, M.status as status, O.pwd as pwd O.firstname as firstname, O.lastname as lastname FROM facility_owner O, facility_master M WHERE O.auto_id = M.facility_owner_id and M.facility_owner_id is not null and O.auto_id='".$_SESSION['lfdata']['auto_id']."'");
+
+			$resC = mysqli_query($conn,"select O.emailid as emailid, M.id as id, O.auto_id as auto_id, M.phone as phone, M.status as status, O.pwd as pwd, O.firstname as firstname, O.lastname as lastname FROM facility_owner O, facility_master M WHERE O.auto_id = M.facility_owner_id and M.facility_owner_id is not null and O.auto_id='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."'");
 			$_SESSION['lfdata'] = mysqli_fetch_array($resC, MYSQLI_ASSOC);
-			
+
 			$GError = "Updated successfully.";
 		}
 		else
-			$GError = "Emailid already exists.";
+			$GError = "Emailid does not exist.";
 	}
 }
 
-$resUP = mysqli_query($conn,"select O.emailid as emailid, M.phone as phone, O.firstname as firstname, O.lastname as lastname FROM facility_owner O, facility_master M WHERE O.auto_id = M.facility_owner_id and M.facility_owner_id is not null and O.auto_id=".$_SESSION['lfdata']['auto_id']);
+$resUP = mysqli_query($conn,"select O.emailid as emailid, M.phone as phone, O.firstname as firstname, O.lastname as lastname FROM facility_owner O, facility_master M WHERE O.auto_id = M.facility_owner_id and M.facility_owner_id is not null and O.auto_id='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."'");
 $arrUP = mysqli_fetch_array($resUP,MYSQLI_ASSOC);
 ?>
 <!--inner block start here-->

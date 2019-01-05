@@ -4,13 +4,13 @@ include('../sql.php');
 $GError = ""; 
 if(isset($_POST['action'])){
 	if($_POST['action'] == "Forgot"){
-			$res = mysqli_query($conn,"SELECT * FROM facility_owner WHERE emailid='".$_POST['emailid']."'");
+			$res = mysqli_query($conn,"SELECT * FROM facility_owner WHERE emailid='".mysqli_real_escape_string($conn, $_POST['emailid'])."'");
 			if(mysqli_num_rows($res)!=0){
 					$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 					$code = md5($_POST['emailid'].time());
-					mysqli_query($conn,"insert into forgotpwd(uid,emailid,code) values('".$arr['auto_id']."','".$arr['emailid']."','".$code."')");
+					mysqli_query($conn,"insert into forgotpwd(uid,emailid,code) values('".mysqli_real_escape_string($conn, $arr['auto_id'])."','".mysqli_real_escape_string($conn, $arr['emailid'])."','".mysqli_real_escape_string($conn, $code)."')");
 					$GError = forgotmail($code,$arr['fname'],$arr['lname']);
-			}	
+			}
 			else 
 				$GError = "Email-id not found, please contact admin.";
 	}

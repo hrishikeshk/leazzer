@@ -1,9 +1,8 @@
 <?php
 include('../sql.php');
-if(isset($_POST['action']))
-{
-	if($_POST['action'] == "getparticular")
-	{
+if(isset($_POST['action'])){
+  /*
+	if($_POST['action'] == "getparticular"){
 		$res = mysqli_query($conn,"select * from particular where id='".$_POST['id']."'");
 		if($arr = mysqli_fetch_array($res,MYSQLI_ASSOC))
 		{
@@ -52,5 +51,7 @@ if(isset($_POST['action']))
         }
 		echo $eventStr;
 	}
+	*/
 }
 ?>
+

@@ -6,13 +6,13 @@ if(isset($_POST['submit'])){
 		if($_POST['newpwd'] != $_POST['conpwd'])
 			$GError= "New password and confirm password mismatch.";		
 		else{
-			$results = mysqli_query($conn,"select * from facility_owner where auto_id=".$_SESSION['lfdata']['auto_id']." and pwd='".$_POST['curpwd']."'");	
+			$results = mysqli_query($conn,"select * from facility_owner where auto_id='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."' and pwd='".mysqli_real_escape_string($conn, $_POST['curpwd'])."'");	
 			if(mysqli_num_rows($results) == 0){
 				$GError= "Wrong current password.";		
 			}
 			else{
 				$GError= "Password updated successfully.";		
-				mysqli_query($conn,"update facility_owner set pwd='".$_POST['newpwd']."' where auto_id='".$_SESSION['lfdata']['auto_id']."'");
+				mysqli_query($conn,"update facility_owner set pwd='".mysqli_real_escape_string($conn, $_POST['newpwd'])."' where auto_id='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."'");
 				$_SESSION['lfdata']['pwd'] = $_POST['newpwd'];
 			}
 		}

@@ -18,7 +18,7 @@ function getBaseUrl(){
     return $protocol.$hostName.$pathInfo['dirname']."/";
 }
 
-$res = mysqli_query($conn,"select O.auto_id as auto_id, O.pwd as pwd, M.id as facility_id, M.title as companyname, M.phone as phone, M.city as city, M.state as state, M.zip as zip, O.emailid as emailid, M.searchable as searchable, M.lat as lat, M.lng as lng, M.street as street, M.region as region, M.locality as locality, M.receivereserve as receivereserve, M.reservationdays as reservationdays, M.description as description, pdispc, pdismo, pdispcfm, pdispcfmfd, pdispcfd, pdismofd, pdismofm from facility_owner O, facility_master M where O.auto_id=M.facility_owner_id and M.facility_owner_id is not null and O.auto_id ='".$_SESSION['lfdata']['auto_id']."'") or die("Error: " . mysqli_error($conn));
+$res = mysqli_query($conn,"select O.auto_id as auto_id, O.pwd as pwd, M.id as facility_id, M.title as companyname, M.phone as phone, M.city as city, M.state as state, M.zip as zip, O.emailid as emailid, M.searchable as searchable, M.lat as lat, M.lng as lng, M.street as street, M.region as region, M.locality as locality, M.receivereserve as receivereserve, M.reservationdays as reservationdays, M.description as description, pdispc, pdismo, pdispcfm, pdispcfmfd, pdispcfd, pdismofd, pdismofm from facility_owner O, facility_master M where O.auto_id=M.facility_owner_id and M.facility_owner_id is not null and O.auto_id ='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."'") or die("Error: " . mysqli_error($conn));
 
 $arrF = mysqli_fetch_array($res,MYSQLI_ASSOC);
 
@@ -57,7 +57,7 @@ if(isset($_POST['db_submit'])){
   	  	$targetFilePath = $targetDir . $fileName;
 
   			if(move_uploaded_file($_FILES["image"]["tmp_name"][$k], $targetFilePath)){
-  				$image_sql = "insert into image (url_fullsize, url_thumbsize, facility_id) values ('".$fileName."', '".$fileName."', '".$facility_id."')";
+  				$image_sql = "insert into image (url_fullsize, url_thumbsize, facility_id) values ('".mysqli_real_escape_string($conn, $fileName)."', '".mysqli_real_escape_string($conn, $fileName)."', '".mysqli_real_escape_string($conn, $facility_id)."')";
   				mysqli_query($conn, $image_sql) or die('Failed to insert facility image: '.mysqli_error($conn));
   			}
   		endforeach;
@@ -66,9 +66,9 @@ if(isset($_POST['db_submit'])){
 }
 else if(isset($_POST['delete_image'])){
   $img_id = $_POST['delete_image'];
-  
+
   $targetDir = "../images/".$facility_id."/";
-  $query = "select url_fullsize from image where facility_id='".$facility_id."' and auto_id='".$img_id."'";
+  $query = "select url_fullsize from image where facility_id='".mysqli_real_escape_string($conn, $facility_id)."' and auto_id='".mysqli_real_escape_string($conn, $img_id)."'";
   $res_si = mysqli_query($conn, $query) or die('Failed to select prior facility images: '.mysqli_error($conn));
   if(mysqli_num_rows($res) == 1){
     $arr_si = mysqli_fetch_array($res_si, MYSQLI_ASSOC);
@@ -80,7 +80,7 @@ else if(isset($_POST['delete_image'])){
 	   else
   	   $fileName = '../images/'.$facility_id.'/'.trim(substr($filePath, $lpos + 1));
     
-    $image_sql = "delete from image where facility_id='".$facility_id."' and auto_id='".$img_id."'";
+    $image_sql = "delete from image where facility_id='".mysqli_real_escape_string($conn, $facility_id)."' and auto_id='".mysqli_real_escape_string($conn, $img_id)."'";
     mysqli_query($conn, $image_sql) or die('Failed to delete prior facility images: '.mysqli_error($conn));
     
     unlink($fileName);
@@ -113,7 +113,7 @@ function generateState($state){
 function sanitize_amenities($facility_id){
   global $conn;
   
-  $res = mysqli_query($conn,"select amenity from facility_amenity where facility_id='".$facility_id."'") or die('Failed to fetch facility amenities.');
+  $res = mysqli_query($conn,"select amenity from facility_amenity where facility_id='".mysqli_real_escape_string($conn, $facility_id)."'") or die('Failed to fetch facility amenities.');
   $ams = array();
 	while($arr = mysqli_fetch_array($res, MYSQLI_ASSOC)){
 	  $ams_pa = explode("|", $arr['amenity']);
@@ -124,11 +124,11 @@ function sanitize_amenities($facility_id){
 	  else{
 	    $curr = $ams_pa[1];
 	  }
-    $res_opts = mysqli_query($conn, "select option_id as oid from amenity_dictionary where (equivalent like '%".$curr."%' OR INSTR('".$curr."', equivalent) > 0) and equivalent is not null and LENGTH(equivalent) > 0") or die('Failed to match facility amenities.');
+    $res_opts = mysqli_query($conn, "select option_id as oid from amenity_dictionary where (equivalent like '%".mysqli_real_escape_string($conn, $curr)."%' OR INSTR('".mysqli_real_escape_string($conn, $curr)."', equivalent) > 0) and equivalent is not null and LENGTH(equivalent) > 0") or die('Failed to match facility amenities.');
     while($arr = mysqli_fetch_array($res_opts, MYSQLI_ASSOC)){
       $ams[] = $arr['oid'];
     }
-	}	
+	}
 	return $ams;
 }
 
@@ -152,7 +152,7 @@ function fetch_predefined_units(){
 function sanitize_units($facility_id){
   global $conn;
   
-  $unit_select_sql 		= "select size, price, auto_id from unit where facility_id='".$facility_id."'";
+  $unit_select_sql 		= "select size, price, auto_id from unit where facility_id='".mysqli_real_escape_string($conn, $facility_id)."'";
   $unit_select_result 	= mysqli_query($conn, $unit_select_sql);
 
   $price_arr = array(); // $matched_units[0];
@@ -182,7 +182,7 @@ function sanitize_units($facility_id){
   return $ret;
 }
 
-$image_select_sql 		= "select auto_id, url_fullsize as path from image where facility_id='".$facility_id."'";
+$image_select_sql 		= "select auto_id, url_fullsize as path from image where facility_id='".mysqli_real_escape_string($conn, $facility_id)."'";
 $image_select_result 	= mysqli_query($conn, $image_select_sql);
 
 $facility_images = [];
@@ -291,7 +291,7 @@ function ajaxcall(datastring){
    		 	},
    		 	error: function(err){
    		 	    off();
-   		 	    alert('Failed to invoke serverside function to db_submit... Please try again in some time' + err);
+   		 	    alert('Failed to invoke serverside function to db_submit... Please try again in some time');
    		 	    res = false;
    		 	}
     });
@@ -314,7 +314,7 @@ function ajaxcall_ii(datastring){
    		 	},
    		 	error: function(err){
    		 	    off();
-   		 	    alert('Failed to invoke serverside function to ii... Please try again in some time' + err);
+   		 	    alert('Failed to invoke serverside function to ii... Please try again in some time');
    		 	    res = false;
    		 	}
     });

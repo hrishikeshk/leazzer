@@ -95,9 +95,6 @@ mysqli_close($conn);
 		<!--//scrolling js-->
 <script src="js/bootstrap.js"> </script>
 <!-- mother grid end here-->
-<!-- Start of HubSpot Embed Code -->
-<script type="text/javascript" id="hs-script-loader" async defer src="//js.hs-scripts.com/5051579.js"></script>
-<!-- End of HubSpot Embed Code -->
 
 </body>
 </html>
