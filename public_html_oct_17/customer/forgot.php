@@ -2,24 +2,21 @@
 require_once('../mail/class.phpmailer.php');		
 include('../sql.php');
 $GError = ""; 
-if(isset($_POST['action']))
-{		
-	if($_POST['action'] == "Forgot")
-	{
-			$res = mysqli_query($conn,"SELECT * FROM customer WHERE emailid='".$_POST['emailid']."'");
-			if(mysqli_num_rows($res)!=0)
-			{
+if(isset($_POST['action'])){		
+	if($_POST['action'] == "Forgot"){
+			$res = mysqli_query($conn,"SELECT * FROM customer WHERE emailid='".mysqli_real_escape_string($conn, $_POST['emailid'])."'");
+			if(mysqli_num_rows($res)!=0){
 					$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 					$code = md5($_POST['emailid'].time());
-					mysqli_query($conn,"insert into forgotpwd(uid,emailid,code) values('".$arr['id']."','".$arr['emailid']."','".$code."')");
+					mysqli_query($conn,"insert into forgotpwd(uid,emailid,code) values('".mysqli_real_escape_string($conn, $arr['id'])."','".mysqli_real_escape_string($conn, $arr['emailid'])."','".mysqli_real_escape_string($conn, $code)."')");
 					$GError = forgotmail($code,$arr['fname'],$arr['lname']);
 			}	
 			else 
 				$GError = "Email-id not found, please contact admin.";
 	}
 }
-function forgotmail($code,$fname,$lname)
-{
+
+function forgotmail($code,$fname,$lname){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com"; 
 	$toemail=$_POST['emailid']; 
@@ -36,8 +33,7 @@ function forgotmail($code,$fname,$lname)
 	$message .= 'Thank you,<br>&mdash; Leazzer';
 	$message .= '</td></tr>';
 	$message .= '</table>';
-	
-	
+
 	$mail = new PHPMailer(); // defaults to using php "mail()"
 	$mail->CharSet = 'UTF-8';
 	$mail->AddReplyTo($fromemail,"Leazzer"); 
