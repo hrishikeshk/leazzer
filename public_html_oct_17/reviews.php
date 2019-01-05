@@ -4,7 +4,7 @@ include('sql.php');
 
 function fetch_reviews($facility_id){
   global $conn;
-  $res = mysqli_query($conn,"select * from review where facility_id='".$facility_id."' order by timestamp desc, auto_id desc");
+  $res = mysqli_query($conn,"select * from review where facility_id='".mysqli_real_escape_string($conn, $facility_id)."' order by timestamp desc, auto_id desc");
   return $res;
 }
 

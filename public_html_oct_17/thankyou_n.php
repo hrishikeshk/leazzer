@@ -75,9 +75,9 @@ include('sql.php');
 			$rdateArr = explode("/", $_GET['rdate']);
 			$reserveFromDate = mktime(0, 0, 0, $rdateArr[0], $rdateArr[1], $rdateArr[2]);
 			$reserveToDate = strtotime("+".$_GET['rdays']." days", $reserveFromDate);
-			$resC = mysqli_query($conn,"select * from customer where id=".$_GET['cid']);
-			$resF = mysqli_query($conn,"select * from facility_master where id=".$_GET['fid']);
-			$resI = mysqli_query($conn,"select * from image where facility_id=".$_GET['fid']);
+			$resC = mysqli_query($conn,"select * from customer where id=".mysqli_real_escape_string($conn, $_GET['cid']));
+			$resF = mysqli_query($conn,"select * from facility_master where id=".mysqli_real_escape_string($conn, $_GET['fid']));
+			$resI = mysqli_query($conn,"select * from image where facility_id=".mysqli_real_escape_string($conn, $_GET['fid']));
 			if((mysqli_num_rows($resC) > 0) && (mysqli_num_rows($resF) > 0)){
 				$arrC = mysqli_fetch_array($resC, MYSQLI_ASSOC);
 				$arrF = mysqli_fetch_array($resF, MYSQLI_ASSOC);

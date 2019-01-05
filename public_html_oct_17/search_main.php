@@ -176,7 +176,7 @@ function ajaxcall(datastring){
    				 	res = result;
    		 	},
    		 	error: function(err){
-   		 	    alert('Failed to invoke serverside function(from search)... Please try again in some time' + err);
+   		 	    alert('Failed to invoke serverside function(from search)... Please try again in some time');
    		 	    res = false;
    		 	}
     });
@@ -206,7 +206,7 @@ function fd_hide(){
     $id_str = $opt_ids[0];
     for($i = 1; $i < count($opt_ids); $i++)
       $id_str .= ', '.$opt_ids[$i];  
-	  $resO = mysqli_query($conn,"select opt from options where id in(".$id_str.")");
+	  $resO = mysqli_query($conn,"select opt from options where id in(".mysqli_real_escape_string($conn, $id_str).")");
 	  while($arrO = mysqli_fetch_array($resO, MYSQLI_ASSOC)){
 	    $ret[] = $arrO['opt'];
 	  }
@@ -407,7 +407,7 @@ function cmp($a, $b) {
 		<?php
 			$query = "";
 			if((stristr($_POST['search'], "near") !== FALSE) && (isset($_POST['slat']) && isset($_POST['slng']))){
-  			$query = "select *,(3959 * acos(cos(radians(".$_POST['slat'].")) * cos(radians(lat)) * cos(radians(lng)- radians(".$_POST['slng'].")) + sin(radians(".$_POST['slat'].")) * sin(radians(lat)))) as calc_distance from facility_master having calc_distance < 25 and searchable=1  and city is not null and state is not null and lat is not null and lng is not null order by calc_distance limit 10";
+  			$query = "select *,(3959 * acos(cos(radians(".mysqli_real_escape_string($conn, $_POST['slat']).")) * cos(radians(lat)) * cos(radians(lng)- radians(".mysqli_real_escape_string($conn, $_POST['slng']).")) + sin(radians(".mysqli_real_escape_string($conn, $_POST['slat']).")) * sin(radians(lat)))) as calc_distance from facility_master having calc_distance < 25 and searchable=1  and city is not null and state is not null and lat is not null and lng is not null order by calc_distance limit 10";
 			}
 			else if(is_numeric(isset($_POST['search'])?trim($_POST['search']):"")){
 				$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".trim($_POST['search'])."&sensor=false";
@@ -415,17 +415,17 @@ function cmp($a, $b) {
     		$result = json_decode($result_string, true);
     		$lat = $result['results'][0]['geometry']['location']['lat'];
     		$lng = $result['results'][0]['geometry']['location']['lng'];
-    		$query = "select *,(3959 * acos(cos(radians(".$lat.")) * cos(radians(lat)) * cos(radians(lng)- radians(".$lng.")) + sin(radians(".$lat.")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 and lat is not null and lng is not null having calc_distance < 25 order by calc_distance limit 25";
+    		$query = "select *,(3959 * acos(cos(radians(".mysqli_real_escape_string($conn, $lat).")) * cos(radians(lat)) * cos(radians(lng)- radians(".mysqli_real_escape_string($conn, $lng).")) + sin(radians(".mysqli_real_escape_string($conn, $lat).")) * sin(radians(lat)))) as calc_distance from facility_master where searchable=1 and lat is not null and lng is not null having calc_distance < 25 order by calc_distance limit 25";
 			}
 			else if(strpos((isset($_POST['search'])?trim($_POST['search']):""),",") !== false){
 				$searchArr = explode(",",trim($_POST['search']));
-				$query = "select * from facility_master where searchable=1 and lat is not null and lng is not null and (title LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%' or state LIKE '%".(isset($searchArr[0])?trim($searchArr[0]):"")."%') LIMIT 25";
+				$query = "select * from facility_master where searchable=1 and lat is not null and lng is not null and (title LIKE '%".(isset($searchArr[0])?trim(mysqli_real_escape_string($conn, $searchArr[0])):"")."%' OR city LIKE '%".(isset($searchArr[0])?trim(mysqli_real_escape_string($conn, $searchArr[0])):"")."%' or state LIKE '%".(isset($searchArr[0])?trim(mysqli_real_escape_string($conn, $searchArr[0])):"")."%') LIMIT 25";
 			}
 			else{
-				$query = "select * from facility_master where searchable=1 and lat is not null and lng is not null and (title LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%' or state LIKE '%".(isset($_POST['search'])?trim($_POST['search']):"")."%') order by title LIMIT 25";
+				$query = "select * from facility_master where searchable=1 and lat is not null and lng is not null and (title LIKE '%".(isset($_POST['search'])?trim(mysqli_real_escape_string($conn, $_POST['search'])):"")."%' OR city LIKE '%".(isset($_POST['search'])?trim(mysqli_real_escape_string($conn, $_POST['search'])):"")."%' or state LIKE '%".(isset($_POST['search'])?trim(mysqli_real_escape_string($conn, $_POST['search'])):"")."%') order by title LIMIT 25";
 			}
 			$res = mysqli_query($conn,$query);
-			
+
 			$filter_dict_opts = array();
 			if(count($filter) > 0)
 			  $filter_dict_opts = calc_from_amenity_dict($filter);

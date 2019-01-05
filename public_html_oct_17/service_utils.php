@@ -5,7 +5,7 @@ include('sql.php');
 function insert_facility_owner($email){
   global $conn;
 	mysqli_query($conn,"insert into facility_owner(emailid, pwd, logintype, companyname, phone, firstname, lastname) values ('".
-												$email."','excited123!','auto','".
+												mysqli_real_escape_string($conn, $email)."','excited123!','auto','".
 												mysqli_real_escape_string($conn,$_POST['company'])."','".
 												mysqli_real_escape_string($conn,$_POST['phone'])."','".
 												mysqli_real_escape_string($conn,$_POST['firstname'])."','".
@@ -29,7 +29,7 @@ function extract_image_name($ss_path){
 
 function fetch_image_url($facility_id){
   global $conn;
-  $res = mysqli_query($conn,"select * from image where facility_id='".$facility_id."' limit 1");
+  $res = mysqli_query($conn,"select * from image where facility_id='".mysqli_real_escape_string($conn, $facility_id)."' limit 1");
   if(mysqli_num_rows($res) > 0)
     return mysqli_fetch_array($res, MYSQLI_ASSOC);
   else
@@ -38,7 +38,7 @@ function fetch_image_url($facility_id){
 
 function fetch_review_count($facility_id){
   global $conn;
-  $res = mysqli_query($conn,"select count(*) as rct from review where facility_id='".$facility_id."'");
+  $res = mysqli_query($conn,"select count(*) as rct from review where facility_id='".mysqli_real_escape_string($conn, $facility_id)."'");
   $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
   return $arr['rct'];
 }
@@ -80,7 +80,7 @@ function has_priority_amenity($arr_amenities, $arr_search_any){
 
 function save_phone($cid, $phone){
   global $conn;
-  mysqli_query($conn,"UPDATE customer set phone = '".$phone."' where id = '".$cid."'");
+  mysqli_query($conn,"UPDATE customer set phone = '".mysqli_real_escape_string($conn, $phone)."' where id = '".mysqli_real_escape_string($conn, $cid)."'");
 }
 
 function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ownerEmail, $ownerName, $userPhone, $unit, $price, $resFromDate, $resToDate, $phone){
@@ -91,7 +91,7 @@ function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ow
 	$message .= '<tr><td>';
 	$message .= '<center><img src="https://www.leazzer.com/images/reservation.png" height="150px" width="150px" alt="Logo" title="Logo" style="display:block"></center><br>';
 	$message .= 'Hello Admin !<br />';
-	
+
 	$message .= '<b><u>Facility Name</u> - '.htmlspecialchars($facilityName, ENT_QUOTES).'<br />';
 	$message .= '<b><u>Facility Address</u> - '.htmlspecialchars($facilityAddress, ENT_QUOTES).'<br />';
 	$message .= '<u>Facility Phone Number</u> - '.htmlspecialchars($facilityPhone, ENT_QUOTES).'<br />';
@@ -223,7 +223,7 @@ function checkUnits($units){
 
 function checkEmail($email, $cnt){
 	global $conn;
-	$res = mysqli_query($conn,"select * from facility_owner where emailid='".$email.($cnt==0?"":$cnt)."@leazzer.com'");	
+	$res = mysqli_query($conn,"select * from facility_owner where emailid='".mysqli_real_escape_string($conn, $email).($cnt==0?"":$cnt)."@leazzer.com'");	
 	if(mysqli_num_rows($res) > 0){
 		$cnt++;
 		return checkEmail($email,$cnt);
@@ -236,7 +236,7 @@ function checkEmail($email, $cnt){
 function fetch_units($facility_id){
 	global $conn;
 	
-	$resFU = mysqli_query($conn, "SELECT A.auto_id as id, A.size as size, A.price as price, B.images as img FROM unit A, units B where A.size=B.units and A.facility_id='".$facility_id."'");
+	$resFU = mysqli_query($conn, "SELECT A.auto_id as id, A.size as size, A.price as price, B.images as img FROM unit A, units B where A.size=B.units and A.facility_id='".mysqli_real_escape_string($conn, $facility_id)."'");
   
   $unit_info_array = array();
   
@@ -497,7 +497,7 @@ function arrange_priority_with_group($facility_unit_amenities){
 
 function fetch_consolidate_amenities($facility_id, $unit_info_arr){
   global $conn;
-  $resFA = mysqli_query($conn, "SELECT amenity as fac_amenity FROM facility_amenity where facility_id='".$facility_id."'");
+  $resFA = mysqli_query($conn, "SELECT amenity as fac_amenity FROM facility_amenity where facility_id='".mysqli_real_escape_string($conn,$facility_id)."'");
   
   $amenities = array();
   while($arrFA = mysqli_fetch_array($resFA, MYSQLI_ASSOC)){
@@ -508,7 +508,7 @@ function fetch_consolidate_amenities($facility_id, $unit_info_arr){
 	for($i = 0; $i < count($unit_info_arr); $i++){
 	  $unit_id = $unit_info_arr[$i]['id'];
 	  
-	  $resUA = mysqli_query($conn, "SELECT amenity as unit_amenity FROM unit_amenity where unit_id='".$unit_id."'");
+	  $resUA = mysqli_query($conn, "SELECT amenity as unit_amenity FROM unit_amenity where unit_id='".mysqli_real_escape_string($conn,$unit_id)."'");
 	  if(mysqli_num_rows($resUA) == 0){
 	    continue;
 	  }
@@ -557,7 +557,7 @@ function fetch_priority_unit_amenities($facility_id, $unit_info_arr){
 	  $unit_str .= ', '.$unit_info_arr[$i]['id'];
 	}
 	$unit_str .= ')';
-	$query_str = "SELECT distinct amenity as ua, unit_id as uid FROM unit_amenity where (amenity like '%limate%' OR amenity like '%emperature%' OR amenity like '%iscount%') and unit_id in ".$unit_str;
+	$query_str = "SELECT distinct amenity as ua, unit_id as uid FROM unit_amenity where (amenity like '%limate%' OR amenity like '%emperature%' OR amenity like '%iscount%') and unit_id in ".mysqli_real_escape_string($conn, $unit_str);
 	
   $resUA = mysqli_query($conn, $query_str);
   if(mysqli_num_rows($resUA) == 0)
@@ -597,7 +597,7 @@ function construct_addl_discounts($arrFM){
 
 function fetch_facility_amenities($facility_id, $arrFM){
   global $conn;
-  $resFA = mysqli_query($conn, "SELECT amenity as fac_amenity FROM facility_amenity where facility_id='".$facility_id."'");
+  $resFA = mysqli_query($conn, "SELECT amenity as fac_amenity FROM facility_amenity where facility_id='".mysqli_real_escape_string($conn, $facility_id)."'");
   
   $amenities = array();
   while($arrFA = mysqli_fetch_array($resFA, MYSQLI_ASSOC)){
@@ -617,7 +617,7 @@ function calc_from_amenity_dict($filter_opt_ids){
 	  $opt .= ', '.$filter_opt_ids[$i];
 	}
 		  
-	$resO = mysqli_query($conn,"select equivalent from amenity_dictionary where option_id in (".$opt.")");
+	$resO = mysqli_query($conn,"select equivalent from amenity_dictionary where option_id in (".mysqli_real_escape_string($conn, $opt).")");
 	$ret = array();
   while($arrO = mysqli_fetch_array($resO,MYSQLI_ASSOC)){
   	$ret[] = $arrO['equivalent'];

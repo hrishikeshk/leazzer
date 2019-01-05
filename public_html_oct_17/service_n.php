@@ -8,7 +8,7 @@ if(isset($_POST['action'])){
 		if($_POST['lat'] == 0 || $_POST['lng'] == 0)
 			$query = "select *, 0 as calc_distance from facility_master where searchable=1 and city is not null and state is not null and lat is not null and lng is not null limit 10";
 		else
-			$query = "select *,(3959 * acos(cos(radians(".$_POST['lat'].")) * cos(radians(lat)) * cos(radians(lng)- radians(".$_POST['lng'].")) + sin(radians(".$_POST['lat'].")) * sin(radians(lat)))) as calc_distance from facility_master having calc_distance < 25 and searchable=1  and city is not null and state is not null and lat is not null and lng is not null order by calc_distance limit 10";
+			$query = "select *,(3959 * acos(cos(radians(".mysqli_real_escape_string($conn, $_POST['lat']).")) * cos(radians(lat)) * cos(radians(lng)- radians(".mysqli_real_escape_string($conn, $_POST['lng']).")) + sin(radians(".mysqli_real_escape_string($conn, $_POST['lat']).")) * sin(radians(lat)))) as calc_distance from facility_master having calc_distance < 25 and searchable=1  and city is not null and state is not null and lat is not null and lng is not null order by calc_distance limit 10";
 
 		$res = mysqli_query($conn,$query);
 		while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
@@ -99,20 +99,20 @@ if(isset($_POST['action'])){
 		$reserveFromDate = mktime(0,0,0,$rdateArr[0],$rdateArr[1],$rdateArr[2]);
 		$reserveToDate = strtotime("+".$_POST['rdays']." days",$reserveFromDate); 
 
-		mysqli_query($conn,"insert into reserve(cid, fid, reservefromdate, reservetodate, units) values('".$_POST['cid']."','".
-										$_POST['fid']."','".
+		mysqli_query($conn,"insert into reserve(cid, fid, reservefromdate, reservetodate, units) values('".mysqli_real_escape_string($conn, $_POST['cid'])."','".
+										mysqli_real_escape_string($conn, $_POST['fid'])."','".
 										$reserveFromDate."','".
 										$reserveToDate."','".
 										mysqli_real_escape_string($conn,",".$_POST['unit']."-$".$_POST['price'].",")."')");
 		
-		$resC = mysqli_query($conn,"select * from customer where id=".$_POST['cid']);
-		$resF = mysqli_query($conn,"select * from facility_master where id=".$_POST['fid']);
-    $resO = mysqli_query($conn,"select O.firstname as firstname, O.lastname as lastname, O.emailid as emailid from facility_owner O, facility_master M where M.id=".$_POST['fid']." and O.auto_id=M.facility_owner_id limit 1");
+		$resC = mysqli_query($conn,"select * from customer where id='".mysqli_real_escape_string($conn, $_POST['cid'])."'");
+		$resF = mysqli_query($conn,"select * from facility_master where id='".mysqli_real_escape_string($conn, $_POST['fid'])."'");
+    $resO = mysqli_query($conn,"select O.firstname as firstname, O.lastname as lastname, O.emailid as emailid from facility_owner O, facility_master M where M.id='".mysqli_real_escape_string($conn, $_POST['fid'])."' and O.auto_id=M.facility_owner_id limit 1");
 		if((mysqli_num_rows($resC) > 0) && (mysqli_num_rows($resF) > 0)){
 			$arrC = mysqli_fetch_array($resC, MYSQLI_ASSOC);
 			$arrF = mysqli_fetch_array($resF, MYSQLI_ASSOC);
 			$arrO = read_owner_data($resO, $arrF['id']);
-			
+
 			$phone = '';
 			if((!isset($arrC['phone']) || strlen($arrC['phone']) < 10) && isset($_POST['phone']) && isset($arrC['id'])){
 			  save_phone($arrC['id'], $_POST['phone']);

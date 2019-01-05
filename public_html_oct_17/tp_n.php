@@ -17,13 +17,13 @@
 
   function fetch_facility_images($facility_id){
     global $conn;
-    $res = mysqli_query($conn,"select url_fullsize as url from image where facility_id='".$facility_id."'");
+    $res = mysqli_query($conn,"select url_fullsize as url from image where facility_id='".mysqli_real_escape_string($conn, $facility_id)."'");
     if(mysqli_num_rows($res) > 0){
       return $res;
     }
     return false;
   }
-  
+
   if(isset($_GET['facility_id'])){
     $res = fetch_facility_images($_GET['facility_id']);
     if($res == false){

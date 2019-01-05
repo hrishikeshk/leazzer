@@ -72,6 +72,9 @@ ensure unique js and css libs download and use.
 https://security.stackexchange.com/questions/66252/encodeuricomponent-in-a-unquoted-html-attribute
 https://phpsecurity.readthedocs.io/en/latest/Cross-Site-Scripting-(XSS).html
 
+https://stackoverflow.com/questions/60174/how-can-i-prevent-sql-injection-in-php
+https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet
+
 -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
         async defer></script>
