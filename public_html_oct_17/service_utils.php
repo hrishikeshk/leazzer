@@ -557,7 +557,7 @@ function fetch_priority_unit_amenities($facility_id, $unit_info_arr){
 	  $unit_str .= ', '.$unit_info_arr[$i]['id'];
 	}
 	$unit_str .= ')';
-	$query_str = "SELECT distinct amenity as ua, unit_id as uid FROM unit_amenity where (amenity like '%limate%' OR amenity like '%emperature%' OR amenity like '%iscount%') and unit_id in ".mysqli_real_escape_string($conn, $unit_str);
+	$query_str = "SELECT amenity as ua, unit_id as uid, kind FROM unit_amenity where ((amenity like '%limate%' OR amenity like '%emperature%' OR amenity like '%iscount%') OR (kind in ('u_pdispc', 'u_pdismo', 'u_pdispcfm', 'u_pdispcfmfd', 'u_pdispcfd', 'u_pdismofd', 'u_pdismofm'))) and unit_id in ".mysqli_real_escape_string($conn, $unit_str);
 	
   $resUA = mysqli_query($conn, $query_str);
   if(mysqli_num_rows($resUA) == 0)

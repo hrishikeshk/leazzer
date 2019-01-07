@@ -230,12 +230,13 @@ function show_results($arr, $filter_dict_opts){
 	  
 	  $from_unit_amenities = fetch_priority_unit_amenities($facility_id, $unit_info_arr);
 
-    $facility_unit_amenities = a_unique(a_merge(get23($from_unit_amenities), $facility_unit_amenities));
+    //$facility_unit_amenities = a_unique(a_merge(get23($from_unit_amenities), $facility_unit_amenities));
+    
     $priority_amenities = arrange_priority_with_group($facility_unit_amenities);
 
     echo '<tr style="margin:0px;padding:0px;border:0px solid #000;background:none;">';
 	  echo '<td style="background:none;margin:0px;padding:5px;border:0px solid #000;">';
-	  			
+
 	  echo '<table style="font-size: .9em;margin-bottom: 10px;width:100%;box-shadow: 5px 5px 5px #888888;"><tr>';
 	  echo '<td style="margin:0px;padding:0px;width:120px;vertical-align: top;border-top:1px solid #ddd;border-left:1px solid #ddd;">';
 	  $image_file_name = extract_image_name($arr_imgs['url_thumbsize']);
@@ -255,7 +256,7 @@ function show_results($arr, $filter_dict_opts){
 	  echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
 	    		
 	  echo '<table>';
-	    		
+
 	  echo '<tr><td><b>'.htmlspecialchars($arr['title'], ENT_QUOTES).'</b><br>';
 	  echo htmlspecialchars($arr['city'].",".$arr['state']." ".$arr['zip'], ENT_QUOTES).'<br />';
 
@@ -263,13 +264,13 @@ function show_results($arr, $filter_dict_opts){
       echo $calc_distance.' miles away<br />';
     else
       echo '0.1 miles away<br />';
-	    
+
 	  if(has_priority_amenity($facility_unit_amenities, array('climate')))
 	    echo '<img src="images/cc.jpg" title="climate control equipped" style="min-height:40px;width:40px;" />';
-	    		
+
 	  if(has_priority_amenity($facility_unit_amenities, array('security', 'camera', 'video camera')))
 	    echo '<img src="images/secam.png" title="security camera monitoring" style="min-height:40px;width:40px;;margin-left:4px" />';
-  
+
 	  echo '</td>';
 //    
     echo '<td><div style="float:right;padding:0;margin:0;font-size:.9em;color:#68AE00;">Reservations held for Move-in Date + '.$arr['reservationdays'].' days</div></td>';
