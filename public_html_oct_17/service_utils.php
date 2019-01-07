@@ -336,7 +336,7 @@ function show_unit_detail($arrFU, $facility_id, $rdays, $has_ua, $facilityName, 
 	if($has_ua == true){
 	  $show_fire = 'visibility:visible';
 	}
-	echo '<div class="blink-image" style="margin-bottom:10px"><a href="javascript:popupMoreLessAmenities(\''.htmlspecialchars($facilityName, ENT_QUOTES).'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="'.$show_fire.'"><img src="images/fire.png" title="Click For Unit Amenities !" style="width:20px;height:20px;visibility:inherit"></a></div>';
+	////echo '<div class="blink-image" style="margin-bottom:10px"><a href="javascript:popupMoreLessAmenities(\''.htmlspecialchars($facilityName, ENT_QUOTES).'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="'.$show_fire.'"><img src="images/fire.png" title="Click For Unit Amenities !" style="width:20px;height:20px;visibility:inherit"></a></div>';
 
 	$phone = 'unknown';
 	if(isset($_SESSION['lcdata']['phone']))
