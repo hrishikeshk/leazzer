@@ -20,11 +20,10 @@ function getBaseUrl(){
 
 $res = mysqli_query($conn,"select O.auto_id as auto_id, O.pwd as pwd, M.id as facility_id, M.title as companyname, M.phone as phone, M.city as city, M.state as state, M.zip as zip, O.emailid as emailid, M.searchable as searchable, M.lat as lat, M.lng as lng, M.street as street, M.region as region, M.locality as locality, M.receivereserve as receivereserve, M.reservationdays as reservationdays, M.description as description, pdispc, pdismo, pdispcfm, pdispcfmfd, pdispcfd, pdismofd, pdismofm from facility_owner O, facility_master M where O.auto_id=M.facility_owner_id and M.facility_owner_id is not null and O.auto_id ='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."'") or die("Error: " . mysqli_error($conn));
 
-$arrF = mysqli_fetch_array($res,MYSQLI_ASSOC);
-
-//$_SESSION['lfdata'] = $arrF;
+$arrF = mysqli_fetch_array($res, MYSQLI_ASSOC);
 
 $facility_id = $arrF['facility_id'];
+//$_SESSION['lfdata'] = $arrF;
 
 if(isset($_POST['db_submit'])){
   
@@ -202,7 +201,7 @@ if (mysqli_num_rows($image_select_result) > 0) {
 <script src="js/jquery.autosave.js"></script> 
 <script type="text/javascript">
 $(function() {
-  $("input:not(.upload,.opt_inputs,.unit_price_inputs,.unit_size_inputs, .searchable_class),select").autosave({
+  $("input:not(.upload,.opt_inputs,.unit_price_inputs,.unit_size_inputs, .searchable_class, .ud_unit, .ud_unit_class),select").autosave({
 			url: "dpost.php",
 			method: "post",
 			grouped: false,
@@ -247,6 +246,19 @@ function persist_unit_cb(unit_id, size, price){
   if(elem_id != undefined && elem_id != null){
     var state = elem_id.checked;
     var res = ajaxcall('change=unit&id='+unit_id+'&val='+state+'&size='+size+'&price='+price);
+    
+    var el = document.getElementById('ud_unit');
+    if(state == "checked"){
+      if(price != undefined && price != null){
+        el.options[el.options.length] = new Option(size + '| priced at $' + price, unit_id);
+      }
+      else{
+        el.options[el.options.length] = new Option(size, unit_id);
+      }
+    }
+    else{
+      
+    }
   }
   else{
     alert('Failed to save unit checkbox updates. Please try again in some time');
@@ -337,6 +349,40 @@ function process_image_delete(idx){
   form.submit();
 }
 
+function ajaxcall_udfetch(datastring){
+    var res;
+    on();
+    $.ajax
+    ({
+    		type:"POST",
+    		url:"udfetch.php",
+    		data:datastring,
+    		cache:false,
+    		async:false,
+    		success: function(result){
+   				 	res = result;
+   		 	},
+   		 	error: function(err){
+   		 	    alert('Failed to invoke serverside function to db_submit... Please try again in some time');
+   		 	    res = false;
+   		 	}
+    });
+    return res;
+}
+
+function persist_unit_ud(kind){
+  var unit_id = document.getElementById('ud_unit');
+  var elem_id = document.getElementById(kind);
+  if(elem_id != undefined && elem_id != null && unit_id != undefined && unit_id != null){
+    var state = elem_id.value;
+    var id = unit_id.value;
+    var res = ajaxcall('unit_id='+id+'&kind='+kind+'&ud='+state);
+  }
+  else{
+    alert('Failed to save unit discount updates. Please try again in some time');
+  }
+}
+
 </script>
 <div id="save_message">
   <div id="text_as">Saving Changes ...</div>
@@ -355,7 +401,7 @@ function process_image_delete(idx){
     				<?php
     				  echo '<img src="images/trash.png" style="margin-left:90%" height="40px; cursor:pointer" width="40px" onclick="process_image_delete($(\'#myCarousel .item\').index($(\'#myCarousel .item.active\')));"  />';
     				?>
-    				
+
 							<!-- img src="images/trash.png" style="margin-left:90%" height="40px" width="40px" onclick="alert('active: ' + $('#myCarousel .item').index($('#myCarousel .item.active')));" / -->
 							
 							<div id="myCarousel" class="carousel slide" data-ride="carousel" data-interval="false">
@@ -414,7 +460,7 @@ function process_image_delete(idx){
     				
 			<input class="searchable_class" type="checkbox" name="searchable" id="searchable" value="searchableval" style="margin-bottom:5px;display:inline;" <?php echo ($arrF['searchable']==0?"checked":"");?> onchange="persist_searchable();"> Make This Location Unsearchable<br /><br />
 			    <div>
-  			    <h4>Discounts</h4><br />
+  			    <h4>Discounts - Facility Level</h4><br />
 	  		    <div style="text-align:left;padding:0;margin:0;border: 1px solid black; border-radius: 7px">
 	  		    <h5 style="text-align:center">Percentage Discounts</h5><br />
 			      <input type="number" step = "1" pattern = "\d+" min="0" max = "100" name="pdispc" id="pdispc" placeholder="" value="<?php echo $arrF['pdispc'];?>" style="width:50px; margin-bottom:10px; margin-left: 10px"> <p style="display:inline;font-size:.9em;"> % OFF For </p>
@@ -449,7 +495,7 @@ function process_image_delete(idx){
 					<hr style="margin:5px 0px 5px 0px">
 					<?php
 					$res_amenities = sanitize_amenities($facility_id);
-					
+
 					$res = mysqli_query($conn,"select * from options");
 					while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
 						$checked = "";
@@ -459,8 +505,58 @@ function process_image_delete(idx){
 
 					}
 					?>
+          <br />
+          <div>
+          <script>
+            function ud_select(){
+              var ud_selection = document.getElementById('ud_unit');
+              var ud_details = document.getElementById('ud_details');
+              document.getElementById('u_pdispc').value='';
+              document.getElementById('u_pdismo').value='';
+              document.getElementById('u_pdispcfm').value='';
+              document.getElementById('u_pdispcfmfd').value='';
+              document.getElementById('u_pdispcfd').value='';
+              document.getElementById('u_pdismofd').value='';
+              document.getElementById('u_pdismofm').value='';
+              var res = ajaxcall_udfetch('unit_id='+ud_selection.value+'&udfetch=1');
+              //alert('unit sel :' + ud_selection.value + ' : ' + res);
+              var parsed_ams = JSON.parse(res);
+              for(i = 0; i < parsed_ams.length; i++){
+                document.getElementById(parsed_ams[i]['kind']).value=parsed_ams[i]['amenity'];
+              }
+              if(ud_details != undefined && ud_details != null){
+                ud_details.style.display='block';
+              }
+            }
+          </script>
+  			    <h4>Discounts - Unit Level</h4>
+  			    <select name="ud_unit" id="ud_unit" required class="form-control ud_unit_class" style="margin-bottom:5px;" onClick="ud_select();">
+          	  <option value="">Select Unit</option>
+          	</select>
+          	<div name="ud_details" id="ud_details" style="display:none">
+	  		    <div style="text-align:left;padding:0;margin:0;border: 1px solid black; border-radius: 7px">
+	  		    <h5 style="text-align:center">Percentage Discounts</h5><br />
+			      <input class = "ud_unit" type="number" step = "1" pattern = "\d+" min="0" max = "100" name="u_pdispc" id="u_pdispc" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px" onchange="persist_unit_ud('u_pdispc');"> <p style="display:inline;font-size:.9em;"> % OFF For </p>
+			      <input class = "ud_unit" type="number" step = "1" pattern = "\d+" min="0" max = "12" name="u_pdismo" id="u_pdismo" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px" onchange="persist_unit_ud('u_pdismo');"> <p style="display:inline;font-size:.9em;"> Month(s) </p>
+			      <br />
+			      <hr style="margin:5px 0px 5px 0px; border-width: 1px; color: black">
+			      <input class = "ud_unit" type="number" step = "1" pattern = "\d+" min="0" max = "100" name="u_pdispcfm" id="u_pdispcfm" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px" onchange="persist_unit_ud('u_pdispcfm');"> <p style="display:inline;font-size:.9em;"> % OFF First Month </p></div>
+            <br />
+	  		    <div style="text-align:left;padding:0;margin:0;border: 1px solid black; border-radius: 7px">
+	  		    <h5 style="text-align:center">Fixed Value Discounts</h5><br />
+			      <input class = "ud_unit" type="number" step = "1" pattern = "\d+" min="0" max = "100" name="u_pdispcfmfd" id="u_pdispcfmfd" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px" onchange="persist_unit_ud('u_pdispcfmfd');"><p style="display:inline;font-size:.9em;"> OFF First Month </p>
+			      <br />
+			      <hr style="margin:5px 0px 5px 0px; border-width: 1px; color: black">
+			      <input class = "ud_unit" type="number" step = "1" pattern = "\d+" min="0" max = "100" name="u_pdispcfd" id="u_pdispcfd" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px" onchange="persist_unit_ud('u_pdispcfd');"> <p style="display:inline;font-size:.9em;"> OFF For </p>
+			      <input class = "ud_unit" type="number" step = "1" pattern = "\d+" min="0" max = "12" name="u_pdismofd" id="u_pdismofd" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px" onchange="persist_unit_ud('u_pdismofd');"><p style="display:inline;font-size:.9em;"> Month(s)</p></div>
+            <br />
+			      <div style="text-align:left;padding:0;margin:0;border: 1px solid black; border-radius: 7px">
+			      <h5 style="text-align:center">Free Months</h5><br />
+			      <input class = "ud_unit" type="number" step = "1" pattern = "\d+" min="0" max = "12" name="u_pdismofm" id="u_pdismofm" placeholder="" value="" style="width:50px; margin-bottom:10px; margin-left: 10px" onchange="persist_unit_ud('u_pdismofm');"> <p style="display:inline;font-size:.9em;"> Month(s) free </p></div>
+			      </div>
+			    </div>
 
-    		</div>    		
+    		</div>
 				<div class="col-md-4" style="border:0px solid #000;padding:0px 5px;margin:0;">
     			<hr style="margin:5px 0px 5px 0px">
     			<b>Choose Your Products</b>
@@ -487,6 +583,8 @@ function process_image_delete(idx){
 	  				echo '<input type="number" step="0.01" name="unitval['.$id_arr[$i].']" id="unitval['.$id_arr[$i].']" value="'.$price_arr[$i].'" class="form-control unit_price_inputs" style="display:inline;width:90%;margin:2px;padding:2px;height:25px;" onchange="persist_unit_pr(\''.$id_arr[$i].'\',\''.$esc_size.'\');">';
 	  				echo '</div>';
 	  				echo '</div>';
+	  				if($checked == "checked")
+  	  				echo '<script>var el = document.getElementById(\'ud_unit\'); el.options[el.options.length] = new Option(\''.$esc_size.'| priced at $'.$price_arr[$i].'\', \''.$id_arr[$i].'\');</script>';
     			}
     			?>
 

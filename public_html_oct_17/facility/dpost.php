@@ -45,6 +45,10 @@ if(isset($_POST['phone'])){
   $updates = 'phone=\''.trim(mysqli_real_escape_string($conn, $_POST['phone'])).'\'';
   run_fm_updates($updates);
 }
+if(isset($_POST['state'])){
+  $updates = 'state=\''.trim(mysqli_real_escape_string($conn, $_POST['state'])).'\'';
+  run_fm_updates($updates);
+}
 
 if(isset($_POST['reservationdays'])){
   $updates = 'reservationdays=\''.trim(mysqli_real_escape_string($conn, $_POST['reservationdays'])).'\'';
@@ -124,7 +128,6 @@ if(isset($_POST['change']) && $_POST['change'] == 'unit'){
   $price = mysqli_real_escape_string($conn, $_POST['price']);
   if($_POST['val'] == "true"){
     $query = "insert into unit(facility_id, size, price_freq) values ('".mysqli_real_escape_string($conn, $facility_id)."', '".$size."', 'per month')";
-    error_log('ins: '.$query.' : '.$size);
     mysqli_query($conn, $query) or die('Failed to insert facility-units - Please try again: '.mysqli_error($conn));
   }
   else{
@@ -138,7 +141,51 @@ if(isset($_POST['change']) && $_POST['change'] == 'unitval'){
   $id = mysqli_real_escape_string($conn, $_POST['id']);
   $size = mysqli_real_escape_string($conn, $_POST['size']);
 
-  $query = "update unit set price='".mysqli_real_escape_string($conn, $_POST['val'])."' where facility_id='".mysqli_real_escape_string($conn, $facility_id)."' and size='".$size."'";
+  $query = "update unit set price='".mysqli_real_escape_string($conn, $_POST['val'])."' where facility_id='".mysqli_real_escape_string($conn, $facility_id)."' and size='".$size."' and auto_id='".$id."'";
   mysqli_query($conn, $query) or die('Failed to insert facility-units-price - Please try again: '.mysqli_error($conn));  
+}
+
+function run_ua_updates($updates, $unit_id, $kind){
+  global $conn;
+  $query = "delete from unit_amenity where unit_id='".mysqli_real_escape_string($conn, $unit_id)."' and kind='".mysqli_real_escape_string($conn, $kind)."' and kind is not null";
+	mysqli_query($conn, $query) or die('Failed to apriori delete'.$updates.'. Please try again: '.mysqli_error($conn));  
+	
+  $query = "insert into unit_amenity (unit_id, kind, amenity) values ('".$unit_id."','".$kind."','".$updates."')";
+	mysqli_query($conn, $query) or die('Failed to update'.$updates.'. Please try again: '.mysqli_error($conn));  
+}
+
+if(isset($_POST['ud']) && isset($_POST['unit_id']) && isset($_POST['kind'])){
+  $updates = trim(mysqli_real_escape_string($conn, $_POST['ud']));
+  run_ua_updates($updates, $_POST['unit_id'], $_POST['kind']);
+}
+
+if(isset($_POST['ud']) && isset($_POST['unit_id']) && isset($_POST['kind'])){
+  $updates = trim(mysqli_real_escape_string($conn, $_POST['ud']));
+  run_ua_updates($updates, $_POST['unit_id'], $_POST['kind']);
+}
+
+if(isset($_POST['ud']) && isset($_POST['unit_id']) && isset($_POST['kind'])){
+  $updates = trim(mysqli_real_escape_string($conn, $_POST['ud']));
+  run_ua_updates($updates, $_POST['unit_id'], $_POST['kind']);
+}
+
+if(isset($_POST['ud']) && isset($_POST['unit_id']) && isset($_POST['kind'])){
+  $updates = trim(mysqli_real_escape_string($conn, $_POST['ud']));
+  run_ua_updates($updates, $_POST['unit_id'], $_POST['kind']);
+}
+
+if(isset($_POST['ud']) && isset($_POST['unit_id']) && isset($_POST['kind'])){
+  $updates = trim(mysqli_real_escape_string($conn, $_POST['ud']));
+  run_ua_updates($updates, $_POST['unit_id'], $_POST['kind']);
+}
+
+if(isset($_POST['ud']) && isset($_POST['unit_id']) && isset($_POST['kind'])){
+  $updates = trim(mysqli_real_escape_string($conn, $_POST['ud']));
+  run_ua_updates($updates, $_POST['unit_id'], $_POST['kind']);
+}
+
+if(isset($_POST['ud']) && isset($_POST['unit_id']) && isset($_POST['kind'])){
+  $updates = trim(mysqli_real_escape_string($conn, $_POST['ud']));
+  run_ua_updates($updates, $_POST['unit_id'], $_POST['kind']);
 }
 
