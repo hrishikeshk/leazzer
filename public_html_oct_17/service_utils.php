@@ -328,14 +328,24 @@ function has_unit_priority_amenities($ua_arr, $uid){
   return $ret;
 }
 
-function show_unit_detail($arrFU, $facility_id, $rdays, $has_ua, $facilityName, $facility_unit_amenities){
-  echo '<div class="col-md-1" style="width:10%;text-align:center;margin-bottom: 5px">';
+function get_unit_priority_amenities($ua_arr, $uid){
+  $ret = array();
+  if(array_key_exists($uid, $ua_arr) == false)
+    return $ret;
+  $inner_a = $ua_arr[$uid];
+  
+  return ud_construct_addl_discounts($inner_a);
+}
+
+function show_unit_detail($arrFU, $facility_id, $rdays, $ua, $facilityName, $facility_unit_amenities){
+  echo '<div class="col-md-2" style="width:10%;text-align:center;margin-bottom: 5px">';
 	echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":htmlspecialchars($arrFU['img'], ENT_QUOTES)).'" style="vertical-align: top;width:50px;height:50px">';
 	echo '<p style="text-align:center;width:80%;display:inline-block;margin:0;font-size:.8em;white-space: nowrap;"><b>'.htmlspecialchars($arrFU['size']).'</b><br>$'.htmlspecialchars($arrFU['price'], ENT_QUOTES).'</p>';
 	$show_fire = 'visibility:hidden';
-	if($has_ua == true){
+	if(count($ua) > 0){
 	  $show_fire = 'visibility:visible';
 	}
+	echo '<br /><div style='.$show_fire.'><div class="blink-image" style="margin-bottom:10px;"><img src="images/fire.png" style="width:20px;height:20px;visibility:inherit" /></div><div style="visibility:inherit">'.$ua[0].'</div></div>';
 	////echo '<div class="blink-image" style="margin-bottom:10px"><a href="javascript:popupMoreLessAmenities(\''.htmlspecialchars($facilityName, ENT_QUOTES).'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="'.$show_fire.'"><img src="images/fire.png" title="Click For Unit Amenities !" style="width:20px;height:20px;visibility:inherit"></a></div>';
 
 	$phone = 'unknown';
@@ -354,12 +364,12 @@ function show_units($facility_id, $arr_arr_FU, $show_upfront, $rdays, $ua_arr, $
   $arr_len = count($arr_arr_FU);
 	for($i = 0; $i < min_ints($arr_len, $show_upfront); $i++){
 	  $arrFU = $arr_arr_FU[$i];
-	  show_unit_detail($arrFU, $facility_id, $rdays, has_unit_priority_amenities($ua_arr, $arrFU['id']), $facilityName, $facility_unit_amenities);
+	  show_unit_detail($arrFU, $facility_id, $rdays, get_unit_priority_amenities($ua_arr, $arrFU['id']), $facilityName, $facility_unit_amenities);
 	}
 	echo '<div id="unit_more_show'.$facility_id.'" style="display:none">';
 	for($i = $show_upfront; $i < $arr_len; $i++){
 	  $arrFU = $arr_arr_FU[$i];
-		show_unit_detail($arrFU, $facility_id, $rdays, has_unit_priority_amenities($ua_arr, $arrFU['id']), $facilityName,  $facility_unit_amenities);
+		show_unit_detail($arrFU, $facility_id, $rdays, get_unit_priority_amenities($ua_arr, $arrFU['id']), $facilityName,  $facility_unit_amenities);
 	}
 	echo '</div>';
 	
@@ -367,6 +377,91 @@ function show_units($facility_id, $arr_arr_FU, $show_upfront, $rdays, $ua_arr, $
 	if($arr_len > $show_upfront){
 	  echo '<p> <a id="switchMoreLessUnits'.$facility_id.'" href="javascript:showMoreLessUnits('.$facility_id.')" style="display:block"> &gt;&gt;</a></p>';
 	}
+}
+
+function fetch_priority_unit_amenities($facility_id, $unit_info_arr){
+  global $conn;
+	$unit_amenities = array();
+	if(count($unit_info_arr) == 0)
+	  return $unit_amenities;
+	$unit_str = '('.$unit_info_arr[0]['id'];
+	for($i = 1; $i < count($unit_info_arr); $i++){
+	  $unit_str .= ', '.$unit_info_arr[$i]['id'];
+	}
+	$unit_str .= ')';
+	$query_str = "SELECT amenity as ua, unit_id as uid, kind FROM unit_amenity where kind is not null and kind in ('u_pdispc', 'u_pdismo', 'u_pdispcfm', 'u_pdispcfmfd', 'u_pdispcfd', 'u_pdismofd', 'u_pdismofm') and unit_id in ".mysqli_real_escape_string($conn, $unit_str);
+	
+  $resUA = mysqli_query($conn, $query_str);
+  if(mysqli_num_rows($resUA) == 0)
+	  return $unit_amenities;
+
+	while($ua = mysqli_fetch_array($resUA, MYSQLI_ASSOC)){
+	  //$unit_amenities[] = $ua['uid'].'~Other|'.$ua['ua'];
+	  if(array_key_exists($ua['uid'], $unit_amenities) == false)
+	    $unit_amenities[$ua['uid']] = array();
+	  $unit_amenities[$ua['uid']][$ua['kind']] = $ua['ua'];
+	}
+	return $unit_amenities;
+}
+
+function ud_construct_addl_discounts($arrFM){
+  $ret = array();
+  //foreach ($arrFM as $key => $value) {
+    //error_log( "Key: $key; Value: $value\n" );
+  //}
+  $pdispc = $arrFM['u_pdispc'];
+  $pdismo = $arrFM['u_pdismo'];
+  if(isset($pdispc) && $pdispc > 0 && isset($pdismo) && $pdismo > 0)
+    $ret[] = $pdispc.' % OFF For '.$pdismo.' Month(s)';
+  
+  $pdispcfm = $arrFM['u_pdispcfm'];
+  if(isset($pdispcfm) && $pdispcfm > 0)
+    $ret[] = $pdispcfm.' % OFF First Month';
+    
+  $pdispcfmfd = $arrFM['u_pdispcfmfd'];
+  if(isset($pdispcfmfd) && $pdispcfmfd > 0)
+    $ret[] = $pdispcfmfd.' OFF First Month';
+    
+  $pdispcfd = $arrFM['u_pdispcfd'];
+  $pdismofd = $arrFM['u_pdismofd'];
+  if(isset($pdispcfd) && $pdispcfd > 0 && isset($pdismofd) && $pdismofd > 0)
+    $ret[] = $pdispcfd.' OFF For '.$pdismofd.' Month(s)';
+    
+  $pdismofm = $arrFM['u_pdismofm'];
+  if(isset($pdismofm) && $pdismofm > 0)
+    $ret[] = $pdismofm.' OFF First Month';
+    
+  return $ret;
+}
+
+function construct_addl_discounts($arrFM){
+  $ret = array();
+  //foreach ($arrFM as $key => $value) {
+    //error_log( "Key: $key; Value: $value\n" );
+  //}
+  $pdispc = $arrFM['pdispc'];
+  $pdismo = $arrFM['pdismo'];
+  if(isset($pdispc) && $pdispc > 0 && isset($pdismo) && $pdismo > 0)
+    $ret[] = 'Discounts|'.$pdispc.' % OFF For '.$pdismo.' Month(s)';
+  
+  $pdispcfm = $arrFM['pdispcfm'];
+  if(isset($pdispcfm) && $pdispcfm > 0)
+    $ret[] = 'Discounts|'.$pdispcfm.' % OFF First Month';
+    
+  $pdispcfmfd = $arrFM['pdispcfmfd'];
+  if(isset($pdispcfmfd) && $pdispcfmfd > 0)
+    $ret[] = 'Discounts|$'.$pdispcfmfd.' OFF First Month';
+    
+  $pdispcfd = $arrFM['pdispcfd'];
+  $pdismofd = $arrFM['pdismofd'];
+  if(isset($pdispcfd) && $pdispcfd > 0 && isset($pdismofd) && $pdismofd > 0)
+    $ret[] = 'Discounts|$'.$pdispcfd.' OFF For '.$pdismofd.' Month(s)';
+    
+  $pdismofm = $arrFM['pdismofm'];
+  if(isset($pdismofm) && $pdismofm > 0)
+    $ret[] = 'Discounts|$'.$pdismofm.' OFF First Month';
+    
+  return $ret;
 }
 
 function a_intersect($arr1, $arr2){
@@ -547,54 +642,6 @@ function get23($arr_ua){
   return $ret;
 }
 
-function fetch_priority_unit_amenities($facility_id, $unit_info_arr){
-  global $conn;
-	$unit_amenities = array();
-	if(count($unit_info_arr) == 0)
-	  return $unit_amenities;
-	$unit_str = '('.$unit_info_arr[0]['id'];
-	for($i = 1; $i < count($unit_info_arr); $i++){
-	  $unit_str .= ', '.$unit_info_arr[$i]['id'];
-	}
-	$unit_str .= ')';
-	$query_str = "SELECT amenity as ua, unit_id as uid, kind FROM unit_amenity where ((amenity like '%limate%' OR amenity like '%emperature%' OR amenity like '%iscount%') OR (kind in ('u_pdispc', 'u_pdismo', 'u_pdispcfm', 'u_pdispcfmfd', 'u_pdispcfd', 'u_pdismofd', 'u_pdismofm'))) and unit_id in ".mysqli_real_escape_string($conn, $unit_str);
-	
-  $resUA = mysqli_query($conn, $query_str);
-  if(mysqli_num_rows($resUA) == 0)
-	  return $unit_amenities;
-	while($ua = mysqli_fetch_array($resUA, MYSQLI_ASSOC))
-	  $unit_amenities[] = $ua['uid'].'~Other|'.$ua['ua'];
-	return $unit_amenities;
-}
-
-function construct_addl_discounts($arrFM){
-  $ret = array();
-  
-  $pdispc = $arrFM['pdispc'];
-  $pdismo = $arrFM['pdismo'];
-  if(isset($pdispc) && $pdispc > 0 && isset($pdismo) && $pdismo > 0)
-    $ret[] = 'Discounts|'.$pdispc.' % OFF For '.$pdismo.' Month(s)';
-  
-  $pdispcfm = $arrFM['pdispcfm'];
-  if(isset($pdispcfm) && $pdispcfm > 0)
-    $ret[] = 'Discounts|'.$pdispcfm.' % OFF First Month';
-    
-  $pdispcfmfd = $arrFM['pdispcfmfd'];
-  if(isset($pdispcfmfd) && $pdispcfmfd > 0)
-    $ret[] = 'Discounts|$'.$pdispcfmfd.' OFF First Month';
-    
-  $pdispcfd = $arrFM['pdispcfd'];
-  $pdismofd = $arrFM['pdismofd'];
-  if(isset($pdispcfd) && $pdispcfd > 0 && isset($pdismofd) && $pdismofd > 0)
-    $ret[] = 'Discounts|$'.$pdispcfd.' OFF For '.$pdismofd.' Month(s)';
-    
-  $pdismofm = $arrFM['pdismofm'];
-  if(isset($pdismofm) && $pdismofm > 0)
-    $ret[] = 'Discounts|$'.$pdismofm.' OFF First Month';
-    
-  return $ret;
-}
-
 function fetch_facility_amenities($facility_id, $arrFM){
   global $conn;
   $resFA = mysqli_query($conn, "SELECT amenity as fac_amenity FROM facility_amenity where facility_id='".mysqli_real_escape_string($conn, $facility_id)."'");
@@ -626,8 +673,8 @@ function calc_from_amenity_dict($filter_opt_ids){
 }
 
 function eval_filters($facility_unit_amenities, $filter_dict_opts){
-  if(count($filter_dict_opts) == 0)
-    return true;
+  //if(count($filter_dict_opts) == 0)
+    //return true;
   for($i = 0; $i < count($filter_dict_opts); $i++){
     for($j = 0; $j < count($facility_unit_amenities); $j++){
       if((stristr($facility_unit_amenities[$j], $filter_dict_opts[$i]) !== FALSE) || (stristr($filter_dict_opts[$i], $facility_unit_amenities[$j]) !== FALSE))

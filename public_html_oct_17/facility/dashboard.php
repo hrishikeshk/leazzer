@@ -248,16 +248,27 @@ function persist_unit_cb(unit_id, size, price){
     var res = ajaxcall('change=unit&id='+unit_id+'&val='+state+'&size='+size+'&price='+price);
     
     var el = document.getElementById('ud_unit');
-    if(state == "checked"){
+    console.log('state = ' + state);
+    if(state == true){
       if(price != undefined && price != null){
-        el.options[el.options.length] = new Option(size + '| priced at $' + price, unit_id);
+        el.options[el.options.length] = new Option(size + ' priced at $' + price, unit_id);
       }
       else{
         el.options[el.options.length] = new Option(size, unit_id);
       }
     }
     else{
-      
+      console.log('unit_id = ' + unit_id);
+      var ops = [];
+      for(i = 0; i < el.options.length; i++){
+        ops.push(el.options[i]);
+        console.log('option[i] = ' + el.options[i].value + ' | ' + el.options[i].text);
+      }
+      $("#ud_unit").empty();
+      for(i = 0; i < ops.length; i++){
+        if(ops[i].value != unit_id)
+          el.options[el.options.length] = ops[i];
+      }
     }
   }
   else{
@@ -584,7 +595,7 @@ function persist_unit_ud(kind){
 	  				echo '</div>';
 	  				echo '</div>';
 	  				if($checked == "checked")
-  	  				echo '<script>var el = document.getElementById(\'ud_unit\'); el.options[el.options.length] = new Option(\''.$esc_size.'| priced at $'.$price_arr[$i].'\', \''.$id_arr[$i].'\');</script>';
+  	  				echo '<script>var el = document.getElementById(\'ud_unit\'); el.options[el.options.length] = new Option(\''.$esc_size.' priced at $'.$price_arr[$i].'\', \''.$id_arr[$i].'\');</script>';
     			}
     			?>
 

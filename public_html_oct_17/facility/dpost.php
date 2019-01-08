@@ -131,8 +131,9 @@ if(isset($_POST['change']) && $_POST['change'] == 'unit'){
     mysqli_query($conn, $query) or die('Failed to insert facility-units - Please try again: '.mysqli_error($conn));
   }
   else{
-    $query = "delete from unit where facility_id='".mysqli_real_escape_string($conn, $facility_id)."' and size='".$size."' and price='".$price."'";
-    error_log('del: '.$query.' : '.$size);
+    $query = "delete from unit where auto_id='".mysqli_real_escape_string($conn, $id)."'";
+    //$query = "delete from unit where facility_id='".mysqli_real_escape_string($conn, $facility_id)."' and size='".$size."' and price='".$price."'";
+    //error_log('del: '.$query.' : '.$size);
     mysqli_query($conn, $query) or die('Failed to delete facility-units - Please try again: '.mysqli_error($conn));
   }
 }
