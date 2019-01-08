@@ -338,14 +338,16 @@ function get_unit_priority_amenities($ua_arr, $uid){
 }
 
 function show_unit_detail($arrFU, $facility_id, $rdays, $ua, $facilityName, $facility_unit_amenities){
-  echo '<div class="col-md-2" style="width:10%;text-align:center;margin-bottom: 5px">';
+  echo '<div class="col-md-1" style="width:22%;text-align:center;margin-bottom: 5px">';
 	echo '<img src="unitimages/'.($arrFU['img']==""?"pna.jpg":htmlspecialchars($arrFU['img'], ENT_QUOTES)).'" style="vertical-align: top;width:50px;height:50px">';
 	echo '<p style="text-align:center;width:80%;display:inline-block;margin:0;font-size:.8em;white-space: nowrap;"><b>'.htmlspecialchars($arrFU['size']).'</b><br>$'.htmlspecialchars($arrFU['price'], ENT_QUOTES).'</p>';
 	$show_fire = 'visibility:hidden';
 	if(count($ua) > 0){
 	  $show_fire = 'visibility:visible';
 	}
-	echo '<br /><div style='.$show_fire.'><div class="blink-image" style="margin-bottom:10px;"><img src="images/fire.png" style="width:20px;height:20px;visibility:inherit" /></div><div style="visibility:inherit">'.$ua[0].'</div></div>';
+	
+	echo '<br /><table style='.$show_fire.'><tr><td style="font-size:.9em;white-space: nowrap;"><img class="blink-image" src="images/fire.png" style="width:20px;height:20px;visibility:inherit" />'.$ua[0].'<img class="blink-image" src="images/fire.png" style="width:20px;height:20px;visibility:inherit" /></td></tr></table>';
+	////echo '<br /><div style='.$show_fire.'><div class="blink-image" style="margin-bottom:10px;"><img src="images/fire.png" style="width:20px;height:20px;visibility:inherit" /></div>'.$ua[0].'<div class="blink-image" style="margin-bottom:10px;"><img src="images/fire.png" style="width:20px;height:20px;visibility:inherit" /></div></div>';
 	////echo '<div class="blink-image" style="margin-bottom:10px"><a href="javascript:popupMoreLessAmenities(\''.htmlspecialchars($facilityName, ENT_QUOTES).'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="'.$show_fire.'"><img src="images/fire.png" title="Click For Unit Amenities !" style="width:20px;height:20px;visibility:inherit"></a></div>';
 
 	$phone = 'unknown';
@@ -731,7 +733,7 @@ function calculate_distance_ll($lat, $lng, $loc){
     padding: 20px;
     border: 1px solid #888;
     width: 50%; /* Could be more or less, depending on screen size */
-    height: 60%;
+    height: 70%;
     position: fixed;
     z-index: 1;
     left: 10%;
