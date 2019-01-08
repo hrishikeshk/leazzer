@@ -83,7 +83,7 @@ function save_phone($cid, $phone){
   mysqli_query($conn,"UPDATE customer set phone = '".mysqli_real_escape_string($conn, $phone)."' where id = '".mysqli_real_escape_string($conn, $cid)."'");
 }
 
-function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ownerEmail, $ownerName, $userPhone, $unit, $price, $resFromDate, $resToDate, $phone){
+function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ownerEmail, $ownerName, $userPhone, $unit, $price, $resFromDate, $resToDate, $phone, $cust_email, $cust_name){
 	global $conn,$GError;
 	$fromemail="no-reply@leazzer.com";
 	$toemail= 'admin@leazzer.com';
@@ -95,7 +95,9 @@ function onReserveAdminMail($facilityName, $facilityAddress, $facilityPhone, $ow
 	$message .= '<b><u>Facility Name</u> - '.htmlspecialchars($facilityName, ENT_QUOTES).'<br />';
 	$message .= '<b><u>Facility Address</u> - '.htmlspecialchars($facilityAddress, ENT_QUOTES).'<br />';
 	$message .= '<u>Facility Phone Number</u> - '.htmlspecialchars($facilityPhone, ENT_QUOTES).'<br />';
+	$message .= '<u>User Name</u> - '.htmlspecialchars($cust_name, ENT_QUOTES).'<br /></b>';
 	$message .= '<u>User Phone Number</u> - '.htmlspecialchars($userPhone, ENT_QUOTES).'<br /></b>';
+	$message .= '<u>User Email</u> - '.htmlspecialchars($cust_email, ENT_QUOTES).'<br /></b>';
 	
 	$message .= '<br><br>A '.htmlspecialchars($unit).' unit has been reserved from ';
 	$message .= htmlspecialchars($resFromDate).' to '.htmlspecialchars($resToDate).' for the price of $'.htmlspecialchars($price, ENT_QUOTES).' per month.<br>';

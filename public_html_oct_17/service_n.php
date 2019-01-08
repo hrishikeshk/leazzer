@@ -142,7 +142,9 @@ if(isset($_POST['action'])){
 													$_POST['price'],
 													date('m/d/Y',$reserveFromDate),
 													date('m/d/Y',$reserveToDate),
-													$phone);
+													$phone,
+													$arrC['emailid'],
+													$arrC['firstname']." ".$arrC['lastname']);
 			onReserveCustomerMail($arrF['id'], $arrC['emailid'],
 													$arrC['firstname']." ".$arrC['lastname'],
 													$_POST['unit'],
