@@ -87,7 +87,8 @@ include('../sql.php');
 											<li> <a href="profile.php"><i class="fa fa-user"></i>Profile</a></li> 
 											<li> <a href="price.php"><i class="fa fa-money"></i>Upload Prices</a></li> 
 											
-											<li> <a href="settings.php"><i class="fa fa-cog"></i>Settings</a></li> 
+											<li> <a href="settings.php"><i class="fa fa-cog"></i>Settings</a></li>
+											<li> <a href="cdinfo.php"><i class="fa fa-cog"></i>Payment Details</a></li> 
 											<li> <a href="index.php?action=logout"><i class="fa fa-sign-out"></i>Logout</a></li>
 										</ul>
 									</li>
