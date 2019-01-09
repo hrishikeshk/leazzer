@@ -289,17 +289,28 @@ function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $
 
   $arr_len = count($facility_unit_amenities);
   $review_count = fetch_review_count($facility_id);
-  echo '<tr><td style="width:900px;padding-left:400px">';
+  echo '<tr><td style="width:900px;padding-left:100px">';
   $min_num = min_ints($show_upfront, $arr_len);
   if($min_num > 0){
     echo '<div style="text-align:left;font-weight:bold">Highlights</div>';
   }
-	for($i = 0; $i < $min_num; $i++){
+
+  echo '<table><tr><td>';
+
+	for($i = 0; $i < $min_num/2; $i++){
 	  $amenity_w_g = explode("|", $facility_unit_amenities[$i]);
     $amenity = htmlspecialchars($amenity_w_g[1], ENT_QUOTES);
 	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
 		echo '  '.$amenity.'<br />';
 	}
+	echo '</td><td>';
+	for($i = $min_num / 2 + 1; $i < $min_num; $i++){
+	  $amenity_w_g = explode("|", $facility_unit_amenities[$i]);
+    $amenity = htmlspecialchars($amenity_w_g[1], ENT_QUOTES);
+	  echo '<img src="images/gtick.png" style="vertical-align: left;width:10px;height:10px" />';
+		echo '  '.$amenity.'<br />';
+	}
+  echo '</tr></table>';
 
 	echo '<div id="unit_more_amenities'.$facility_id.'" style="display:none">';
 	for($i = $show_upfront; $i < $arr_len; $i++){
@@ -348,7 +359,11 @@ function show_unit_detail($arrFU, $facility_id, $rdays, $ua, $facilityName, $fac
 	  $show_fire = 'visibility:visible';
 	}
 	
-	echo '<br /><table style='.$show_fire.'><tr><td style="font-size:.9em;white-space: nowrap;"><img class="blink-image" src="images/fire.png" style="width:20px;height:20px;visibility:inherit" />'.$ua[0].'<img class="blink-image" src="images/fire.png" style="width:20px;height:20px;visibility:inherit" /></td></tr></table>';
+	echo '<br /><table style='.$show_fire.'><tr><td style="font-size:.9em;white-space: nowrap;"><img class="blink-image" src="images/fire.png" style="width:20px;height:20px;visibility:inherit" />';
+	if(count($ua) > 0){
+		echo $ua[0];
+	}
+	echo '<img class="blink-image" src="images/fire.png" style="width:20px;height:20px;visibility:inherit" /></td></tr></table>';
 	////echo '<br /><div style='.$show_fire.'><div class="blink-image" style="margin-bottom:10px;"><img src="images/fire.png" style="width:20px;height:20px;visibility:inherit" /></div>'.$ua[0].'<div class="blink-image" style="margin-bottom:10px;"><img src="images/fire.png" style="width:20px;height:20px;visibility:inherit" /></div></div>';
 	////echo '<div class="blink-image" style="margin-bottom:10px"><a href="javascript:popupMoreLessAmenities(\''.htmlspecialchars($facilityName, ENT_QUOTES).'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="'.$show_fire.'"><img src="images/fire.png" title="Click For Unit Amenities !" style="width:20px;height:20px;visibility:inherit"></a></div>';
 

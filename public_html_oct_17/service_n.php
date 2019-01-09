@@ -82,7 +82,7 @@ if(isset($_POST['action'])){
 						
 			echo '</td><tr><td colspan=2 style="padding:0;border-left:1px solid #ddd;">';
 
-			show_units($facility_id, $unit_info_arr, 5, $arr['reservationdays'], $from_unit_amenities, $arr['title'], $facility_unit_amenities);
+			show_units($facility_id, $unit_info_arr, 4, $arr['reservationdays'], $from_unit_amenities, $arr['title'], $facility_unit_amenities);
 
 			echo'</td></tr></table>';
 		}
