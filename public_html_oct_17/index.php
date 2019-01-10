@@ -65,9 +65,9 @@ https://stackoverflow.com/questions/4195937/what-are-some-good-php-performance-t
 single quotes preferred over double quotes
 mark functions static explicitly
 use var instead of count(array) in loops
-php version upgrade
-profile to know laggards and bottlenecks.
-ensure unique js and css libs download and use.
+- php version upgrade
+- profile to know laggards and bottlenecks.
+- ensure unique js and css libs download and use.
 --
 https://security.stackexchange.com/questions/66252/encodeuricomponent-in-a-unquoted-html-attribute
 https://phpsecurity.readthedocs.io/en/latest/Cross-Site-Scripting-(XSS).html

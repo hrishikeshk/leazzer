@@ -25,7 +25,9 @@ RewriteRule ^(.*)$ https://www.leazzer.com/$1 [R,L]
   ExpiresByType application/x-font-woff   "access plus 1 month"
   ExpiresByType font/opentype             "access plus 1 month"
   ExpiresByType image/svg+xml             "access plus 1 month"
-
+  ExpiresByType font/woff2                "access plus 1 month"
+  ExpiresByType font/woff                 "access plus 1 month"
+  
 # CSS and JavaScript
   ExpiresByType application/javascript    "access plus 1 week"
   ExpiresByType text/css                  "access plus 1 week"

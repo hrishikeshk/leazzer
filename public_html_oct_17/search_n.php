@@ -38,12 +38,7 @@
 		</div>
 	</div>
 </div>
-<div class="copyright">
-	<div class="container">
-		<p>© <?php echo date("Y",time());?> Leazzer. All rights reserved | <a href="/global_footer.php">Privacy Policy</a> | <a href="/global_footer_tu.php">Terms of use</a>
-    </p>
-	</div>
-</div>
+
 <script src="js/jquery.min.js"></script>
 <script src="js/jquery.easing.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
@@ -70,6 +65,13 @@
 <link href="admin/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />
 <script type="text/javascript" src="admin/js/jquery.dataTables.min.js"></script>
 <!-- link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" / -->
+
+<div class="copyright">
+	<div class="container">
+		<center><p>© <?php echo date("Y",time());?> Leazzer. All rights reserved | <a href="/global_footer.php">Privacy Policy</a> | <a href="/global_footer_tu.php">Terms of use</a>
+    </p></center>
+	</div>
+</div>
 
 <script>
 
