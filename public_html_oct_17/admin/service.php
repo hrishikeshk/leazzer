@@ -26,6 +26,15 @@ if(isset($_POST['action'])){
 					 "[-]".$arr['city']."[-]".$arr['state']."[-]".$arr['zip']."[-]".$arr['searchable']."[-]".$arr['status'];
 		}
 	}
+		if($_POST['action'] == "getcard"){
+		$res = mysqli_query($conn,"select  M.title as title, C.stripe_id as stripe_id from facility_master M, facility_owner O, owner_card C where M.facility_owner_id=O.auto_id and O.auto_id=C.owner_id and M.id='".$_POST['id']."'");
+		if(mysqli_num_rows($res) == 0){
+		  echo "[-]";
+		}
+		else if($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
+			echo $arr['stripe_id']."[-]".$arr['title'];
+		}
+	}
 	if($_POST['action'] == "getcustomer"){
 		$res = mysqli_query($conn,"select * from customer where id='".$_POST['id']."'");
 		if($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){

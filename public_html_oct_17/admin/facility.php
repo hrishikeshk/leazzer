@@ -78,12 +78,14 @@ if(isset($_GET['action'])){
 
 if(isset($_POST['action'])){
 	if($_POST['action'] == "update"){
-	error_log("got :".$_POST['status']." , ".$_POST['searchable']);
 		$query = "update facility_master set status='".(($_POST['status'] == 'Enabled')?1:0)."', searchable='".(isset($_POST['searchable'])?1:0)."'";
 		$query .= " where id=".$_POST['submit'];
 		error_log('Query in update: '.$query);
 		mysqli_query($conn,$query) OR die('Failed to update facility details - '.mysqli_error($conn));
 		$GError = "Edited successfully.";
+	}
+	else if($_POST['action'] == "charge"){
+	  
 	}
 }
 
@@ -96,7 +98,7 @@ if(isset($_POST['action'])){
 				 		<a href="<?php echo $_SERVER['PHP_SELF']."?action=export"; ?>" class="hvr-ripple-out" style="background:#68AE00;color:#FFF;">Export</a>
 				 </td></tr>
   			</table>
-  		<!---START-->
+  		<!---START EDIT-->
 				<div id="myModal" class="modal fade" role="dialog">
 				  <div class="modal-dialog">
 				    <!-- Modal content-->
@@ -135,7 +137,40 @@ if(isset($_POST['action'])){
 						</form>
 				  </div>
 				</div>
-			<!---END-->
+			<!---END EDIT-->
+			  		<!---START CHARGE-->
+				<div id="myModalCharge" class="modal fade" role="dialog">
+				  <div class="modal-dialog">
+				    <!-- Modal content-->
+				    <form method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>" enctype="multipart/form-data">
+				    <div class="modal-content">
+				      <div class="modal-body">
+				        <p>
+									<center>
+										<br>
+										<table id="chargeFN" style="width:90%">
+												<tr>
+													<td style="vertical-align: top;text-align: right;width:30%;"><b>Facility Name :&nbsp;</b></td>
+													<td ><input class="form-control" placeholder="Facility Name" type="text" name="facility_name" id="facility_name" required style="margin-bottom:0px;display:inline;width:100%;" readonly><br><br></td>
+													</tr>
+													<tr><td style="vertical-align: top;text-align: right;width:30%;"><b>Amount :&nbsp;</b></td>
+													<td><textarea class="form-control" placeholder="Amount" name="amount" id="amount" 
+													style="margin-bottom:0px;display:inline;width:70%;height: 25px;"></textarea><br><br></td></tr>
+										</table>
+										<input type="hidden" name="action" id="action" value="Charge">
+										<b id="noCard" style=""display:hidden">No credit cards available for this facility !</b>
+									</center>
+				        </p>
+				      </div>
+				      <div class="modal-footer">
+				      	<button class="btn btn-primary" name="submitCharge" id="submitCharge" value="Charge" style="background:#68AE00;border-color:#68AE00;">Charge</button>
+				        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+				      </div>
+				    </div>
+						</form>
+				  </div>
+				</div>
+			<!---END CHARGE-->
 				<?php
 					if($GError!=""){
 						echo "<div class=\"alert alert-info\" role=\"alert\">";
@@ -150,6 +185,7 @@ if(isset($_POST['action'])){
 						<th width=50px>Id</th>
 						<th>Company Name</th>
 						<th width=30px>Status</th>
+						<th width=30px>Charge</th>
 						<th width=20px>Edit</th></tr>
 					</thead>
 				    </tbody>
@@ -160,8 +196,7 @@ if(isset($_POST['action'])){
 <link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />
 <script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 <script type="text/javascript">
-$(document).ready(function()
-{
+$(document).ready(function(){
     $('#datatable').DataTable({
     	 "responsive": true,
     	 "processing": true,
@@ -184,6 +219,13 @@ $(document).ready(function()
 								return (data==1?"Yes":"No");
 							}
 						},
+						{"data": "id",
+            	"render":function(data,type,row,meta)
+            	{
+            	  $btn = "<a href=\"#\" data-toggle=\"modal\" data-target=\"#myModalCharge\" onclick=\"chargefacility("+data+")\"><i class=\"fa fa-pencil\"></i></a>";
+								return $btn;
+							}
+						},
             {"data": "id",
             	"render":function(data,type,row,meta)
             	{
@@ -192,18 +234,38 @@ $(document).ready(function()
 						}]
     });
 });
-$("#myModal").on("hidden.bs.modal", function () 
-{
+$("#myModal").on("hidden.bs.modal", function (){
     resetLayout();
-});			
-function resetLayout()
-{
+});
+$("#myModalCharge").on("hidden.bs.modal", function (){
+    resetLayout();
+});
+function resetLayout(){
 	document.getElementById("email").value = "";
 	document.getElementById("details").innerHTML = "";
 	document.getElementById("searchable").checked = true;
 	document.getElementById("status").value = "Enabled";
 	document.getElementById("action").value = "update";
 	document.getElementById("submit").innerHTML = "update";
+	document.getElementById("facility_name").value = "";
+	document.getElementById("amount").innerHTML = "";
+	document.getElementById("submitCharge").innerHTML = "update";
+}
+
+function chargefacility(id){
+	var res = ajaxcall("action=getcard&id="+id);
+	var resArr = res.split("[-]");
+	if(resArr[0].length == 0){
+	  resetLayout();
+  	document.getElementById("chargeFN").style.display="none";
+  	document.getElementById("noCard").style.display="block";
+  	document.getElementById("submitCharge").style.display="none";
+	}
+	else{
+	  document.getElementById("facility_name").value = resArr[1];
+	  document.getElementById("action").value = "Charge";
+  	document.getElementById("submitCharge").innerHTML = "Charge";
+	}
 }
 
 function editfacility(id){
