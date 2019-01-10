@@ -75,6 +75,19 @@ https://phpsecurity.readthedocs.io/en/latest/Cross-Site-Scripting-(XSS).html
 https://stackoverflow.com/questions/60174/how-can-i-prevent-sql-injection-in-php
 https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet
 
+--
+https://stripe.com/docs/saving-cards
+https://stripe.com/docs/stripe-js
+https://stripe.com/docs/sources/customers
+https://stripe.com/docs/error-codes
+https://stripe.com/docs/api/customers/retrieve?lang=curl
+https://stripe.com/docs/stripe-js/elements/quickstart#setup
+https://stripe.com/docs/stripe-js/reference
+https://github.com/stripe/elements-examples/#example-2
+https://github.com/stripe/elements-examples/blob/master/css/example2.css
+https://github.com/stripe/elements-examples/blob/master/js/example2.js
+https://github.com/stripe/elements-examples/blob/master/js/index.js
+
 -->
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
         async defer></script>

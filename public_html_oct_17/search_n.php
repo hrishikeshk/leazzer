@@ -49,6 +49,28 @@
 <script src="js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" />
 <script type="text/javascript" src="admin/js/bootstrap-datepicker.js"></script>
+
+<link href="facility/css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
+<link href="facility/css/style.css" rel="stylesheet" type="text/css" media="all"/>
+<!--script src="facility/js/jquery-2.1.1.min.js"></script -->
+<link href="facility/css/font-awesome.css" rel="stylesheet">
+<link href='facility/fonts/fonts.css' rel='stylesheet' type='text/css'>
+<!-- script src="facility/js/Chart.min.js"></script -->
+<!--skycons-icons-->
+<!-- script src="facility/js/skycons.js"></script -->
+<link href="facility/css/demo-page.css" rel="stylesheet" media="all">
+<link href="facility/css/hover.css" rel="stylesheet" media="all">
+
+<!-- script src="js/jquery.min.js"></script -->
+<!-- script src="js/jquery.easing.min.js"></script -->
+<!-- script src="js/bootstrap.min.js"></script -->
+<!-- link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" / -->
+<!-- script type="text/javascript" src="admin/js/bootstrap-datepicker.js"></script -->
+
+<link href="admin/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />
+<script type="text/javascript" src="admin/js/jquery.dataTables.min.js"></script>
+<!-- link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" / -->
+
 <script>
 
 <?php
