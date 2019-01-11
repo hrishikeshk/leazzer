@@ -682,22 +682,32 @@ function calc_from_amenity_dict($filter_opt_ids){
 	for($i = 1; $i < count($filter_opt_ids); $i++){
 	  $opt .= ', '.$filter_opt_ids[$i];
 	}
-		  
-	$resO = mysqli_query($conn,"select equivalent from amenity_dictionary where option_id in (".mysqli_real_escape_string($conn, $opt).")");
+
+	$resO = mysqli_query($conn,"select option_id, equivalent from amenity_dictionary where option_id in (".mysqli_real_escape_string($conn, $opt).")");
 	$ret = array();
   while($arrO = mysqli_fetch_array($resO,MYSQLI_ASSOC)){
-  	$ret[] = $arrO['equivalent'];
+    if(array_key_exists($arrO['option_id'], $ret) == false)
+      $ret[$arrO['option_id']] = array();
+  	$ret[$arrO['option_id']][] = $arrO['equivalent'];
   }
   return $ret;
 }
 
 function eval_filters($facility_unit_amenities, $filter_dict_opts){
-  //if(count($filter_dict_opts) == 0)
-    //return true;
+  foreach($filter_dict_opts as $opt_id => $equivalent_arr){
+    $b = eval_filters_new($facility_unit_amenities, $equivalent_arr);
+    if($b === false)
+      return false;
+  }
+  return true;
+}
+
+function eval_filters_new($facility_unit_amenities, $filter_dict_opts){
   for($i = 0; $i < count($filter_dict_opts); $i++){
     for($j = 0; $j < count($facility_unit_amenities); $j++){
-      if((stristr($facility_unit_amenities[$j], $filter_dict_opts[$i]) !== FALSE) || (stristr($filter_dict_opts[$i], $facility_unit_amenities[$j]) !== FALSE))
+      if((stristr($facility_unit_amenities[$j], $filter_dict_opts[$i]) !== FALSE) || (stristr($filter_dict_opts[$i], $facility_unit_amenities[$j]) !== FALSE)){
         return true;
+      }
     }
   }
   return false;

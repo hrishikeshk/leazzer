@@ -142,7 +142,7 @@ $(document).ready(function(){
   <?php
   	echo 'var res = ajaxcall_search(\''.relay_posts().'\');';
   ?>
-	$('#searchmain').html(res);
+	/*$('#searchmain').html(res);
 	
 	$('.datepicker').datepicker({
      	format: 'mm/dd/yyyy',
@@ -159,7 +159,7 @@ $(document).ready(function(){
 	  	autoclose:true
     });
 	});
-	
+	*/
 });
 
 function ajaxcall_search(datastring){
@@ -170,9 +170,26 @@ function ajaxcall_search(datastring){
     		url:"search_main.php",
     		data:datastring,
     		cache:false,
-    		async:false,
+    		async:true,
     		success: function(result){		
    				 	res = result;
+   				 	$('#searchmain').html(res);
+	
+          	$('.datepicker').datepicker({
+               	format: 'mm/dd/yyyy',
+               	startDate: new Date(),
+            		autoclose:true
+            });
+            $('#datatable').DataTable({
+            		"aaSorting": []
+            });
+          	$('#datatable').on('draw.dt', function (){ 
+            	$('.datepicker').datepicker({
+               	format: 'mm/dd/yyyy',
+               	startDate: new Date(),
+          	  	autoclose:true
+              });
+          	});
    		 	},
    		 	error: function(err){
    		 	    alert('Failed to invoke serverside function(in search)... Please try again in some time');
