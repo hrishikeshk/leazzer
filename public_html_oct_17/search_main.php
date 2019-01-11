@@ -433,7 +433,8 @@ function cmp($a, $b) {
 			
 			usort($results_arr, 'cmp');
 			
-			for($i = 0; $i < count($results_arr); $i++){
+			$num_results = count($results_arr);
+			for($i = 0; $i < $num_results; $i++){
 			  show_results($results_arr[$i], $filter_dict_opts);
 			}
 		?>
