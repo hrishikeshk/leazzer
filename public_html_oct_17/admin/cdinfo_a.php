@@ -1,6 +1,6 @@
 <?php
 $GError="";
-include('header.php');
+include('header_cc.php');
 include('../sql.php');
 
 function stripe_curl($user, $url, $posts){
@@ -31,7 +31,7 @@ if(isset($_POST['stripeToken'])){
   $dev_ret = json_decode($ret, true);
   */
   //error_log($dev_ret['id'].' : '.$dev_ret['object'].' : '.$dev_ret['created'].' : '.$dev_ret['description'].' : '.$dev_ret['email'].' : '.$dev_ret['sources']['data'][0]);
-  header("Location: dashboard.php");
+  header("Location: facility.php");
 }
 
 ?>
@@ -41,16 +41,16 @@ function ajaxcall_self(form, datastring){
     $.ajax
     ({	
     		type:"POST",
-    		url:"cdinfo.php",
+    		url:"cdinfo_a.php",
     		data:datastring,
     		cache:false,
     		async:true,
     		success: function(result){		
    				 	res = result;
-   				 	form.querySelector("#s_message").innerText = 'Succesfully saved your credit card details.';
+   				 	form.querySelector("#s_message").innerText = 'Succesfully saved the credit card details.';
    		 	},
    		 	error: function(err){
-   		 	    alert('Failed to invoke serverside function(in cdinfo)... Please try again in some time');
+   		 	    alert('Failed to invoke serverside function(in cdinfo_a)... Please try again in some time');
    		 	    res = false;
    		 	}
     });
@@ -377,7 +377,7 @@ function ajaxcall_self(form, datastring){
   
     </script-->
 
-    <link rel="stylesheet" type="text/css" href="css/stripehelper.css" />
+    <link rel="stylesheet" type="text/css" href="../facility/css/stripehelper.css" />
 <!-- style>
 .StripeElement {
   background-color: white;

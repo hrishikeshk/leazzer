@@ -158,7 +158,11 @@ if(isset($_POST['action'])){
 													style="margin-bottom:0px;display:inline;width:70%;height: 25px;"></textarea><br><br></td></tr>
 										</table>
 										<input type="hidden" name="action" id="action" value="Charge">
-										<b id="noCard" style=""display:hidden">No credit cards available for this facility !</b>
+										<div id="noCard">
+  										<b style=""display:hidden">No credit cards available for this facility !</b>
+	  									<br />
+	  									Click to add card details for this facility <button class="btn btn-primary" name="addCard" id="addCard" value="Add Card" style="background:#68AE00;border-color:#68AE00;" onClick="return openCard();">Add Card</button>
+										</div>
 									</center>
 				        </p>
 				      </div>
@@ -240,6 +244,16 @@ $("#myModal").on("hidden.bs.modal", function (){
 $("#myModalCharge").on("hidden.bs.modal", function (){
     resetLayout();
 });
+
+function openCard(){
+  var id_source = document.getElementById("addCard");
+  if(id_source != undefined && id_source != null){
+    //var name_source = document.getElementById("facility_name");
+    window.location.href = "cdinfo_a.php?facility_id=" + id_source.value;
+  }
+  return false;
+}
+
 function resetLayout(){
 	document.getElementById("email").value = "";
 	document.getElementById("details").innerHTML = "";
@@ -257,9 +271,11 @@ function chargefacility(id){
 	var resArr = res.split("[-]");
 	if(resArr[0].length == 0){
 	  resetLayout();
+	  //document.getElementById("facility_name").value = resArr[1];
   	document.getElementById("chargeFN").style.display="none";
   	document.getElementById("noCard").style.display="block";
   	document.getElementById("submitCharge").style.display="none";
+  	document.getElementById("addCard").value=id;
 	}
 	else{
 	  document.getElementById("facility_name").value = resArr[1];

@@ -326,7 +326,7 @@ function show_amenities($facility_id, $facility_unit_amenities, $show_upfront, $
 	
 	if($arr_len > $show_upfront){
 	  //echo '<a id="switchMoreLess'.$facility_id.'" href="javascript:showMoreLessAmenities('.$facility_id.')" style="display:block"> &gt;&gt;</a>';
-	  echo '<a href="javascript:popupMoreLessAmenities(\''.htmlspecialchars($facilityName, ENT_QUOTES).'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="display:block">      &gt;&gt;</a>';
+	  echo '<a href="javascript:popupMoreLessAmenities(\''.htmlspecialchars($facilityName, ENT_QUOTES).'\', '.popup_amenities($facility_id, $facility_unit_amenities).')" style="display:block">      More &gt;&gt;</a>';
 	}
 	echo '</td></tr>';
 }
@@ -394,7 +394,7 @@ function show_units($facility_id, $arr_arr_FU, $show_upfront, $rdays, $ua_arr, $
 	
 	echo "</div>";
 	if($arr_len > $show_upfront){
-	  echo '<p> <a id="switchMoreLessUnits'.$facility_id.'" href="javascript:showMoreLessUnits('.$facility_id.')" style="display:block"> &gt;&gt;</a></p>';
+	  echo '<p> <a id="switchMoreLessUnits'.$facility_id.'" href="javascript:showMoreLessUnits('.$facility_id.')" style="display:block"> More &gt;&gt;</a></p>';
 	}
 }
 
@@ -996,11 +996,11 @@ function calculate_distance_ll($lat, $lng, $loc){
     var a_moreless = document.getElementById("switchMoreLess" + facility_id);
     if(y.style.display == "none"){
       y.style.display = "block";
-      a_moreless.innerHTML = "&lt;&lt; ";
+      a_moreless.innerHTML = " Less &lt;&lt; ";
     }
     else{
       y.style.display = "none";
-      a_moreless.innerHTML = " &gt;&gt;";
+      a_moreless.innerHTML = " More &gt;&gt;";
     }
   }
 
@@ -1065,11 +1065,11 @@ function calculate_distance_ll($lat, $lng, $loc){
     var a_moreless = document.getElementById("switchMoreLessUnits" + facility_id);
     if(y.style.display == "none"){
       y.style.display = "block";
-      a_moreless.innerHTML = "&lt;&lt; ";
+      a_moreless.innerHTML = " Less &lt;&lt; ";
     }
     else{
       y.style.display = "none";
-      a_moreless.innerHTML = " &gt;&gt;";
+      a_moreless.innerHTML = " More &gt;&gt;";
     }
   }
 
