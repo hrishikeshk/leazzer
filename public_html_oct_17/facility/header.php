@@ -10,7 +10,6 @@ if(!isset($_SESSION['lfdata']))
 	header("Location: index.php");
 
 $GError = "";
-$pwd_change = false;
 $pos = strpos($_SERVER['REQUEST_URI'],"settings.php");
 if($pos === false){
 	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['pwd']) == "excited123!"))
@@ -19,12 +18,11 @@ if($pos === false){
 else {
 	if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['pwd']) == "excited123!")){
 		$GError = "Please change your password.";
-		$pwd_change = true;
 	}
 }
 
-$pos = strpos($_SERVER['REQUEST_URI'],"profile.php");
-if($pos === false){
+$prpos = strpos($_SERVER['REQUEST_URI'],"profile.php");
+if($prpos === false){
 	//if(isset($_SESSION['lfdata']) && (trim($_SESSION['lfdata']['phone']) == ""))
 		//header("Location: profile.php");
 }
@@ -34,6 +32,16 @@ else {
 }
 
 include('../sql.php');
+
+$cdpos = strpos($_SERVER['REQUEST_URI'],"cdinfo.php");
+if($cdpos === false && $pos === false){
+  $query = "select * from owner_card where owner_id = '".$_SESSION['lfdata']['auto_id']."'";
+  $res = mysqli_query($conn, $query);
+  if(mysqli_num_rows($res) == 0){
+    header("Location: cdinfo.php");
+  }
+}
+
 ?>
 <!DOCTYPE HTML>
 <html>

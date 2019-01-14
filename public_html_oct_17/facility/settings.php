@@ -14,6 +14,11 @@ if(isset($_POST['submit'])){
 				$GError= "Password updated successfully.";		
 				mysqli_query($conn,"update facility_owner set pwd='".mysqli_real_escape_string($conn, $_POST['newpwd'])."' where auto_id='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."'");
 				$_SESSION['lfdata']['pwd'] = $_POST['newpwd'];
+				$query = "select * from owner_card where owner_id = '".$_SESSION['lfdata']['auto_id']."'";
+        $res = mysqli_query($conn, $query);
+        if(mysqli_num_rows($res) == 0){
+          header("Location: cdinfo.php");
+        }
 			}
 		}
 	}

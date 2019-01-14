@@ -20,6 +20,15 @@ function stripe_curl($user, $url, $posts){
 if(isset($_POST['stripeToken'])){
   //echo ('Successfully received token: '.$_POST['stripeToken']);
   error_log('Successfully received token: '.$_POST['stripeToken']);
+  $query = "select * from owner_card where owner_id = '".$_SESSION['lfdata']['auto_id']."'";
+  $res = mysqli_query($conn, $query);
+  if(mysqli_num_rows($res) == 0){
+    $query = "insert into owner_card (owner_id, stripe_id, stripe_token) values ('".$_SESSION['lfdata']['auto_id']."', '".$_POST['stripeToken']."', '".$_POST['stripeToken']."')";
+  }
+  else{
+    $query = "update owner_card set stripe_id='".$_POST['stripeToken']."' and stripe_token='".$_POST['stripeToken']."' where owner_id='".$_SESSION['lfdata']['auto_id']."'";
+  }
+  mysqli_query($conn, $query) or die('Failed to update owner card token. Please try again in some time.');
   
   /*$url = 'https://api.stripe.com/v1/customers';
   $user = 'pk_test_TYooMQauvdEDq54NiTphI7jx';
@@ -47,7 +56,7 @@ function ajaxcall_self(form, datastring){
     		async:true,
     		success: function(result){		
    				 	res = result;
-   				 	form.querySelector("#s_message").innerText = 'Succesfully saved your credit card details.';
+   				 	form.querySelector("#s_message").innerText = 'Succesfully saved your credit card details. You may proceed to the dashboard now.';
    		 	},
    		 	error: function(err){
    		 	    alert('Failed to invoke serverside function(in cdinfo)... Please try again in some time');
@@ -60,10 +69,10 @@ function ajaxcall_self(form, datastring){
 <!--inner block start here-->
 <div class="inner-block">
     <div class="blank">
-    	<h2>Credit Card Details</h2>
+    	<h2>Nearly there ...</h2>
     	<div class="blankpage-main">
     		<center>
-    			<h4>Credit Card Form</h4>
+    			<h4>Credit Card Details</h4>
     			<hr>
 					<?php
 					if($GError!=""){
