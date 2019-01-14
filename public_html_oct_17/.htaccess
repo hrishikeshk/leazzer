@@ -56,3 +56,7 @@ RewriteRule ^(.*)$ https://www.leazzer.com/$1 [R,L]
   php_flag  session.cookie_httponly On
 </IfModule>
 
+<IfModule mod_headers.c>
+  Header set Connection keep-alive
+</IfModule>
+

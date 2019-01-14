@@ -1,3 +1,4 @@
+
 <?php
 /*
 if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
@@ -331,6 +332,30 @@ existing - AIzaSyCvc_18HEgG7qB9nWPE9KlxVOFW0r4RJPM
 
 -->
 <script type="text/javascript" src="https://my.hellobar.com/0a1f374fa79bc3ef32b08e041d0e29da4e404a80.js"></script>
+<!-- Quantcast Tag -->
+<script type="text/javascript">
+var _qevents = _qevents || [];
+
+(function() {
+var elem = document.createElement('script');
+elem.src = (document.location.protocol == "https:" ? "https://secure" : "http://edge") + ".quantserve.com/quant.js";
+elem.async = true;
+elem.type = "text/javascript";
+var scpt = document.getElementsByTagName('script')[0];
+scpt.parentNode.insertBefore(elem, scpt);
+})();
+
+_qevents.push({
+qacct:"p-KKeGf5CD2xz2v"
+});
+</script>
+
+<noscript>
+<div style="display:none;">
+<img src="//pixel.quantserve.com/pixel/p-KKeGf5CD2xz2v.gif" border="0" height="1" width="1" alt="Quantcast"/>
+</div>
+</noscript>
+<!-- End Quantcast tag -->
 </body>
 </html>
 
