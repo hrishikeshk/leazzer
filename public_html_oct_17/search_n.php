@@ -79,69 +79,81 @@
   
   function relay_posts(){
     $query_str = '';
-  	if(isset($_POST['search']))
+    $qa = false;
+  	if(isset($_POST['search'])){
   	  $query_str .= "search=".htmlspecialchars($_POST['search'], ENT_QUOTES);
+  	  $qa = true;
+  	}
   	if(isset($_POST['action'])){
-  	  if(strlen($query_str) > 0)
+  	  if($qa === true)
   	    $query_str .= '&';
   	  $query_str .= "action=".htmlspecialchars($_POST['action'], ENT_QUOTES);
+  	  $qa = true;
   	}
   	if(isset($_POST['id'])){
-  	  if(strlen($query_str) > 0)
+  	  if($qa === true)
   	    $query_str .= '&';
   	  $query_str .= "id=".htmlspecialchars($_POST['id'], ENT_QUOTES);
+  	  $qa = true;
   	}
   	if(isset($_POST['options'])){
-  	  if(strlen($query_str) > 0)
+  	  if($qa === true)
   	    $query_str .= '&';
   	  $query_str .= "options_s=".serialize($_POST['options']);
+  	  $qa = true;
   	}
   	else if(isset($_POST['options_s'])){
-  	  if(strlen($query_str) > 0)
+  	  if($qa === true)
   	    $query_str .= '&';
   	  $query_str .= "options_s=".$_POST['options_s'];
+  	  $qa = true;
   	}
   	if(isset($_GET['search']))
   	  $query_str .= "search=".htmlspecialchars($_GET['search'], ENT_QUOTES);
   	if(isset($_GET['action'])){
-  	  if(strlen($query_str) > 0)
+  	  if($qa === true)
   	    $query_str .= '&';
   	  $query_str .= "action=".htmlspecialchars($_GET['action'], ENT_QUOTES);
+  	  $qa = true;
   	}
   	if(isset($_GET['id'])){
-  	  if(strlen($query_str) > 0)
+  	  if($qa === true)
   	    $query_str .= '&';
   	  $query_str .= "id=".htmlspecialchars($_GET['id'], ENT_QUOTES);
+  	  $qa = true;
   	}
   	if(isset($_GET['options'])){
-  	  if(strlen($query_str) > 0)
+  	  if($qa === true)
   	    $query_str .= '&';
   	  $query_str .= "options_s=".serialize($_GET['options']);
+  	  $qa = true;
   	}
   	else if(isset($_GET['options_s'])){
-  	  if(strlen($query_str) > 0)
+  	  if($qa === true)
   	    $query_str .= '&';
   	  $query_str .= "options_s=".$_GET['options_s'];
+  	  $qa = true;
   	}
   	
   	if(isset($_POST['slat'])){
-  	  if(strlen($query_str) > 0)
+  	  if($qa === true)
   	    $query_str .= '&';
   	  $query_str .= "slat=".htmlspecialchars($_POST['slat'], ENT_QUOTES);
+  	  $qa = true;
   	}
   	if(isset($_POST['slng'])){
-  	  if(strlen($query_str) > 0)
+  	  if($qa === true)
   	    $query_str .= '&';
   	  $query_str .= "slng=".htmlspecialchars($_POST['slng'], ENT_QUOTES);
   	}
   	return $query_str;
   }
 ?>
-
-$(document).ready(function(){
-  <?php
+<?php
   	echo 'var res = ajaxcall_search(\''.relay_posts().'\');';
   ?>
+$(document).ready(function(){
+  
 	/*$('#searchmain').html(res);
 	
 	$('.datepicker').datepicker({

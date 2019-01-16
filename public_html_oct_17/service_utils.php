@@ -745,6 +745,10 @@ function calculate_distance_ll($lat, $lng, $loc){
   return round((3959 * acos(cos(deg2rad($ll[0])) * cos(deg2rad($lat)) * cos(deg2rad($lng)- deg2rad($ll[1])) + sin(deg2rad($ll[0])) * sin(deg2rad($lat)))), 1);
 }
 
+function calculate_distance_ll_ll($lat, $lng, $lat2, $lng2){
+  return round((3959 * acos(cos(deg2rad($lat2)) * cos(deg2rad($lat)) * cos(deg2rad($lng)- deg2rad($lng2)) + sin(deg2rad($lat2)) * sin(deg2rad($lat)))), 1);
+}
+
 ?>
 
 <style>
