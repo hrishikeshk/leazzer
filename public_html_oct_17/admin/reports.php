@@ -45,7 +45,7 @@ include('header.php');
     <div class="blank">
   		<table style="width:100%;"><tr><td style="width:50%;"><h2>Reports</h2></td></tr>
   		   <tr>
-  		   <td style="width:25%;text-align:center;border:1px solid black;border-radius:2px">
+  		   <td style="width:25%;text-align:center;border:1px solid black;border-radius:4px">
   		     
   		     <form name="changedpwdfrm" id="changedpwdfrm" method="post" action="javascript:show_pwd_changes();">
   		       Password Changes in Interval : <select id="chpwd_tf">
@@ -56,12 +56,12 @@ include('header.php');
   		         <option value="365">Past 1 year</option>
   		         <option value="10000">All Of Them</option>
   		       </select>
-  		       <button class="btn btn-success" name="submit" value="View Changed Pwd" style="background:#68AE00;border-color:#68AE00;">View Changes</button>
+  		       <button id="d0_btn" class="btn btn-success" name="submit" value="View Changed Pwd" style="background:#68AE00;border-color:#68AE00;">View Changes</button>
   		     </form>
   		   </td>
-  			 <td style="width:25%;text-align:right;">
+  			 <!-- td style="width:25%;text-align:right;">
 				 		<a href="<?php echo $_SERVER['PHP_SELF']."?action=export"; ?>" class="hvr-ripple-out" style="background:#68AE00;color:#FFF;">Export</a>
-				 </td></tr>
+				 </td --></tr>
   			</table>
 				<?php
 					if($GError!=""){
@@ -96,9 +96,9 @@ $(document).ready(function(){
 
 function show_pwd_changes(){
   var tf_select = document.getElementById('chpwd_tf');
-  $('#datatable0').DataTable({
-       "retrieve": true,
+  var table = $('#datatable0').DataTable({
        "paging": false,
+       "searching": false,
        "destroy" : true,
     	 "responsive": true,
     	 "processing": true,
@@ -107,7 +107,7 @@ function show_pwd_changes(){
             url: 'rservice.php?chpwd_tf=' + tf_select.value,
             type: 'POST'
         },
-       "columns":[            
+       "columns":[
 						{"data": "auto_id",
 							"render":function(data,type,row,meta)
 							{
@@ -135,6 +135,10 @@ function show_pwd_changes(){
 								return data;
 							}
 						}]
+    });
+    
+    $('#d0_btn').on('click', function() {
+        table.ajax.reload();
     });
 }
 
