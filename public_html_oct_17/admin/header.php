@@ -59,7 +59,8 @@ $GError = "";
 											<li> <a href="units.php"><i class="fa fa-cube"></i> Units</a> </li> 
 											<li> <a href="options.php"><i class="fa fa-eye"></i> Options</a> </li> 
 											<!--<li> <a href="button.php"><i class="fa fa-comments"></i> Button</a> </li>-->
-											<li> <a href="settings.php"><i class="fa fa-cog"></i> Settings</a> </li> 
+											<li> <a href="settings.php"><i class="fa fa-cog"></i> Settings</a> </li>
+											<li> <a href="reports.php"><i class="fa fa-cog"></i> Reports</a> </li> 
 											<li> <a href="index.php?action=logout"><i class="fa fa-sign-out"></i> Logout</a> </li>
 										</ul>
 									</li>

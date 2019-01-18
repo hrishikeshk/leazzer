@@ -189,6 +189,7 @@ if(isset($_POST['action'])){
 						<th width=50px>Id</th>
 						<th>Company Name</th>
 						<th width=30px>Status</th>
+						<th>Email</th>
 						<th width=30px>Charge</th>
 						<th width=20px>Edit</th></tr>
 					</thead>
@@ -223,6 +224,12 @@ $(document).ready(function(){
 								return (data==1?"Yes":"No");
 							}
 						},
+						{"data": "emailid",
+            	"render":function(data,type,row,meta)
+            	{
+								return data;
+							}
+						},
 						{"data": "id",
             	"render":function(data,type,row,meta)
             	{
@@ -238,6 +245,7 @@ $(document).ready(function(){
 						}]
     });
 });
+
 $("#myModal").on("hidden.bs.modal", function (){
     resetLayout();
 });
