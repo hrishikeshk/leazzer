@@ -15,11 +15,14 @@ if(isset($_POST['submit'])){
 				error_log("pwd before: ".$_POST['newpwd']);
 				error_log("pwd after: ".mysqli_real_escape_string($conn, $_POST['newpwd']));
 				mysqli_query($conn,"update customer set pwd='".mysqli_real_escape_string($conn, $_POST['newpwd'])."' where id='".mysqli_real_escape_string($conn, $_SESSION['lcdata']['id'])."'");
-				$_SESSION['lcdata']['pwd'] = $_POST['newpwd'];
+				////$_SESSION['lcdata']['pwd'] = $_POST['newpwd'];
+				unset($_SESSION['lcdata']);
+				header("Location: index.php");
 			}
 		}
 	}
 }
+
 ?>
 <!--inner block start here-->
 <div class="inner-block">
