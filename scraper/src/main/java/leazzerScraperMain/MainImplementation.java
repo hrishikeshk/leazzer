@@ -47,6 +47,7 @@ public class MainImplementation implements Runnable {
     static void processOneArgMain(String arg, WebClient wc, int pagenum, int maxPages){
         try{
             Logger.println("Fetching now page# " + pagenum + "... " + arg);
+            //HtmlPage hp2 = wc.getPage(new URL(consSearchURL(arg, pagenum)));
             HtmlPage hp = wc.getPage(new URL(consSearchURL(arg, pagenum)));
             ParsedPage pp = MainSearchPageProcessor.extractFacilities(hp, pagenum == 1);
             if(pagenum == 1 && pp != null && pp.pagination != null){
@@ -58,8 +59,8 @@ public class MainImplementation implements Runnable {
 
             Logger.println("Finished processing page# " + pagenum + "... for " + arg);
             if(maxPages == -1) {
-                if(pp.pagination == null){
-                    Logger.println("Error: Did not find pages information in page. Persisted first page and now exiting...");
+                if(pp == null || pp.pagination == null){
+                    Logger.println("Error: Did not find pages information in page. Checked first page and now exiting...");
                     return;
                 }
                 Pagination pageInfo = pp.pagination;
@@ -79,7 +80,8 @@ public class MainImplementation implements Runnable {
 
     static int processArgs(String[] va){
         try{
-            WebClient wc = new WebClient(BrowserVersion.CHROME);
+            ////WebClient wc = new WebClient(BrowserVersion.FIREFOX_60);
+            WebClient wc = new WebClient(BrowserVersion.EDGE);
             wc.getCookieManager().setCookiesEnabled(true);
             wc = new WebClientConfig().setIgnoreMost(wc);
             for(int i = 0; i < va.length; ++i){

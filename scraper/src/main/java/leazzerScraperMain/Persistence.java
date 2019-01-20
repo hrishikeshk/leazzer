@@ -99,7 +99,7 @@ public class Persistence {
         listKV.add(new NameValuePair("distance", String.valueOf(f.distance)));
         listKV.add(new NameValuePair("lowest_price", String.valueOf(f.lowestPrice)));
         listKV.add(new NameValuePair("facility_promo", f.facilityPromo));
-
+        listKV.add(new NameValuePair("sc_version", "v1.0.1.2.2019"));
         listKV.add(new NameValuePair("street", f.location.streetAddress));
         listKV.add(new NameValuePair("locality", f.location.addressLocality));
         listKV.add(new NameValuePair("region", f.location.addressRegion));

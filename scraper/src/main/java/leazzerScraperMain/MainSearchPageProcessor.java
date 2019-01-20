@@ -276,10 +276,12 @@ public class MainSearchPageProcessor {
     }
 
     public static void fetchDetailsAndPersist(String location, WebClient wc, ParsedPage pp){
-        Facility[] facs = pp.facilities;
-        for(int i = 0; i < facs.length; ++i){
-            Facility f = facs[i];
-            processOneFacilityDetail(f, wc);
+        if(pp != null && pp.facilities != null) {
+            Facility[] facs = pp.facilities;
+            for (int i = 0; i < facs.length; ++i) {
+                Facility f = facs[i];
+                processOneFacilityDetail(f, wc);
+            }
         }
     }
 }
