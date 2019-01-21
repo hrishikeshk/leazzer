@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jan 04, 2019 at 05:28 AM
+-- Generation Time: Jan 21, 2019 at 07:28 AM
 -- Server version: 5.6.39-cll-lve
 -- PHP Version: 5.6.30
 
@@ -21,7 +21,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `leazzer`
 --
-DROP DATABASE IF EXISTS `leazzer`;
 CREATE DATABASE IF NOT EXISTS `leazzer` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
 USE `leazzer`;
 
@@ -37,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `admin` (
   `username` varchar(200) NOT NULL,
   `password` varchar(200) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -63,8 +62,9 @@ CREATE TABLE IF NOT EXISTS `amenity_dictionary` (
   `auto_id` int(11) NOT NULL AUTO_INCREMENT,
   `option_id` int(11) NOT NULL,
   `equivalent` varchar(100) NOT NULL,
-  PRIMARY KEY (`auto_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  PRIMARY KEY (`auto_id`),
+  KEY `optId_amenityDict` (`option_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=40 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -83,7 +83,7 @@ CREATE TABLE IF NOT EXISTS `customer` (
   `phone` varchar(200) COLLATE utf8_unicode_ci DEFAULT NULL,
   `status` varchar(20) COLLATE utf8_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -120,7 +120,7 @@ CREATE TABLE IF NOT EXISTS `facility` (
   `coupon_desc` varchar(300) COLLATE utf8_unicode_ci NOT NULL,
   `sub_images` varchar(800) COLLATE utf8_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=362 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS `facility_images` (
   `path` varchar(127) NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -189,8 +189,8 @@ CREATE TABLE IF NOT EXISTS `facility_master` (
   `pdismofm` int(11) DEFAULT NULL,
   PRIMARY KEY (`auto_id`),
   UNIQUE KEY `id` (`id`),
-  KEY `slatlng` (`searchable`) USING BTREE
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  KEY `slatlng` (`searchable`,`lat`,`lng`,`city`,`state`) USING BTREE
+) ENGINE=MyISAM AUTO_INCREMENT=1214 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -208,9 +208,10 @@ CREATE TABLE IF NOT EXISTS `facility_owner` (
   `emailid` varchar(200) NOT NULL,
   `logintype` varchar(100) DEFAULT NULL,
   `phone` varchar(200) DEFAULT NULL,
+  `ch_pwd_ts` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`auto_id`),
   UNIQUE KEY `emailid` (`emailid`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=559 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -225,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `forgotpwd` (
   `emailid` varchar(200) NOT NULL,
   `code` text,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -241,7 +242,7 @@ CREATE TABLE IF NOT EXISTS `image` (
   `facility_id` varchar(20) NOT NULL,
   PRIMARY KEY (`auto_id`),
   KEY `img_fac_id_2` (`facility_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=4783 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -254,7 +255,24 @@ CREATE TABLE IF NOT EXISTS `options` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `opt` varchar(200) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `owner_card`
+--
+
+DROP TABLE IF EXISTS `owner_card`;
+CREATE TABLE IF NOT EXISTS `owner_card` (
+  `auto_id` int(11) NOT NULL AUTO_INCREMENT,
+  `owner_id` int(11) NOT NULL,
+  `stripe_id` varchar(100) NOT NULL,
+  `stripe_token` varchar(100) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`auto_id`),
+  KEY `card_owner_id` (`owner_id`)
+) ENGINE=MyISAM AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -271,7 +289,7 @@ CREATE TABLE IF NOT EXISTS `reserve` (
   `fid` int(11) DEFAULT NULL,
   `units` text COLLATE utf8_unicode_ci,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=179 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -293,7 +311,7 @@ CREATE TABLE IF NOT EXISTS `review` (
   `stars` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`auto_id`),
   KEY `review_fac_id` (`facility_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=712 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -312,7 +330,7 @@ CREATE TABLE IF NOT EXISTS `unit` (
   `price_freq` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`auto_id`),
   KEY `unit_facId_size_2` (`facility_id`,`size`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=8757 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -330,7 +348,7 @@ CREATE TABLE IF NOT EXISTS `units` (
   `price` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `units_size` (`units`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=575 DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 
@@ -342,7 +360,9 @@ DROP TABLE IF EXISTS `unit_amenity`;
 CREATE TABLE IF NOT EXISTS `unit_amenity` (
   `unit_id` int(11) NOT NULL,
   `amenity` varchar(100) NOT NULL,
-  KEY `ua_unit_id_amenity` (`unit_id`,`amenity`)
+  `kind` varchar(20) DEFAULT NULL,
+  KEY `ua_unit_id_amenity` (`unit_id`,`amenity`),
+  KEY `unit_amenity_kind` (`unit_id`,`kind`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 COMMIT;
 
