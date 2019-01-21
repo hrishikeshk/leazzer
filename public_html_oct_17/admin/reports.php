@@ -48,7 +48,7 @@ include('header.php');
   		   <td style="width:25%;text-align:center;border:1px solid black;border-radius:4px">
   		     
   		     <form name="changedpwdfrm" id="changedpwdfrm" method="post" action="javascript:show_pwd_changes();">
-  		       Password Changes in Interval : <select id="chpwd_tf">
+  		       Initial Password Changes in Interval : <select id="chpwd_tf">
   		         <option value="1">Past 1 day</option>
   		         <option value="7">Past 1 week</option>
   		         <option value="15">Past 1 fortnight</option>
@@ -137,9 +137,9 @@ function show_pwd_changes(){
 						}]
     });
     
-    $('#d0_btn').on('click', function() {
-        table.ajax.reload();
-    });
+    //$('#d0_btn').on('click', function() {
+      //  table.ajax.reload();
+    //});
 }
 
 function ajaxcall(datastring){
