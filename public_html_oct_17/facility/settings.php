@@ -11,8 +11,18 @@ if(isset($_POST['submit'])){
 				$GError= "Wrong current password.";		
 			}
 			else{
-				$GError= "Password updated successfully.";		
-				mysqli_query($conn,"update facility_owner set pwd='".mysqli_real_escape_string($conn, $_POST['newpwd'])."' where auto_id='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."'");
+				$GError= "Password updated successfully.";
+				$upd_ts = false;
+				if($_POST['curpwd'] === 'excited123!' && $_POST['newpwd'] != 'excited123!'){
+				  $upd_ts = true;
+				}
+				$query = "update facility_owner set pwd='".mysqli_real_escape_string($conn, $_POST['newpwd'])."' where auto_id='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."'";
+        if($upd_ts === true){
+          $query = "update facility_owner set pwd='".mysqli_real_escape_string($conn, $_POST['newpwd'])."', ch_pwd_ts=TIMESTAMP(NOW()) where auto_id='".mysqli_real_escape_string($conn, $_SESSION['lfdata']['auto_id'])."'";
+        }
+				mysqli_query($conn, $query);
+
+        session_regenerate_id();
 				$_SESSION['lfdata']['pwd'] = $_POST['newpwd'];
 				$query = "select * from owner_card where owner_id = '".$_SESSION['lfdata']['auto_id']."'";
         $res = mysqli_query($conn, $query);
