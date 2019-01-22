@@ -25,6 +25,13 @@ $GError = "";
 <script src="js/skycons.js"></script>
 <link href="css/demo-page.css" rel="stylesheet" media="all">
 <link href="css/hover.css" rel="stylesheet" media="all">
+
+<link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />
+<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="css/datepicker.css" />
+<script type="text/javascript" src="js/bootstrap-datepicker.js"></script>
+
+
 <!--//skycons-icons-->
 </head>
 <body>	

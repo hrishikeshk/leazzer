@@ -40,6 +40,7 @@ if(isset($_GET['action'])){
 include('header.php');
 
 ?>
+
 <!--inner block start here-->
 <div class="inner-block">
     <div class="blank">
@@ -59,6 +60,17 @@ include('header.php');
   		       <button id="d0_btn" class="btn btn-success" name="submit" value="View Changed Pwd" style="background:#68AE00;border-color:#68AE00;">View Changes</button>
   		     </form>
   		   </td>
+  		   <td style="width:25%;text-align:center;border:1px solid black;border-radius:4px">
+  		     
+  		     <form name="trxfrm" id="trxfrm" method="post" action="javascript:show_trxs();">
+  		       Transactions (Reservations) <br />
+  		       From : 
+	            <input class="datepicker" id="mdate_from" name="mdate_from" type="text" placeholder="From Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;">
+	           <br />To :
+	            <input class="datepicker" id="mdate_to" name="mdate_to" type="text" placeholder="To Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;">
+  		       <button id="trx_btn" class="btn btn-success" name="submit" value="View Transactions" style="background:#68AE00;border-color:#68AE00;">View</button>
+  		     </form>
+  		   </td>
   			 <!-- td style="width:25%;text-align:right;">
 				 		<a href="<?php echo $_SERVER['PHP_SELF']."?action=export"; ?>" class="hvr-ripple-out" style="background:#68AE00;color:#FFF;">Export</a>
 				 </td --></tr>
@@ -70,7 +82,7 @@ include('header.php');
 						echo "</div>";
 					}
 				?>
-    	<div class="blankpage-main" style="padding:1em 1em;">
+    	<div id="cpass_div" class="blankpage-main" style="padding:1em 1em;display:none">
 				<table id="datatable0" class="table table-striped table-bordered" width="100%" cellspacing="0">
 					<thead>
 						<tr>
@@ -85,16 +97,94 @@ include('header.php');
 				    </tbody>
 					</table>		
     	</div>
+    	<div id="trx_div" class="blankpage-main" style="padding:1em 1em;display:none">
+				<table id="datatable1" class="table table-striped table-bordered" width="100%" cellspacing="0">
+					<thead>
+						<tr>
+						<th width=20px>Reservation Id</th>
+						<th>Customer First Name</th>
+						<th>Customer Last Name</th>
+						<th>Customer Email</th>
+						<th>Reserved From</th>
+						<th>Reserved To</th>
+						<th>Units</th>
+						<th>Facility Name</th>
+						<th>Facility Email</th></tr>
+					</thead>
+				    </tbody>
+					</table>		
+    	</div>
     </div>
 </div>
-<link href="css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />
-<script type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
-    
+  $('.datepicker').datepicker({
+     format: 'mm/dd/yyyy',
+     startDate: new Date('2017/01/01'),
+     autoclose:true
+  });
 });
 
+function show_trxs(){
+  var cpass_div = document.getElementById('cpass_div');
+  cpass_div.style.display="none";
+  var trx_div = document.getElementById('trx_div');
+  trx_div.style.display="block";
+  var from_date = document.getElementById('mdate_from');
+  var to_date = document.getElementById('mdate_to');
+  var table = $('#datatable1').DataTable({
+       "paging": false,
+       "searching": false,
+       "destroy" : true,
+    	 "responsive": true,
+    	 "processing": true,
+    	 "serverSide": true,
+    	 "ajax": {
+            url: 'rtrxs.php?from=' + from_date.value + '&to=' + to_date.value,
+            type: 'POST'
+        },
+       "columns":[
+						{"data": "id",
+							"render":function(data,type,row,meta)
+							{
+									return data;
+							}
+						},
+            {"data": "customer_firstname"},
+            {"data": "customer_lastname"},
+            {"data": "customer_email"},
+            {"data": "reservation_from"},
+            {"data": "reservation_to",
+            	"render":function(data,type,row,meta)
+            	{
+								return data;
+							}
+						},
+            {"data": "unit",
+            	"render":function(data,type,row,meta)
+            	{
+								return data;
+							}
+						},
+						{"data": "facility_name"},
+            {"data": "facility_email",
+            	"render":function(data,type,row,meta)
+            	{
+								return data;
+							}
+						}]
+    });
+    
+    //$('#d0_btn').on('click', function() {
+      //  table.ajax.reload();
+    //});
+}
+
 function show_pwd_changes(){
+  var cpass_div = document.getElementById('cpass_div');
+  cpass_div.style.display="block";
+  var trx_div = document.getElementById('trx_div');
+  trx_div.style.display="none";
   var tf_select = document.getElementById('chpwd_tf');
   var table = $('#datatable0').DataTable({
        "paging": false,

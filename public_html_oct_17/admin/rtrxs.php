@@ -8,13 +8,14 @@
 	$start  = $_POST["start"];//Paging first record indicator.
 	$length = $_POST['length'];//Number of records that the table can display in the current draw
 	
-	$query = "SELECT * FROM facility_owner where pwd <> 'excited123!' ";
-	if(isset($_GET['chpwd_tf']) && ($_GET['chpwd_tf'] != ""))
-		$query .= ' and ch_pwd_ts is not null and ch_pwd_ts >= TIMESTAMP(DATE_SUB(NOW(), INTERVAL '.$_GET['chpwd_tf'].' day))';
+	$query = "select R.id as id, C.firstname as customer_firstname, C.lastname as customer_lastname, C.emailid as customer_email, from_unixtime(R.reservefromdate, '%m/%d/%Y') as reservation_from, from_unixtime(R.reservetodate, '%m/%d/%Y') as reservation_to, R.units as unit, F.title as facility_name, O.emailid as facility_email from reserve R, facility_master F, customer C, facility_owner O where R.cid=C.id and R.fid=F.id and F.facility_owner_id = O.auto_id";
+  if(isset($_GET['from']) && $_GET['from'] != "" && isset($_GET['to']) && $_GET['to'] != "")
+		$query .= ' and R.reservefromdate >= '.date_timestamp_get(date_create_from_format('m/d/Y', $_GET['from'])).' and R.reservetodate <= '.date_timestamp_get(date_create_from_format('m/d/Y', $_GET['to']));
 	
-	$query .= "ORDER BY ".$orderBy." ".$orderType;
+	$query .= " ORDER BY ".$orderBy." ".$orderType;
 	//$query .= "ORDER BY ".$orderBy." ".$orderType." limit ".$start." , ".$length;
 	
+	error_log($query);
 	//echo  "Query --".$query; created_at < TIMESTAMP(DATE_SUB(NOW(), INTERVAL 5 day))
 	$data_arr = getData($query);
 	$cnt = $data_arr[1];
@@ -29,7 +30,7 @@
 
   function getData($sql){
         global $conn;
-        $query = mysqli_query($conn, $sql) OR DIE ("Can't get Data from DB for reports" );
+        $query = mysqli_query($conn, $sql) OR DIE ("Can't get Data from DB for transaction reports" );
         $num_rows = mysqli_num_rows($query);
         $data = array();
         foreach ($query as $row ){
