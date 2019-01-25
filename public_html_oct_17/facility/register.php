@@ -61,7 +61,7 @@ if(isset($_POST['action'])){
 	    		$GError = register();
 	  	}
 	  	else{
-        $GError = "Invalid CAPTCHA. Please try again... ".$dev_ret['error-codes'][0];
+        $GError = "Invalid CAPTCHA. Please try again... ";
 	  	}
 		}
 		else{
