@@ -59,6 +59,51 @@ function showOpt($arr){
 
 <script type="text/javascript">
 
+var cmp_facs = [];
+
+function add_cmp(facility_id){
+  var cmp_cb = document.getElementById('cmp_' + facility_id);
+  if(cmp_cb == undefined || cmp_cb == null)
+    return;
+  var btn = document.getElementById('cmp_btn_' + facility_id);
+  if(btn == undefined || btn == null)
+    return;
+  var is_added = cmp_cb.checked;
+  if(is_added === true){
+    cmp_facs.push(facility_id);
+    if(cmp_facs.length > 1)
+      btn.style.display = 'block';
+  }
+  else{
+    btn.style.display = 'none';
+    cmp_facs = cmp_facs.filter(function(elem){
+      return (elem != facility_id);
+    });
+    if(cmp_facs.length == 1){
+      var bx = document.getElementById('cmp_btn_' + cmp_facs[0]);
+      if(bx != undefined && bx != null)
+        bx.style.display = 'none';
+      else
+        console.log('failed to find elem: ' + cmp_facs[0]);
+    }
+  }
+}
+
+function cmp_do(){
+  //alert('comparing facilities: ' + cmp_facs.length + ' : ' + str);
+  
+  if(cmp_facs.length > 1){
+    var str = cmp_facs[0];
+    for(x = 1; x < cmp_facs.length; ++x){
+      str += '|' + cmp_facs[x];
+    }
+    window.location.href='compare.php?facs='+str;
+  }
+  else{
+    
+  }
+}
+
 function get_ll(position){
   if (navigator.geolocation){
   	navigator.geolocation.getCurrentPosition(showPosition,showError);
@@ -227,11 +272,11 @@ function show_results($arr, $filter_dict_opts){
 
 	  echo '</a>';
 	  echo '<br><a href="javascript:showMorePhotos('.$facility_id.')">More Photos</a>';
-////
+
 	  echo '<div id="dateday_'.$facility_id.'" class="login-block" name="dateday_'.$facility_id.'" style="margin:0px;text-align:left;padding:0;">';
 	  echo '<p id="mdatemsg_'.$facility_id.'" style="display:none;color:#BB0000;font-size:.9em;margin:0;margin-left: 10px;padding:0;text-align:left;">Enter Move-In Date</p>';
 	  echo '<input class="datepicker" id="mdate_'.$facility_id.'" name="mdate_'.$facility_id.'" type="text" placeholder="Move-in Date"  style="width:200px;height:30px;padding:5px;margin:5px;font-size:.8em;"></div><br />';
-////
+
 	  echo '</td>';
     
 	  echo '<td style="vertical-align:top;text-align:left;border-top:1px solid #ddd;padding: 10px 10px 0px 10px;">';
@@ -240,7 +285,10 @@ function show_results($arr, $filter_dict_opts){
 
 	  echo '<tr><td><b>'.htmlspecialchars($arr['title'], ENT_QUOTES).'</b><br>';
 	  echo htmlspecialchars($arr['city'].",".$arr['state']." ".$arr['zip'], ENT_QUOTES).'<br />';
-
+    
+    echo '<input type="checkbox" name="cmp_entry" id="cmp_'.$facility_id.'" value="'.$facility_id.'" onchange="add_cmp(\''.$facility_id.'\' );">&nbsp;&nbsp;';
+    echo '<button id="cmp_btn_'.$facility_id.'" onClick="cmp_do();" style="display:none;border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.2em;font-family: \'Carrois Gothic\', sans-serif;width:100px;"><i class="fa">Compare</i></button><br />';
+    
 	  if($calc_distance > 0)
       echo $calc_distance.' miles away<br />';
     else
@@ -288,9 +336,10 @@ function cmp($a, $b) {
             <!--header start here-->
 				<div class="header-main">
 					<div class="header-left" style="width:100%;">
-							<div class="logo-name login-block"  style="width:100%;padding:0;margin:0;">
+							<div class="logo-name login-block" style="width:100%;padding:0;margin:0;">
+							  <center>
 								<form method="post" action="search_n.php" enctype="multipart/form-data">
-								<center>
+								
 								<a href="index.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/></a>
 								<input name="search" type="text" placeholder="Near me, City or Zip" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>" required="" style="width:50%;display:inline;margin:0;">
 								<input name="slat" id="slat" type="hidden" value="" />
@@ -298,8 +347,9 @@ function cmp($a, $b) {
 								<button onClick="fd_show();" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button>
 								<!--button data-toggle="modal" data-target="#myModal" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button -->
 								<button type="submit" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-search"></i></button>
-								</center>
+								
 								</form>
+								</center>
 							</div>
 							<div class="clearfix"> </div>
 						 </div>
