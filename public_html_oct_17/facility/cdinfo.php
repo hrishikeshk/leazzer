@@ -5,7 +5,7 @@ include('../sql.php');
 
 function stripe_curl($user, $url, $posts){
   $ch = curl_init();
-  curl_setopt($ch, CURLOPT_POSTFIELDS, 'source='+$posts['source']+'&email='+$posts['email']+'&description='+$posts['description']);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, 'source='.$posts['source'].'&email='.$posts['email'].'&description='.$posts['description']);
   curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type' => 'application/x-www-form-urlencoded'));
   curl_setopt($ch, CURLOPT_HEADER, 0);
   curl_setopt($ch, CURLOPT_USERNAME, $user);

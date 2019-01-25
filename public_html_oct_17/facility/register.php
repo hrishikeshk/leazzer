@@ -5,22 +5,68 @@ session_start(['cookie_lifetime' => 86400,
             ]);
 require_once('../mail/class.phpmailer.php');		
 include('../sql.php');
+
+function recaptcha_curl($url, $posts){
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+  curl_setopt($ch, CURLOPT_URL, $url);
+  //curl_setopt($ch, CURLOPT_POST, true); The bugger who wrote this API does not add content-length if this is a POST.
+  //$jposts = json_encode($posts);
+  $post_str = "secret=".$posts['secret']."&response=".$posts['response'];
+  //curl_setopt($ch, CURLOPT_POSTFIELDS, $post_str);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $posts);
+  curl_setopt($ch, CURLOPT_HEADER, array('Content-length: ' .strlen($post_str)));
+  
+  //curl_setopt($ch, CURLOPT_POSTFIELDS, $jposts);
+  curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type' => 'application/x-www-form-urlencoded'));
+  //curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type' => 'application/x-www-form-urlencoded'));
+  //curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type' => 'application/json'));
+  //curl_setopt($ch, CURLOPT_HEADER, 0);
+  
+  curl_setopt($ch, CURLOPT_HEADER, array('Content-Length: ' .strlen($post_str)));
+  $data = curl_exec($ch);
+  curl_close($ch);
+  return $data;
+}
+
 $GError = ""; 
 if(isset($_POST['action'])){		
 	if($_POST['action'] == "Register"){
-		$res = mysqli_query($conn,"select * from facility_owner O, facility_master M where O.auto_id = M.facility_owner_id and O.emailid='".mysqli_real_escape_string($conn, $_POST['emailid'])."'");
-		if(mysqli_num_rows($res) > 0){
-			while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
-	  		if($arr['status'] == "1"){
-	  			$GError = register();
-	  			break;
-	  		}
-	  		else			
-	  			$GError = "This emailid already registered. please login";
-	    }
+	  if(isset($_POST['g-recaptcha-response']) === true){
+	    
+	    $url = 'https://www.google.com/recaptcha/api/siteverify';
+      $posts = array('secret' => '6LcbcowUAAAAAIlUzgvL4xiWAQoKfRRRcA7ROJo3',
+                     'response' => $_POST['g-recaptcha-response'],
+               );
+      $ret = recaptcha_curl($url, $posts);
+      //error_log($ret);
+      //$dev_ret = json_decode($ret, true);
+	  ////  
+	  //error_log('re-conv: '.json_encode($dev_ret));
+	    if(stristr($ret, '"success": true,') !== FALSE){
+    		$res = mysqli_query($conn,"select * from facility_owner O, facility_master M where O.auto_id = M.facility_owner_id and O.emailid='".mysqli_real_escape_string($conn, $_POST['emailid'])."'");
+	    	if(mysqli_num_rows($res) > 0){
+	    	  $GError = "This emailid already registered. please login";
+	    	  /*
+	    		while($arr = mysqli_fetch_array($res,MYSQLI_ASSOC)){
+	      		if($arr['status'] == "1"){
+	      			$GError = register();
+	      			break;
+	      		}
+	      		else			
+	      			$GError = "This emailid already registered. please login";
+	        }*/
+	    	}
+	    	else
+	    		$GError = register();
+	  	}
+	  	else{
+        $GError = "Invalid CAPTCHA. Please try again... ".$dev_ret['error-codes'][0];
+	  	}
 		}
-		else
-				$GError = register();
+		else{
+		  $GError = "Un-attempted CAPTCHA. Please try again.";
+		}
 	}
 }
 
@@ -86,6 +132,7 @@ mysqli_close($conn);
 <script src="js/jquery-2.1.1.min.js"></script> 
 <link href="css/font-awesome.css" rel="stylesheet"> 
 <link href='fonts/fonts.css' rel='stylesheet' type='text/css'>
+<script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
 <body>
 <body><a href="../index.php"><img id="logo" src="../images/llogo.png" style="width:40px;margin:20px;" alt="Logo"/></a>
@@ -105,6 +152,7 @@ mysqli_close($conn);
 					<input type="text" name="phone" placeholder="Phone" required>
 					<input type="text" name="emailid" placeholder="Email" required>
 					<input type="text" name="password" class="lock" placeholder="Password" required>
+					<div class="g-recaptcha" data-sitekey="6LcbcowUAAAAADTDD3oHPsYDcKHAS471UMEIo4V0"></div>
 					<input type="submit" name="action" value="Register">
 					<h3>Already a member?<a href="index.php"> Login</a></h3>				
 				</form>
