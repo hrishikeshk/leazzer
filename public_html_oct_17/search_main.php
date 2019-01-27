@@ -83,8 +83,6 @@ function add_cmp(facility_id){
       var bx = document.getElementById('cmp_btn_' + cmp_facs[0]);
       if(bx != undefined && bx != null)
         bx.style.display = 'none';
-      else
-        console.log('failed to find elem: ' + cmp_facs[0]);
     }
   }
 }
@@ -294,9 +292,12 @@ function show_results($arr, $filter_dict_opts){
     else
       echo '0.1 miles away<br />';
 
-	  if(has_priority_amenity($facility_unit_amenities, array('climate')))
+	  
+	  if(fetch_has_facility_cc($facility_id)){
+	  //if(has_priority_amenity($facility_unit_amenities, array('climate')))
 	    echo '<img src="images/cc.jpg" title="climate control equipped" style="min-height:40px;width:40px;" />';
-
+    }
+    
 	  if(has_priority_amenity($facility_unit_amenities, array('security', 'camera', 'video camera')))
 	    echo '<img src="images/secam.png" title="security camera monitoring" style="min-height:40px;width:40px;;margin-left:4px" />';
 

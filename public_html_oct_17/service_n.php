@@ -58,7 +58,8 @@ if(isset($_POST['action'])){
   			  echo '0.1 miles away<br />';
 			}
 			
-			if(has_priority_amenity($facility_unit_amenities, array('climate')))
+			//if(has_priority_amenity($facility_unit_amenities, array('climate')))
+			if(fetch_has_facility_cc($facility_id))
 	  		  echo '<img src="images/cc.jpg" title="climate control equipped" style="min-height:40px;width:40px;" />';
 	  		
 	  	if(has_priority_amenity($facility_unit_amenities, array('security', 'camera', 'video camera')))

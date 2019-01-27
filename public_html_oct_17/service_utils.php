@@ -423,6 +423,19 @@ function fetch_priority_unit_amenities($facility_id, $unit_info_arr){
 	return $unit_amenities;
 }
 
+function fetch_has_facility_cc($facility_id){
+  global $conn;
+	$unit_amenities = array();
+	$query_str = "SELECT count(*) as ct FROM unit_amenity UA, unit U, facility_master M where M.id = U.facility_id and U.auto_id=UA.unit_id and UA.amenity='Climate Controlled' and M.id='".mysqli_real_escape_string($conn, $facility_id)."'";
+	
+  $resUA = mysqli_query($conn, $query_str);
+  $ccc_arr = mysqli_fetch_array($resUA, MYSQLI_ASSOC);
+  $ccc = $ccc_arr['ct'];
+  if($ccc == 0)
+    return false;
+  return true;
+}
+
 function ud_construct_addl_discounts($arrFM){
   $ret = array();
   //foreach ($arrFM as $key => $value) {

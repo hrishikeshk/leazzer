@@ -31,22 +31,75 @@
 <?php
 session_start();
 include('sql.php');
+include('service_utils.php');
 
+$facs_arr = array();
 function get_amenities($facility_id){
-  global $conn;
-  
+  global $conn, $facs_arr;
+  $query = "select * from facility_master where id='".$facility_id."'";
+  $res = mysqli_query($conn, $query);
+  if(mysqli_num_rows($res) == 0)
+    return array();
+  else{
+    $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
+    $facs_arr[$facility_id] = $arr;
+    //error_log('fac id store: '.$arr['title'].' and actual: '.$facs_arr[$facility_id]['title'].' with fac id: '.$facility_id);
+    $facility_unit_amenities = fetch_facility_amenities($facility_id, $arr);
+    return arrange_priority_with_group($facility_unit_amenities);
+  }
 }
 
+$amenities = array();
+$fac_arr = array();
+$ct = 0;
 if(isset($_GET['facs'])){
   $fac_arr = explode('|', $_GET['facs']);
   $ct = count($fac_arr);
-  $amenities = array();
+  if($ct > 4)
+    $ct = 4;
   for($i = 0; $i < $ct; $i++){
     $amenities[$fac_arr[$i]] = get_amenities($fac_arr[$i]);
   }
-  
 }
+
 ?>
+<table>
+<thead>
+<tr>
+  <th>Quality</th>
+  <?php
+    for($i = 0; $i < $ct; $i++){
+      echo '<th>'.$facs_arr[$fac_arr[$i]]['title'].'</th>';
+    }
+  ?>
+</tr>
+</thead>
+<tbody>
+<tr>
+    <td>Climate Control</td>
+    <?php
+    for($i = 0; $i < $ct; $i++){
+      ////if(has_priority_amenity($amenities[$fac_arr[$i]], array('climate')))
+      if(fetch_has_facility_cc($fac_arr[$i]))
+	      echo '<td><img src="images/gtick.png" title="climate control equipped" style="vertical-align: left;width:10px;height:10px" /></td>';
+	    else
+	      echo '<td><img src="images/rcross.png" style="vertical-align: left;width:10px;height:10px" /></td>';
+    }
+    ?>
+<tr>
+<tr>
+    <td>Security / Surveillance</td>
+    <?php
+    for($i = 0; $i < $ct; $i++){
+      if(has_priority_amenity($amenities[$fac_arr[$i]], array('security', 'camera', 'video camera')))
+	      echo '<td><img src="images/gtick.png" title="security enhancements equipped" style="vertical-align: left;width:10px;height:10px" /></td>';
+	    else
+	      echo '<td><img src="images/rcross.png" style="vertical-align: left;width:10px;height:10px" /></td>';
+    }
+    ?>
+<tr>
+</tbody>
+</table>
 
 <!--scrolling js-->
 		<script src="js/jquery.nicescroll.js"></script>
