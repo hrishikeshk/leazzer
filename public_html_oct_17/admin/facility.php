@@ -18,16 +18,16 @@ if(isset($_GET['action'])){
 
 			ob_start();
 		  $df = fopen("php://output", 'w');
-	    $res = mysqli_query($conn,"select * from facility_master");
+	    $res = mysqli_query($conn,"select M.id as Facility_Id, M.title as Company_Name, O.emailid as Email, O.phone as Company_Phone, O.firstname as FirstName, O.lastname as LastName, M.street as street, M.locality as Locality, M.region as Region, M.city as City, M.state as State, M.zip as Zip, M.lat as Latitude, M.lng as Longitude, M.searchable as Searchable, M.status as Status, M.reservationdays as Reservation_Days, M.description as Description from facility_master M, facility_owner O where M.facility_owner_id=O.auto_id");
 	    if(mysqli_num_rows($res) > 0){
   	    $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
-	      $arr['options'] = updateOpt($arr['id']);
-	  		$arr['units'] = updateUnit($arr['id']);
+	      $arr['options'] = updateOpt($arr['Facility_Id']);
+	  		$arr['units'] = updateUnit($arr['Facility_Id']);
 	  	  fputcsv($df, array_keys($arr));
 	  		fputcsv($df, $arr);
 	  		while($arr = mysqli_fetch_array($res, MYSQLI_ASSOC)){
-	  			$arr['options'] = updateOpt($arr['id']);
-	  			$arr['units'] = updateUnit($arr['id']);
+	  			$arr['options'] = updateOpt($arr['Facility_Id']);
+	  			$arr['units'] = updateUnit($arr['Facility_Id']);
 	  			fputcsv($df, $arr);
 	  		}
 			}
