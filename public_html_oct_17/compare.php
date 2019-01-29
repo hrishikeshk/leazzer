@@ -21,13 +21,13 @@
     <!-- Brand and toggle get grouped for better mobile display -->
     <div class="navbar-header">
 
- 	  <a href="javascript:history.go(-1)" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:50px;" alt="Logo"/>
- 	  </a>
- 	  <h1 style="margin-left:75px; color:#1122dd">Compare Facilities</h1>
+   	  <a href="javascript:history.go(-1)" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:50px;" alt="Logo"/>
+ 	    </a>
+ 	    <h1 style="margin-left:75px; color:#1122dd">Compare Facilities</h1>
+ 	  </div>
  	  <p style="float:right; text-align:right">
       <a href="javascript:history.go(-1)">Back To Search<a/>
     </p>
- 	</div>
 	</div>
 </nav>
 
@@ -50,9 +50,38 @@ $option_ct = count($option_ids);
 
 $facs_arr = array();
 $amenity_kinds = array();
+$facs_master = array();
+
+function get_rep_image($facility_id){
+  global $conn;
+  $query = "select url_fullsize from image where facility_id='".mysqli_real_escape_string($conn, $facility_id)."' limit 1";
+  $res = mysqli_query($conn, $query);
+  if(mysqli_num_rows($res) == 0)
+    return '<img src="unitimages/pna.jpg" style="min-height:200px;width:200px;">';
+  else{
+    $arr_imgs = mysqli_fetch_array($res, MYSQLI_ASSOC);
+    $image_file_name = extract_image_name($arr_imgs['url_fullsize']);
+	  $expected_image_path = "images/".$facility_id."/".$image_file_name;
+    return '<img src="'.$expected_image_path.'" style="min-height:200px;width:200px;">';
+  }
+}
+
+function get_facs_master($facility_id){
+  global $conn, $facs_master;
+  $query = "select * from facility_master where id='".mysqli_real_escape_string($conn, $facility_id)."' limit 1";
+  $res = mysqli_query($conn, $query);
+  if(mysqli_num_rows($res) == 0)
+    return array();
+  else{
+    $arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
+    $facs_master[$facility_id] = $arr;
+    return $facs_master;
+  }
+}
+
 function get_amenities($facility_id){
   global $conn, $facs_arr;
-  $query = "select * from facility_master where id='".$facility_id."'";
+  $query = "select * from facility_master where id='".mysqli_real_escape_string($conn, $facility_id)."' limit 1";
   $res = mysqli_query($conn, $query);
   if(mysqli_num_rows($res) == 0)
     return array();
@@ -105,6 +134,7 @@ if(isset($_GET['facs'])){
   if($ct > 4)
     $ct = 4;
   for($i = 0; $i < $ct; $i++){
+    get_facs_master($fac_arr[$i]);
     $am_arr = get_amenities($fac_arr[$i]);
     $amenity_kinds = array_merge(array_keys($am_arr), $amenity_kinds);
     $amenities[$fac_arr[$i]] = $am_arr;
@@ -112,30 +142,50 @@ if(isset($_GET['facs'])){
 }
 
 ?>
-<table id="datatable" class="table table-striped table-bordered" style="margin:0px;padding:0px;border:0px solid #000;" width="100%" cellspacing="0">
+<table id="datatable" class="table" style="margin:0px;padding:0px;" width="100%" cellspacing="0">
 <thead>
 <tr>
-  <th>Facilities &gt;&gt;</th>
+  <th></th>
   <?php
     for($i = 0; $i < $ct; $i++){
-      echo '<th>'.$facs_arr[$fac_arr[$i]]['title'].'</th>';
+      echo '<th>'.get_rep_image($fac_arr[$i]).'<br /><br />';
+      echo $facs_arr[$fac_arr[$i]]['title'].'</th>';
     }
   ?>
 </tr>
 </thead>
 <tbody>
 <tr>
-    <td>Climate Control</td>
-    <?php
+<td></td>
+<?php
     for($i = 0; $i < $ct; $i++){
-      ////if(has_priority_amenity($amenities[$fac_arr[$i]], array('climate')))
-      if(fetch_has_facility_cc($fac_arr[$i]))
-	      echo '<td><img src="images/gtick.png" title="climate control equipped" style="vertical-align: left;width:10px;height:10px" /></td>';
-	    else
-	      echo '<td><img src="images/rcross.png" style="vertical-align: left;width:10px;height:10px" /></td>';
+      echo '<td>'.$facs_master[$fac_arr[$i]]['description'].'</td>';
     }
     ?>
-<tr>
+</tr>
+
+<?php
+    $cc_arr = array();
+    $show_cc = false;
+    for($i = 0; $i < $ct; $i++){
+      if(fetch_has_facility_cc($fac_arr[$i])){
+	      $cc_arr[] = true;
+	      $show_cc = true;
+	    }
+	    else
+	      $cc_arr[] = false;
+    }
+    if($show_cc === true){
+      echo '<tr><td></td>';
+      for($i = 0; $i < $ct; $i++){
+        if($cc_arr[$i] === true)
+          echo '<td>Climate Control Equipped</td>';
+	      else
+          echo '<td></td>';
+      }
+      echo '</tr>';
+    }
+?>
 <!-- tr>
     <td>Security / Surveillance</td>
     <?php
@@ -154,20 +204,34 @@ if(isset($_GET['facs'])){
   }
 
   for($i = 0; $i < $option_ct; $i++){
-    echo '<tr>';
-    echo '<td>'.$option_names[$i].'</td>';
+    
+    //echo '<td>'.$option_names[$i].'</td>';
+    //echo '<td></td>';
+    $show_r = false;
+    $nm_arr = array();
     for($j = 0; $j < $ct; $j++){
-      echo '<td>';
       if(in_array($option_ids[$i], $fac_ams_markers[$fac_arr[$j]])){
-        echo '<img src="images/gtick.png" title="security enhancements equipped" style="vertical-align: left;width:10px;height:10px" />';
+        $show_r = true;
+        $nm_arr[] = $option_names[$i];
+        //echo '<img src="images/gtick.png" title="security enhancements equipped" style="vertical-align: left;width:10px;height:10px" />';
       }
       else{
-        echo '<img src="images/rcross.png" style="vertical-align: left;width:10px;height:10px" />';
+        //echo '<img src="images/rcross.png" style="vertical-align: left;width:10px;height:10px" />';
+        $nm_arr[] = '';
       }
-      echo '</td>';
     }
-    echo '</tr>';
+    if($show_r === true){
+      echo '<tr><td></td>';
+      for($j = 0; $j < $ct; $j++){
+        echo '<td>';
+          echo $nm_arr[$j];
+          //echo '<img src="images/gtick.png" title="security enhancements equipped" style="vertical-align: left;width:10px;height:10px" />';
+        echo '</td>';
+      }
+      echo '</tr>';
+    }
   }
+
 ?>
 </tbody>
 </table>

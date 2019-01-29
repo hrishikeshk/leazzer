@@ -65,7 +65,7 @@ function add_cmp(facility_id){
   var cmp_cb = document.getElementById('cmp_' + facility_id);
   if(cmp_cb == undefined || cmp_cb == null)
     return;
-  var btn = document.getElementById('cmp_btn_' + facility_id);
+  var btn = document.getElementById('cmp_btn_');
   if(btn == undefined || btn == null)
     return;
   var is_added = cmp_cb.checked;
@@ -75,12 +75,11 @@ function add_cmp(facility_id){
       btn.style.display = 'block';
   }
   else{
-    btn.style.display = 'none';
     cmp_facs = cmp_facs.filter(function(elem){
       return (elem != facility_id);
     });
     if(cmp_facs.length == 1){
-      var bx = document.getElementById('cmp_btn_' + cmp_facs[0]);
+      var bx = document.getElementById('cmp_btn_');
       if(bx != undefined && bx != null)
         bx.style.display = 'none';
     }
@@ -284,8 +283,8 @@ function show_results($arr, $filter_dict_opts){
 	  echo '<tr><td><b>'.htmlspecialchars($arr['title'], ENT_QUOTES).'</b><br>';
 	  echo htmlspecialchars($arr['city'].",".$arr['state']." ".$arr['zip'], ENT_QUOTES).'<br />';
     
-    echo '<input type="checkbox" name="cmp_entry" id="cmp_'.$facility_id.'" value="'.$facility_id.'" onchange="add_cmp(\''.$facility_id.'\' );">&nbsp;&nbsp;Compare...';
-    echo '<button id="cmp_btn_'.$facility_id.'" onClick="cmp_do();" style="display:none;border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.2em;font-family: \'Carrois Gothic\', sans-serif;width:100px;"><i class="fa">Compare</i></button><br />';
+    echo '<input type="checkbox" name="cmp_entry" id="cmp_'.$facility_id.'" value="'.$facility_id.'" onchange="add_cmp(\''.$facility_id.'\' );">&nbsp;&nbsp;Compare...<br />';
+    //echo '<button id="cmp_btn_'.$facility_id.'" onClick="cmp_do();" style="display:none;border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.2em;font-family: \'Carrois Gothic\', sans-serif;width:100px;"><i class="fa">Compare</i></button><br />';
     
 	  if($calc_distance > 0)
       echo $calc_distance.' miles away<br />';
@@ -350,6 +349,7 @@ function cmp($a, $b) {
 								<button type="submit" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-search"></i></button>
 								
 								</form>
+								<br /><br /><button id="cmp_btn_" onClick="cmp_do();" style="display:none;border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.2em;font-family: \'Carrois Gothic\', sans-serif;width:100px;"><i class="fa">Compare</i></button><br />
 								</center>
 							</div>
 							<div class="clearfix"> </div>
