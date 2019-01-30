@@ -131,8 +131,8 @@ $ct = 0;
 if(isset($_GET['facs'])){
   $fac_arr = explode('|', $_GET['facs']);
   $ct = count($fac_arr);
-  if($ct > 4)
-    $ct = 4;
+  if($ct > 3)
+    $ct = 3;
   for($i = 0; $i < $ct; $i++){
     get_facs_master($fac_arr[$i]);
     $am_arr = get_amenities($fac_arr[$i]);
@@ -145,18 +145,25 @@ if(isset($_GET['facs'])){
 <table id="datatable" class="table" style="margin:0px;padding:0px;" width="100%" cellspacing="0">
 <thead>
 <tr>
-  <th></th>
+
   <?php
     for($i = 0; $i < $ct; $i++){
-      echo '<th>'.get_rep_image($fac_arr[$i]).'<br /><br />';
-      echo $facs_arr[$fac_arr[$i]]['title'].'</th>';
+      echo '<th>'.get_rep_image($fac_arr[$i]).'</th>';
+      //echo $facs_arr[$fac_arr[$i]]['title'].'</th>';
+    }
+  ?>
+</tr>
+<tr>
+  <?php
+    for($i = 0; $i < $ct; $i++){
+      //echo '<th>'.get_rep_image($fac_arr[$i]).'</th>';
+      echo '<th>'.$facs_arr[$fac_arr[$i]]['title'].'</th>';
     }
   ?>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td></td>
 <?php
     for($i = 0; $i < $ct; $i++){
       echo '<td>'.$facs_master[$fac_arr[$i]]['description'].'</td>';
@@ -176,7 +183,7 @@ if(isset($_GET['facs'])){
 	      $cc_arr[] = false;
     }
     if($show_cc === true){
-      echo '<tr><td></td>';
+      echo '<tr>';
       for($i = 0; $i < $ct; $i++){
         if($cc_arr[$i] === true)
           echo '<td>Climate Control Equipped</td>';
@@ -221,7 +228,7 @@ if(isset($_GET['facs'])){
       }
     }
     if($show_r === true){
-      echo '<tr><td></td>';
+      echo '<tr>';
       for($j = 0; $j < $ct; $j++){
         echo '<td>';
           echo $nm_arr[$j];

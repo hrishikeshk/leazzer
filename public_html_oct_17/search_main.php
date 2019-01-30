@@ -61,27 +61,35 @@ function showOpt($arr){
 
 var cmp_facs = [];
 
+function upd_cmp_cb(dis){
+  //// cmp_cb_
+  var cmp_cbs = document.getElementsByClassName('cmp_cb_');
+  for(i = 0; i < cmp_cbs.length; i++){
+    if(cmp_cbs[i].checked === false)
+      cmp_cbs[i].disabled = dis;
+  }
+}
+
 function add_cmp(facility_id){
+  var alert_cmp_less = document.getElementById('alert_cmp_less');
+  if(alert_cmp_less != undefined && alert_cmp_less != null)
+    alert_cmp_less.style.display = 'none';
   var cmp_cb = document.getElementById('cmp_' + facility_id);
   if(cmp_cb == undefined || cmp_cb == null)
-    return;
-  var btn = document.getElementById('cmp_btn_');
-  if(btn == undefined || btn == null)
     return;
   var is_added = cmp_cb.checked;
   if(is_added === true){
     cmp_facs.push(facility_id);
-    if(cmp_facs.length > 1)
-      btn.style.display = 'block';
+    if(cmp_facs.length >= 3){
+      upd_cmp_cb(true);
+    }
   }
   else{
     cmp_facs = cmp_facs.filter(function(elem){
       return (elem != facility_id);
     });
-    if(cmp_facs.length == 1){
-      var bx = document.getElementById('cmp_btn_');
-      if(bx != undefined && bx != null)
-        bx.style.display = 'none';
+    if(cmp_facs.length < 3){
+      upd_cmp_cb(false);
     }
   }
 }
@@ -97,7 +105,9 @@ function cmp_do(){
     window.location.href='compare.php?facs='+str;
   }
   else{
-    
+    var alert_cmp_less = document.getElementById('alert_cmp_less');
+    if(alert_cmp_less != undefined && alert_cmp_less != null)
+      alert_cmp_less.style.display='block';
   }
 }
 
@@ -283,7 +293,7 @@ function show_results($arr, $filter_dict_opts){
 	  echo '<tr><td><b>'.htmlspecialchars($arr['title'], ENT_QUOTES).'</b><br>';
 	  echo htmlspecialchars($arr['city'].",".$arr['state']." ".$arr['zip'], ENT_QUOTES).'<br />';
     
-    echo '<input type="checkbox" name="cmp_entry" id="cmp_'.$facility_id.'" value="'.$facility_id.'" onchange="add_cmp(\''.$facility_id.'\' );">&nbsp;&nbsp;Compare...<br />';
+    echo '<input class="cmp_cb_" type="checkbox" name="cmp_entry" id="cmp_'.$facility_id.'" value="'.$facility_id.'" onchange="add_cmp(\''.$facility_id.'\' );">&nbsp;&nbsp;Compare...<br />';
     //echo '<button id="cmp_btn_'.$facility_id.'" onClick="cmp_do();" style="display:none;border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.2em;font-family: \'Carrois Gothic\', sans-serif;width:100px;"><i class="fa">Compare</i></button><br />';
     
 	  if($calc_distance > 0)
@@ -337,20 +347,20 @@ function cmp($a, $b) {
 				<div class="header-main">
 					<div class="header-left" style="width:100%;">
 							<div class="logo-name login-block" style="width:100%;padding:0;margin:0;">
-							  <center>
+							  
 								<form method="post" action="search_n.php" enctype="multipart/form-data">
-								
-								<a href="index.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/></a>
-								<input name="search" type="text" placeholder="Near me, City or Zip" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>" required="" style="width:50%;display:inline;margin:0;">
-								<input name="slat" id="slat" type="hidden" value="" />
-								<input name="slng" id="slng" type="hidden" value="" />
-								<button onClick="fd_show();" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button>
-								<!--button data-toggle="modal" data-target="#myModal" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button -->
-								<button type="submit" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-search"></i></button>
-								
+  								<center>
+  	  							<a href="index.php" style="display:inline;float:left;"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/></a>
+	    							<input name="search" type="text" placeholder="Near me, City or Zip" value="<?php echo (isset($_POST['search'])?$_POST['search']:"");?>" required="" style="width:40%;display:inline;margin:0;">
+	    							<input name="slat" id="slat" type="hidden" value="" />
+	    							<input name="slng" id="slng" type="hidden" value="" />
+	    							<button onClick="fd_show();" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button>
+	    							<!--button data-toggle="modal" data-target="#myModal" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button -->
+	    							<button type="submit" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-search"></i></button>
+	    							<button onClick="cmp_do();" type="button" id="cmp_btn_" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.2em;font-family: \'Carrois Gothic\', sans-serif;"><i class="fa">Compare</i></button>
+	  							</center>
 								</form>
-								<br /><br /><button id="cmp_btn_" onClick="cmp_do();" style="display:none;border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.2em;font-family: \'Carrois Gothic\', sans-serif;width:100px;"><i class="fa">Compare</i></button><br />
-								</center>
+								<div class="alert alert-info" role="alert" id="alert_cmp_less" style="display:none">Please select at least two facilities to compare</div>
 							</div>
 							<div class="clearfix"> </div>
 						 </div>
@@ -406,6 +416,15 @@ function cmp($a, $b) {
 				}
 			 });
 			 get_ll();
+			 $('#datatable').on('draw.dt', function(){
+			   //alert('redraw');
+			   if(cmp_facs.length >= 3){
+			     upd_cmp_cb(true);
+			   }
+			   else{
+			     upd_cmp_cb(false);
+			   }
+			 });
 		});
 		</script>
 <!-- /script-for sticky-nav -->
