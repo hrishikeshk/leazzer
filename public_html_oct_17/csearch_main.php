@@ -209,9 +209,40 @@ function show_results($arr){
    <div class="left-content">
 	   <div class="mother-grid-inner">
   		
+  		
+  		<div class="header-main">
+					<div class="header-left" style="width:100%;">
+							<div class="logo-name login-block" style="width:100%;padding:0;margin:0;">
+							  <div style="float:left">
+							    <a href="index.php"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/></a>
+							    <a href="javascript:history.go(-1)">Back To Compare<a/>
+							  </div>
+							  <a href="search_n.php" style="margin-left:70%">Back To Search<a/>
+							</div>
+							<div class="clearfix"> </div>
+						 </div>
+				     <div class="clearfix"> </div>	
+				</div>
+<!--header end here-->
+
+<!-- script-for sticky-nav -->
+		<script>
+		$(document).ready(function(){
+			 var navoffeset=$(".header-main").offset().top;
+			 $(window).scroll(function(){
+				var scrollpos=$(window).scrollTop(); 
+				if(scrollpos >=navoffeset){
+					$(".header-main").addClass("fixed");
+				}else{
+					$(".header-main").removeClass("fixed");
+				}
+			 });
+		});
+		</script>
+<!-- /script-for sticky-nav -->
 
 <!--inner block start here-->
-<div class="inner-block">
+<div class="inner-block" style="padding-top:12px">
     <div class="blank">
     	<div class="blankpage-main" style="padding:1em 1em;">
 			<br />
