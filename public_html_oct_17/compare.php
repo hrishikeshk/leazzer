@@ -5,6 +5,10 @@
 <meta charset="utf-8">
 <meta name="keywords" content="Leazzer" />
 <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" media="all">
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.easing.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+
 <link href="css/font-awesome.min.css" rel="stylesheet" type="text/css" media="all">
 <link href="css/owl.carousel.css" rel="stylesheet">
 <link rel="stylesheet" href="css/jquery-ui.css" />
@@ -14,6 +18,7 @@
 <link href="fonts/fonts.css" rel="stylesheet">
 <link href="admin/css/jquery.dataTables.min.css" rel="stylesheet" type="text/css" media="all" />
 <script type="text/javascript" src="admin/js/jquery.dataTables.min.js"></script>
+
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -52,17 +57,17 @@ $facs_arr = array();
 $amenity_kinds = array();
 $facs_master = array();
 
-function get_rep_image($facility_id){
+function get_rep_image($facility_id, $ct){
   global $conn;
   $query = "select url_fullsize from image where facility_id='".mysqli_real_escape_string($conn, $facility_id)."' limit 1";
   $res = mysqli_query($conn, $query);
   if(mysqli_num_rows($res) == 0)
-    return '<img src="unitimages/pna.jpg" style="min-height:200px;width:200px;">';
+    return '<img src="unitimages/pna.jpg" style="min-height:90%;width:90%;">';
   else{
     $arr_imgs = mysqli_fetch_array($res, MYSQLI_ASSOC);
     $image_file_name = extract_image_name($arr_imgs['url_fullsize']);
 	  $expected_image_path = "images/".$facility_id."/".$image_file_name;
-    return '<img src="'.$expected_image_path.'" style="min-height:200px;width:200px;">';
+    return '<img src="'.$expected_image_path.'" style="min-height:90%;width:90%;">';
   }
 }
 
@@ -142,13 +147,13 @@ if(isset($_GET['facs'])){
 }
 
 ?>
-<table id="datatable" class="table" style="margin:0px;padding:0px;" width="100%" cellspacing="0">
+<table id="datatable" style="margin:10px;padding:10px;" width="100%" cellspacing="0">
 <thead>
 <tr>
 
   <?php
     for($i = 0; $i < $ct; $i++){
-      echo '<th>'.get_rep_image($fac_arr[$i]).'</th>';
+      echo '<th style="margin:10px;padding:10px;width:'.(100/$ct).'%">'.get_rep_image($fac_arr[$i], $ct).'</th>';
       //echo $facs_arr[$fac_arr[$i]]['title'].'</th>';
     }
   ?>
@@ -157,7 +162,7 @@ if(isset($_GET['facs'])){
   <?php
     for($i = 0; $i < $ct; $i++){
       //echo '<th>'.get_rep_image($fac_arr[$i]).'</th>';
-      echo '<th>'.$facs_arr[$fac_arr[$i]]['title'].'</th>';
+      echo '<th class="header-main" style="text-align:center;margin:10px;padding:10px;width:'.(100/$ct).'%">'.$facs_arr[$fac_arr[$i]]['title'].'</th>';
     }
   ?>
 </tr>
@@ -166,7 +171,7 @@ if(isset($_GET['facs'])){
 <tr>
 <?php
     for($i = 0; $i < $ct; $i++){
-      echo '<td>'.$facs_master[$fac_arr[$i]]['description'].'</td>';
+      echo '<td style="margin:10px;padding:10px;;width:'.(100/$ct).'%">'.$facs_master[$fac_arr[$i]]['description'].'</td>';
     }
     ?>
 </tr>
@@ -186,7 +191,7 @@ if(isset($_GET['facs'])){
       echo '<tr>';
       for($i = 0; $i < $ct; $i++){
         if($cc_arr[$i] === true)
-          echo '<td>Climate Control Equipped</td>';
+          echo '<td style="margin:10px;padding:10px;;width:'.(100/$ct).'%">Climate Control Equipped</td>';
 	      else
           echo '<td></td>';
       }
@@ -204,6 +209,30 @@ if(isset($_GET['facs'])){
     }
     ?>
 <tr -->
+<script>
+function res_do(facility_id){
+  /*var res;
+    $.ajax
+    ({	
+    		type:"POST",
+    		url:"csearch_n.php",
+    		data:"facility_id=" + facility_id,
+    		cache:false,
+    		async:false,
+    		success: function(result){		
+   				 	res = result;
+   		 	},
+   		 	error: function(err){
+   		 	    alert('Failed to invoke serverside function(from scompare)... Please try again in some time');
+   		 	    res = false;
+   		 	}
+    });
+    return res;
+    */
+  window.location.href='csearch_n.php?facility_id='+facility_id;
+}
+
+</script>
 <?php
   $fac_ams_markers = array();
   for($i = 0; $i < $ct; $i++){
@@ -230,7 +259,7 @@ if(isset($_GET['facs'])){
     if($show_r === true){
       echo '<tr>';
       for($j = 0; $j < $ct; $j++){
-        echo '<td>';
+        echo '<td style="margin:10px;padding:10px;;width:'.(100/$ct).'%">';
           echo $nm_arr[$j];
           //echo '<img src="images/gtick.png" title="security enhancements equipped" style="vertical-align: left;width:10px;height:10px" />';
         echo '</td>';
@@ -238,16 +267,19 @@ if(isset($_GET['facs'])){
       echo '</tr>';
     }
   }
-
+  echo '<tr>';
+  for($i = 0; $i < $ct; $i++){
+    echo '<td>';
+    
+    echo '<button onClick="res_do('.$fac_arr[$i].');" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.2em;font-family: \'Carrois Gothic\', sans-serif;"><i class="fa">Reserve</i></button>';
+    
+    echo '</td>';
+  }
+  echo '</tr>';
 ?>
 </tbody>
 </table>
 
-<!--scrolling js-->
-		<script src="js/jquery.nicescroll.js"></script>
-		<script src="js/scripts.js"></script>
-<!--//scrolling js-->
-<script src="js/bootstrap.js"> </script>
 <br /><br />
 <p style="margin-left:75px">
 <a href="index.php"><img id="logo" src="images/llogo.png" style="display:inline;width:40px;" alt="Logo"/>
