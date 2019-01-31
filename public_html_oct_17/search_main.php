@@ -9,6 +9,16 @@ if((!isset($_POST['search'])) && isset($_SESSION['search']))
 	$_POST['search']= $_SESSION['search'];
 else if(isset($_POST['search']))
 	$_SESSION['search']= htmlspecialchars($_POST['search'], ENT_QUOTES);
+	
+if((!isset($_POST['slat'])) && isset($_SESSION['slat']))
+	$_POST['slat']= $_SESSION['slat'];
+else if(isset($_POST['slat']))
+	$_SESSION['slat']= htmlspecialchars($_POST['slat'], ENT_QUOTES);
+	
+if((!isset($_POST['slng'])) && isset($_SESSION['slng']))
+	$_POST['slng']= $_SESSION['slng'];
+else if(isset($_POST['slng']))
+	$_SESSION['slng']= htmlspecialchars($_POST['slng'], ENT_QUOTES);
 
 if(isset($_POST['action'])){
 
@@ -357,7 +367,7 @@ function cmp($a, $b) {
 	    							<button onClick="fd_show();" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button>
 	    							<!--button data-toggle="modal" data-target="#myModal" type="button" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-filter"></i></button -->
 	    							<button type="submit" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;width:100%;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.3em;display: block;font-family: 'Carrois Gothic', sans-serif;width:50px;display:inline;"><i class="fa fa-search"></i></button>
-	    							<button onClick="cmp_do();" type="button" id="cmp_btn_" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 3px;padding: 0.3em 0.2em;font-size: 1.2em;font-family: \'Carrois Gothic\', sans-serif;"><i class="fa">Compare</i></button>
+	    							<button onClick="cmp_do();" type="button" id="cmp_btn_" style="border: none;outline: none;cursor: pointer;color: #fff;background: #68AE00;margin: 0 auto;border-radius: 5px;padding: 0.3em 0.2em;font-size: 1.2em;font-family: \'Carrois Gothic\', sans-serif;">&nbsp;Compare&nbsp;</button>
 	  							</center>
 								</form>
 								<div class="alert alert-info" role="alert" id="alert_cmp_less" style="display:none">Please select at least two facilities to compare</div>
@@ -425,6 +435,9 @@ function cmp($a, $b) {
 			     upd_cmp_cb(false);
 			   }
 			 });
+			 //if(cfacid.length > 0){
+			   //$('#datatable').row(19).scrollTo();
+			 //}
 		});
 		</script>
 <!-- /script-for sticky-nav -->
