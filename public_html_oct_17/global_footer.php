@@ -47,8 +47,12 @@ function fetch_footer(){
 	}
 	return $ret;
 }
-
-echo fetch_footer();
+if(file_exists('pp.pdf')){
+  echo '<center> If you are unable to see the pdf, download it <a href="pp.pdf">here</a></center> <br />';
+	echo '<embed src="pp.pdf" width="90%" height="90%" alt="pdf" pluginspage="http://www.adobe.com/products/acrobat/readstep2.html">';
+}
+else
+  echo fetch_footer();
 ?>
 
 </div>

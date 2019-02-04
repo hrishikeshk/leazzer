@@ -2,25 +2,46 @@
 $GError="";
 include('header.php');
 
-function fetch_ppterm(){
+function fetch_pp(){
 	global $conn;
 	$ret = "";
 			
-	$res = mysqli_query($conn,"select * from admin_configuration where name='ppterms'");
+	$res = mysqli_query($conn,"select * from admin_configuration where name='privacypolicy'");
 	if(mysqli_num_rows($res) > 0){
 		$arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
 		$ret .= $arr['data_value'];	
 	}
 	else{
-		$ret = "TODO: Add policy terms through admin panel...";
+		$ret = "TODO: Paste here privacy policy (HTML text) ...";
 	}
 	return htmlentities($ret);
 }
 
-function update_ppterm(){
+function fetch_tu(){
+	global $conn;
+	$ret = "";
+			
+	$res = mysqli_query($conn,"select * from admin_configuration where name='termsuse'");
+	if(mysqli_num_rows($res) > 0){
+		$arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
+		$ret .= $arr['data_value'];
+	}
+	else{
+		$ret = "TODO: Paste here terms of use (HTML text) ...";
+	}
+	return htmlentities($ret);
+}
+
+function update_pp(){
   global $conn;		
-	mysqli_query($conn,"update admin_configuration set data_value='".$_POST['setppterm']."' where name='ppterms'");
-	$GError= "Privacy policy and terms updated successfully.";
+	mysqli_query($conn,"update admin_configuration set data_value='".$_POST['setpp']."' where name='pp'");
+	$GError= "Privacy policy updated successfully.";
+}
+
+function update_tu(){
+  global $conn;		
+	mysqli_query($conn,"update admin_configuration set data_value='".$_POST['settu']."' where name='tu'");
+	$GError= "Terms of use updated successfully.";
 }
 
 if(isset($_POST['submit']))
@@ -44,8 +65,11 @@ if(isset($_POST['submit']))
 			}
 		}
 	}
-	else if($_POST['submit'] == "setppterm"){
-    update_ppterm();
+	else if($_POST['submit'] == "setpp"){
+    update_pp();
+  }
+  else if($_POST['submit'] == "settu"){
+    update_pp();
   }
 }
 ?>
@@ -58,8 +82,7 @@ if(isset($_POST['submit']))
     			<h4>Change Password</h4>
     			<hr>
 					<?php
-					if($GError!="")
-					{
+					if($GError!=""){
 						echo "<div class=\"alert alert-info\" role=\"alert\">".$GError."</div>";
 					}
 					?>	
@@ -77,15 +100,34 @@ if(isset($_POST['submit']))
     			<h4>Change Privacy Policy</h4>
     			<hr>
 					<?php
-					if($GError!="")
-					{
+					if($GError!=""){
 						echo "<div class=\"alert alert-info\" role=\"alert\">".$GError."</div>";
 					}
 					?>	
-					<form name="changepptermfrm" id="changepptermfrm" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-							<input class="form-control" placeholder="SetPPTerm" type="textarea" name="setppterm" id="setppterm" style="width:90%;" value="<?php echo (fetch_ppterm()); ?>"><br />
-			    		<button class="btn btn-success" name="submit" value="setppterm" style="background:#68AE00;border-color:#68AE00;">Set Privacy Policy and Terms of Use</button>
-					</form>												
+					<form name="changeppfrm" id="changeppfrm" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+							<input class="form-control" placeholder="SetPP" type="textarea" name="setpp" id="setpp" style="width:90%;" value="<?php echo (fetch_pp()); ?>"><br />
+			    		<button class="btn btn-success" name="submit" value="setpp" style="background:#68AE00;border-color:#68AE00;">Set Privacy Policy</button>
+					</form>
+					<b>-- OR -- </b>
+					<br /> <a href="pp_upload.php">Upload a .pdf file as Privacy Policy</a>
+				</center>
+    	</div>
+    	
+    	<div class="blankpage-main">
+    		<center>
+    			<h4>Change Terms Of Use</h4>
+    			<hr>
+					<?php
+					if($GError!=""){
+						echo "<div class=\"alert alert-info\" role=\"alert\">".$GError."</div>";
+					}
+					?>	
+					<form name="changetermfrm" id="changetermfrm" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+							<input class="form-control" placeholder="SetTerm" type="textarea" name="setterm" id="setterm" style="width:90%;" value="<?php echo (fetch_tu()); ?>"><br />
+			    		<button class="btn btn-success" name="submit" value="settu" style="background:#68AE00;border-color:#68AE00;">Set Terms of Use</button>
+					</form>
+					<b>-- OR -- </b>
+					<br /> <a href="tu_upload.php">Upload a .pdf file as Terms Of Use Policy</a>
 				</center>
     	</div>
     </div>
@@ -95,3 +137,4 @@ if(isset($_POST['submit']))
 <?php
 include('footer.php');
 ?>
+
