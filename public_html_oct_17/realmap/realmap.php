@@ -68,6 +68,7 @@
   </form>
   <br />
   <div id="map"></div>
+  <div id="places"></div>
   <script>
       var map;
       var placesService;
@@ -77,8 +78,8 @@
         var placesList = document.getElementById('places');
 
         for (var i = 0, place; place = places[i]; i++) {
-          console.log('place # ' + i + ' : ' + place.name);
-          var image = {
+          console.log('place # ' + i + ' : ' + place.name + ' : ' + JSON.stringify(place));
+          /*var image = {
                         url: place.icon,
                         size: new google.maps.Size(71, 71),
                         origin: new google.maps.Point(0, 0),
@@ -92,10 +93,18 @@
                                   title: place.name,
                                   position: place.geometry.location
                       });
-
-          var li = document.createElement('li');
-          li.textContent = place.name;
-          placesList.appendChild(li);
+          
+          var marker = new google.maps.Marker({
+                                  map: map,
+                                  place: {
+                                    placeId: place.place_id,
+                                    location: place.geometry.location
+                                  }
+                      });
+          */
+          //var li = document.createElement('li');
+          //li.textContent = place.name;
+          //placesList.appendChild(li);
 
           bounds.extend(place.geometry.location);
         }
@@ -118,15 +127,17 @@
             lat: lat, 
             lng: lng
           },
-          zoom: 11
+          zoom: 9
         });
         var request = {
           query: 'Walmart',
           fields: ['name', 'geometry'],
           locationBias: {
-            lat: lat,
-            lng: lng,
-            radius: 5000
+            center: {
+              lat: lat,
+              lng: lng
+            },
+            radius: 50000
           }
         };
         var placesService = new google.maps.places.PlacesService(map);
@@ -137,7 +148,7 @@
             //for (var i = 0; i < results.length; i++) {
               //createMarker(results[i]);
             //}
-            map.setCenter(results[0].geometry.location);
+            //map.setCenter(results[0].geometry.location);
           }
           else console.log('failed places status: ' + status);
         });
