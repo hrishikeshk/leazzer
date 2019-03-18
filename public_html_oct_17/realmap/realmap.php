@@ -126,6 +126,9 @@
           document.getElementById('threemile').checked = false;
         if(radius_miles != 5)
           document.getElementById('fivemile').checked = false;
+        
+        var mapCenter = map.getCenter();
+        drawPlaces(mapCenter.lat(), mapCenter.lng());
       }
 
       function clearCircle(){
@@ -173,15 +176,16 @@
         }
         map.fitBounds(bounds);
         //map.setCenter(bounds.getCenter());
-        //if(numPlaces > 1){
-          //map.setZoom(11);
-        //}
+        if(numPlaces > 1){
+          map.setZoom(12);
+        }
       }
 
       function getPlaces(place, icon, lat, lng){
         var r_m = radius_miles * 1.6 * 1000;
         if(circle != null && circle != undefined)
           r_m = circle.getRadius();
+console.log('Places data: ' + lat + ' : ' + lng + ' : ' + r_m + ' : ' + place);
         var request = {
           query: place,
           fields: ['name', 'geometry'],
@@ -206,12 +210,42 @@
           else console.log('failed places status for ' + place + ': ' + status);
         });
       }
+      
+      function getTextPlaces(place, icon, lat, lng){
+        var r_m = radius_miles * 1.6 * 1000;
+        if(circle != null && circle != undefined)
+          r_m = circle.getRadius();
+console.log('TEXT Places data: ' + lat + ' : ' + lng + ' : ' + r_m + ' : ' + place);
+        var request = {
+          query: place,
+          fields: ['name', 'geometry'],
+          location: new google.maps.LatLng(lat, lng),
+          radius: r_m
+        };
+        var placesService = new google.maps.places.PlacesService(map);
+        placesService.textSearch(request, function(results, status) {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            console.log('num results for ' + place + ': ' + results.length);
+            createMarkers(results, icon);
+            //for (var i = 0; i < results.length; i++) {
+              //createMarker(results[i]);
+            //}
+            //map.setCenter(results[0].geometry.location);
+          }
+          else console.log('failed places status for ' + place + ': ' + status);
+        });
+      }
 
       function drawPlaces(lat, lng){
-        getPlaces('Walmart', '/realmap/images/wm_l.jpg', lat, lng);
+        /* getPlaces('Walmart', '/realmap/images/wm_l.jpg', lat, lng);
         getPlaces('Walgreens', '/realmap/images/wg_l.png', lat, lng);
         getPlaces('CVS', '/realmap/images/cvs_l.png', lat, lng);
-        getPlaces('McDonalds', '/realmap/images/md_l.png', lat, lng);
+        getPlaces('McDonalds', '/realmap/images/md_l.png', lat, lng);*/
+        
+        getTextPlaces('Walmart', '/realmap/images/wm_l.jpg', lat, lng);
+        getTextPlaces('Walgreens', '/realmap/images/wg_l.png', lat, lng);
+        getTextPlaces('CVS', '/realmap/images/cvs_l.png', lat, lng);
+        getTextPlaces('McDonalds', '/realmap/images/md_l.png', lat, lng);
       }
 
       function initMap(){
