@@ -15,7 +15,7 @@
     $zip = $_POST['zip'];
     $lat_lng = get_lat_lng($zip);
   }
-  
+
   function file_get_contents_curl($url){
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -56,31 +56,92 @@
     </style>
   </head>
   <body>
+  <table>
+  <tr>
+  <td>
   <form action="realmap.php" method="post">
     <table>
     <tr>
-      <td>Address: <input type="text" id="address" name="address" /> -- OR -- </td>
-      <td>City: <input type="text" id="city" name="city" /> -- OR -- </td>
-      <td>Zip: <input type="text" id="zip" name="zip" /></td>
+      <td>Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" /> -- OR -- </td>
+      <td>City: <input type="text" id="city" name="city" value="<?php echo $city; ?>" /> -- OR -- </td>
+      <td>Zip: <input type="text" id="zip" name="zip" value="<?php echo $zip; ?>" /></td>
       <td><input type="submit" value="View Location" /></td>
     </tr>
     </table>
   </form>
+  <br/>
+  <form>
+    Draw circular region to drill down: 
+    <input type="radio" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
+    <input type="radio" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
+    <input type="radio" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
+    <input type="button" value="Clear Circle" onclick="javascript:clearCircle();" />
+  </form>
   <br />
+  </td>
+  <td>
+  <!-- Legend: <br />
+  <img src="/realmap/images/wm_l.jpg" height="10px" width="10px" /> - Walmart <br />
+  <img src="/realmap/images/wg_l.png" height="10px" width="10px" /> - Walgreens <br />
+  <img src="/realmap/images/cvs_l.png" height="10px" width="10px" /> - CVS <br />
+  <img src="/realmap/images/md_l.png" height="10px" width="10px" /> - McDonalds -->
+  </td>
+  </tr>
+  </table>
   <div id="map"></div>
   <div id="places"></div>
   <script>
       var map;
       var placesService;
       var infoWindow;
-      function createMarkers(places){
-        var bounds = new google.maps.LatLngBounds();
+      var numPlaces = 0;
+      var bounds;
+      var circle;
+      var radius_miles = 10;
+      var circleEvent;
+
+      function cMile(r_m){
+        radius_miles = r_m;
+        if(circle != undefined && circle != null){
+          circle.setRadius(radius_miles * 1.6 * 1000);
+          circle.setVisible(true);
+        }
+        else{
+          circle = new google.maps.Circle({
+            center: map.getCenter(),
+            editable: true,
+            fillColor: 'grey',
+            fillOpacity: 0.2,
+            map: map,
+            radius: radius_miles * 1.6 * 1000
+          });
+          circleEvent = new google.maps.event.addListener(circle, 'radius_changed', function() {
+            var mapCenter = map.getCenter();
+            drawPlaces(mapCenter.lat(), mapCenter.lng());
+          });
+        }
+        if(radius_miles != 1)
+          document.getElementById('onemile').checked = false;
+        if(radius_miles != 3)
+          document.getElementById('threemile').checked = false;
+        if(radius_miles != 5)
+          document.getElementById('fivemile').checked = false;
+      }
+
+      function clearCircle(){
+        circle.setVisible(false);
+        document.getElementById('onemile').checked = false;
+        document.getElementById('threemile').checked = false;
+        document.getElementById('fivemile').checked = false;
+      }
+      
+      function createMarkers(places, icon){
         var placesList = document.getElementById('places');
 
         for (var i = 0, place; place = places[i]; i++) {
           console.log('place # ' + i + ' : ' + place.name + ' : ' + JSON.stringify(place));
-          /*var image = {
-                        url: place.icon,
+          var image = {
+                        url: icon,
                         size: new google.maps.Size(71, 71),
                         origin: new google.maps.Point(0, 0),
                         anchor: new google.maps.Point(17, 34),
@@ -93,24 +154,66 @@
                                   title: place.name,
                                   position: place.geometry.location
                       });
-          
+          marker.setAnimation(google.maps.Animation.DROP);
+          /*
           var marker = new google.maps.Marker({
                                   map: map,
                                   place: {
                                     placeId: place.place_id,
                                     location: place.geometry.location
                                   }
-                      });
-          */
-          //var li = document.createElement('li');
-          //li.textContent = place.name;
-          //placesList.appendChild(li);
+                      });*/
+          
+          var li = document.createElement('li');
+          li.textContent = place.name;
+          placesList.appendChild(li);
 
           bounds.extend(place.geometry.location);
+          numPlaces++;
         }
         map.fitBounds(bounds);
+        //map.setCenter(bounds.getCenter());
+        //if(numPlaces > 1){
+          //map.setZoom(11);
+        //}
       }
-      
+
+      function getPlaces(place, icon, lat, lng){
+        var r_m = radius_miles * 1.6 * 1000;
+        if(circle != null && circle != undefined)
+          r_m = circle.getRadius();
+        var request = {
+          query: place,
+          fields: ['name', 'geometry'],
+          locationBias: {
+            center: {
+              lat: lat,
+              lng: lng
+            },
+            radius: r_m
+          }
+        };
+        var placesService = new google.maps.places.PlacesService(map);
+        placesService.findPlaceFromQuery(request, function(results, status) {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            console.log('num results for ' + place + ': ' + results.length);
+            createMarkers(results, icon);
+            //for (var i = 0; i < results.length; i++) {
+              //createMarker(results[i]);
+            //}
+            //map.setCenter(results[0].geometry.location);
+          }
+          else console.log('failed places status for ' + place + ': ' + status);
+        });
+      }
+
+      function drawPlaces(lat, lng){
+        getPlaces('Walmart', '/realmap/images/wm_l.jpg', lat, lng);
+        getPlaces('Walgreens', '/realmap/images/wg_l.png', lat, lng);
+        getPlaces('CVS', '/realmap/images/cvs_l.png', lat, lng);
+        getPlaces('McDonalds', '/realmap/images/md_l.png', lat, lng);
+      }
+
       function initMap(){
         <?php
           if(count($lat_lng) > 0){
@@ -121,40 +224,19 @@
             echo 'var lat = 40.397;';
             echo 'var lng = -101.644;';
           }
+          
         ?>
         map = new google.maps.Map(document.getElementById('map'), {
           center: {
             lat: lat, 
             lng: lng
           },
-          zoom: 9
+          zoom: 14
         });
-        var request = {
-          query: 'Walmart',
-          fields: ['name', 'geometry'],
-          locationBias: {
-            center: {
-              lat: lat,
-              lng: lng
-            },
-            radius: 50000
-          }
-        };
-        var placesService = new google.maps.places.PlacesService(map);
-        placesService.findPlaceFromQuery(request, function(results, status) {
-          if (status === google.maps.places.PlacesServiceStatus.OK) {
-            console.log('num results: ' + results.length);
-            createMarkers(results);
-            //for (var i = 0; i < results.length; i++) {
-              //createMarker(results[i]);
-            //}
-            //map.setCenter(results[0].geometry.location);
-          }
-          else console.log('failed places status: ' + status);
-        });
-        
+        bounds = new google.maps.LatLngBounds();
+        drawPlaces(lat, lng);
       }
-      
+
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&callback=initMap&libraries=places,drawing"
     async defer></script>
