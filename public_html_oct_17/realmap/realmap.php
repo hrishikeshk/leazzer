@@ -98,8 +98,9 @@
       var bounds;
       var circle;
       var radius_miles = 10;
-      var circleEvent;
-
+      var circleRCEvent;
+      var circleCCEvent;
+      
       function cMile(r_m){
         radius_miles = r_m;
         if(circle != undefined && circle != null){
@@ -115,8 +116,12 @@
             map: map,
             radius: radius_miles * 1.6 * 1000
           });
-          circleEvent = new google.maps.event.addListener(circle, 'radius_changed', function() {
-            var mapCenter = map.getCenter();
+          circleRCEvent = new google.maps.event.addListener(circle, 'radius_changed', function() {
+            var mapCenter = circle.getCenter();
+            drawPlaces(mapCenter.lat(), mapCenter.lng());
+          });
+          circleCCEvent = new google.maps.event.addListener(circle, 'center_changed', function() {
+            var mapCenter = circle.getCenter();
             drawPlaces(mapCenter.lat(), mapCenter.lng());
           });
         }
@@ -127,8 +132,10 @@
         if(radius_miles != 5)
           document.getElementById('fivemile').checked = false;
         
-        var mapCenter = map.getCenter();
+        var mapCenter = circle.getCenter();
+        
         drawPlaces(mapCenter.lat(), mapCenter.lng());
+        map.setCenter(circle.getCenter());
       }
 
       function clearCircle(){
@@ -136,13 +143,14 @@
         document.getElementById('onemile').checked = false;
         document.getElementById('threemile').checked = false;
         document.getElementById('fivemile').checked = false;
+        circle = null;
       }
-      
+
       function createMarkers(places, icon){
         var placesList = document.getElementById('places');
 
         for (var i = 0, place; place = places[i]; i++) {
-          console.log('place # ' + i + ' : ' + place.name + ' : ' + JSON.stringify(place));
+          ////console.log('place # ' + i + ' : ' + place.name + ' : ' + JSON.stringify(place));
           var image = {
                         url: icon,
                         size: new google.maps.Size(71, 71),
@@ -174,18 +182,23 @@
           bounds.extend(place.geometry.location);
           numPlaces++;
         }
-        map.fitBounds(bounds);
+        ////map.fitBounds(bounds);
         //map.setCenter(bounds.getCenter());
         if(numPlaces > 1){
           map.setZoom(12);
         }
       }
 
-      function getPlaces(place, icon, lat, lng){
+      function getPlaces(place, icon, lt, lg){
         var r_m = radius_miles * 1.6 * 1000;
-        if(circle != null && circle != undefined)
+        var lat = lt;
+        var lng = lg;
+        if(circle != null && circle != undefined){
           r_m = circle.getRadius();
-console.log('Places data: ' + lat + ' : ' + lng + ' : ' + r_m + ' : ' + place);
+          lat = circle.getCenter().lat();
+          lng = circle.getCenter().lng();
+        }
+////console.log('Places data: ' + lat + ' : ' + lng + ' : ' + r_m + ' : ' + place);
         var request = {
           query: place,
           fields: ['name', 'geometry'],
@@ -210,12 +223,12 @@ console.log('Places data: ' + lat + ' : ' + lng + ' : ' + r_m + ' : ' + place);
           else console.log('failed places status for ' + place + ': ' + status);
         });
       }
-      
+
       function getTextPlaces(place, icon, lat, lng){
         var r_m = radius_miles * 1.6 * 1000;
         if(circle != null && circle != undefined)
           r_m = circle.getRadius();
-console.log('TEXT Places data: ' + lat + ' : ' + lng + ' : ' + r_m + ' : ' + place);
+//console.log('TEXT Places data: ' + lat + ' : ' + lng + ' : ' + r_m + ' : ' + place);
         var request = {
           query: place,
           fields: ['name', 'geometry'],
@@ -232,7 +245,7 @@ console.log('TEXT Places data: ' + lat + ' : ' + lng + ' : ' + r_m + ' : ' + pla
             //}
             //map.setCenter(results[0].geometry.location);
           }
-          else console.log('failed places status for ' + place + ': ' + status);
+          else console.log('failed TEXT places status for ' + place + ': ' + status);
         });
       }
 
@@ -241,7 +254,7 @@ console.log('TEXT Places data: ' + lat + ' : ' + lng + ' : ' + r_m + ' : ' + pla
         getPlaces('Walgreens', '/realmap/images/wg_l.png', lat, lng);
         getPlaces('CVS', '/realmap/images/cvs_l.png', lat, lng);
         getPlaces('McDonalds', '/realmap/images/md_l.png', lat, lng);*/
-        
+        numPlaces = 0;
         getTextPlaces('Walmart', '/realmap/images/wm_l.jpg', lat, lng);
         getTextPlaces('Walgreens', '/realmap/images/wg_l.png', lat, lng);
         getTextPlaces('CVS', '/realmap/images/cvs_l.png', lat, lng);
