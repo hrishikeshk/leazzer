@@ -93,7 +93,6 @@
   <script>
       var map;
       var placesService;
-      var infoWindow;
       var numPlaces = 0;
       var bounds;
       var circle;
@@ -119,10 +118,12 @@
           circleRCEvent = new google.maps.event.addListener(circle, 'radius_changed', function() {
             var mapCenter = circle.getCenter();
             drawPlaces(mapCenter.lat(), mapCenter.lng());
+            fetchAADT();
           });
           circleCCEvent = new google.maps.event.addListener(circle, 'center_changed', function() {
             var mapCenter = circle.getCenter();
             drawPlaces(mapCenter.lat(), mapCenter.lng());
+            fetchAADT();
           });
         }
         if(radius_miles != 1)
@@ -136,6 +137,7 @@
         
         drawPlaces(mapCenter.lat(), mapCenter.lng());
         map.setCenter(circle.getCenter());
+        fetchAADT();
       }
 
       function clearCircle(){
@@ -146,6 +148,80 @@
         circle = null;
       }
 
+      function addInfoWindow(marker, contentString){
+        var infowindow = new google.maps.InfoWindow({
+              content: contentString
+            });
+        infowindow.open(map, marker);
+      }
+      
+      function createAADTMarkers(places, icon){
+        for (var i = 0, place; place = places[i]; i++) {
+          var image = {
+                        url: icon,
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(25, 25)
+          };
+          var marker = new google.maps.Marker({
+                                  map: map,
+                                  icon: image,
+                                  title: 'Traffic (2017): ' + place.aadt_2017,
+                                  position: {lat: place.lat, lng: place.lng}
+                      });
+          marker.setAnimation(google.maps.Animation.DROP);
+          ////console.log(place.aadt_2017 + ' : ' + place.lat + ' : ' + place.lng);
+          var aadtFlagClickEvent = new google.maps.event.addListener(marker, 'click', function() {
+            var contentString = '<b>Traffic Average(2017): </b>' + place.aadt_2017 + '<br />' +
+                                '<b>Traffic Average(2016): </b>' + place.aadt_2016 + '<br />' +
+                                '<b>(lat,lng): </b>' + '(' + place.lat + ', ' + place.lng + ')' + '<br />';
+            //var contentString = '<b>(lat,lng): </b>' + '(' + marker.position.lat() + ', ' + marker.position.lng() + ')' + '<br />';
+            var infowindow = new google.maps.InfoWindow({
+              content: contentString
+            });
+            infowindow.open(map, this);
+            //addInfoWindow(marker, contentString);
+          });
+        }
+      }
+
+      function js_http(url){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open( "GET", url, false );
+        xmlHttp.send( null );
+        return xmlHttp.responseText;
+      }
+
+      function fetchAADT(){
+        var c = map.getCenter();
+        if(circle != null && circle != undefined)
+          c = circle.getCenter();
+        var lat = c.lat();
+        var lng = c.lng();
+        var nwlat = lat;
+        var nwlng = lng;
+        var selat = lat - 0.1;
+        var selng = lng + 0.1;
+
+        var query = 'https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_AADT_Annuals/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID,DIST_NM,CNTY_NM,T_FLAG,AADT_2017,AADT_2016,ZLEVEL,GlobalID&geometry=' + nwlng + '%2C' + nwlat + '%2C' + selng + '%2C3' + selat + '&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnDistinctValues=true&outSR=4326&f=json';
+
+        var result_string = js_http(query);
+	      console.log(result_string);
+        var result = JSON.parse(result_string);
+
+        var trafficPlaces = [];
+        var features = result.features;
+        for(i = 0; i < features.length; i++){
+          trafficPlaces.push({ lat: features[i].geometry.y, 
+                               lng: features[i].geometry.x, 
+                               aadt_2016: features[i].attributes.AADT_2016,
+                               aadt_2017: features[i].attributes.AADT_2017
+                             });
+        }
+        createAADTMarkers(trafficPlaces, '/realmap/images/aadt.jpeg');
+      }
+      
       function createMarkers(places, icon){
         var placesList = document.getElementById('places');
 
@@ -282,6 +358,7 @@
         });
         bounds = new google.maps.LatLngBounds();
         drawPlaces(lat, lng);
+        fetchAADT();
       }
 
   </script>
