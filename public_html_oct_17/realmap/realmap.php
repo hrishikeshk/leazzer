@@ -152,17 +152,22 @@
         var infowindow = new google.maps.InfoWindow({
               content: contentString
             });
+        //infowindow.setContent(contentString);
+        infowindow.setContent(marker.aadt);
         infowindow.open(map, marker);
       }
-      
-      function createAADTMarkers(places, icon){
+
+      function createAADTMarkers(places){
         for (var i = 0, place; place = places[i]; i++) {
+           var iconAADT = '/realmap/images/aadt_up.png';
+          if(place.aadt_2017 < place.aadt_2016)
+            iconAADT = '/realmap/images/aadt_down.png';
           var image = {
-                        url: icon,
+                        url: iconAADT,
                         size: new google.maps.Size(71, 71),
                         origin: new google.maps.Point(0, 0),
                         anchor: new google.maps.Point(17, 34),
-                        scaledSize: new google.maps.Size(25, 25)
+                        scaledSize: new google.maps.Size(20, 20)
           };
           var marker = new google.maps.Marker({
                                   map: map,
@@ -171,17 +176,19 @@
                                   position: {lat: place.lat, lng: place.lng}
                       });
           marker.setAnimation(google.maps.Animation.DROP);
-          ////console.log(place.aadt_2017 + ' : ' + place.lat + ' : ' + place.lng);
+          //marker.setLabel('2017: ' + place.aadt_2017 + ', 2016: ' + place.aadt_2016 + '}');
+          marker['aadt'] = '<b>Traffic Average(2017): </b>' + place.aadt_2017 + ' vehicles/day<br />' +
+                                '<b>Traffic Average(2016): </b>' + place.aadt_2016 + ' vehicles/day<br />';
           var aadtFlagClickEvent = new google.maps.event.addListener(marker, 'click', function() {
-            var contentString = '<b>Traffic Average(2017): </b>' + place.aadt_2017 + '<br />' +
+            /*var contentString = '<b>Traffic Average(2017): </b>' + place.aadt_2017 + '<br />' +
                                 '<b>Traffic Average(2016): </b>' + place.aadt_2016 + '<br />' +
-                                '<b>(lat,lng): </b>' + '(' + place.lat + ', ' + place.lng + ')' + '<br />';
-            //var contentString = '<b>(lat,lng): </b>' + '(' + marker.position.lat() + ', ' + marker.position.lng() + ')' + '<br />';
-            var infowindow = new google.maps.InfoWindow({
+                                '<b>(lat,lng): </b>' + '(' + place.lat + ', ' + place.lng + ')' + '<br />';*/
+            var contentString = '<b>(lat,lng): </b>' + '(' + this.position.lat() + ', ' + this.position.lng() + ')' + '<br />';
+            /*var infowindow = new google.maps.InfoWindow({
               content: contentString
             });
-            infowindow.open(map, this);
-            //addInfoWindow(marker, contentString);
+            infowindow.open(map, this);*/
+            addInfoWindow(this, contentString);
           });
         }
       }
@@ -199,15 +206,15 @@
           c = circle.getCenter();
         var lat = c.lat();
         var lng = c.lng();
-        var nwlat = lat;
-        var nwlng = lng;
-        var selat = lat - 0.1;
-        var selng = lng + 0.1;
+        var nwlat = lat - 0.2;
+        var nwlng = lng + 0.2;
+        var selat = lat + 0.2;
+        var selng = lng - 0.2;
 
         var query = 'https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_AADT_Annuals/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID,DIST_NM,CNTY_NM,T_FLAG,AADT_2017,AADT_2016,ZLEVEL,GlobalID&geometry=' + nwlng + '%2C' + nwlat + '%2C' + selng + '%2C3' + selat + '&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnDistinctValues=true&outSR=4326&f=json';
 
         var result_string = js_http(query);
-	      console.log(result_string);
+	      //console.log(result_string);
         var result = JSON.parse(result_string);
 
         var trafficPlaces = [];
@@ -219,11 +226,11 @@
                                aadt_2017: features[i].attributes.AADT_2017
                              });
         }
-        createAADTMarkers(trafficPlaces, '/realmap/images/aadt.jpeg');
+        createAADTMarkers(trafficPlaces);
       }
       
       function createMarkers(places, icon){
-        var placesList = document.getElementById('places');
+        //var placesList = document.getElementById('places');
 
         for (var i = 0, place; place = places[i]; i++) {
           ////console.log('place # ' + i + ' : ' + place.name + ' : ' + JSON.stringify(place));
@@ -251,9 +258,9 @@
                                   }
                       });*/
           
-          var li = document.createElement('li');
-          li.textContent = place.name;
-          placesList.appendChild(li);
+          //var li = document.createElement('li');
+          //li.textContent = place.name;
+          //placesList.appendChild(li);
 
           bounds.extend(place.geometry.location);
           numPlaces++;
@@ -261,7 +268,7 @@
         ////map.fitBounds(bounds);
         //map.setCenter(bounds.getCenter());
         if(numPlaces > 1){
-          map.setZoom(12);
+          map.setZoom(14);
         }
       }
 
@@ -314,7 +321,7 @@
         var placesService = new google.maps.places.PlacesService(map);
         placesService.textSearch(request, function(results, status) {
           if (status === google.maps.places.PlacesServiceStatus.OK) {
-            console.log('num results for ' + place + ': ' + results.length);
+            //console.log('num results for ' + place + ': ' + results.length);
             createMarkers(results, icon);
             //for (var i = 0; i < results.length; i++) {
               //createMarker(results[i]);
@@ -354,7 +361,7 @@
             lat: lat, 
             lng: lng
           },
-          zoom: 14
+          zoom: 16
         });
         bounds = new google.maps.LatLngBounds();
         drawPlaces(lat, lng);
