@@ -234,6 +234,10 @@
 
         for (var i = 0, place; place = places[i]; i++) {
           ////console.log('place # ' + i + ' : ' + place.name + ' : ' + JSON.stringify(place));
+          if(place.name.includes('Walmart') && !place.name.includes('Walmart Supercenter'))
+            continue;
+          if(!place.name.includes('Walmart') && icon.includes('wm_l'))
+            continue;
           var image = {
                         url: icon,
                         size: new google.maps.Size(71, 71),
