@@ -45,13 +45,14 @@
     <meta charset="utf-8">
     <style>
       #map {
-        height: 80%;
-        width: 80%;
+        height: 100%;
+        width: 100%;
       }
       html, body {
         height: 100%;
-        margin: 2%;
-        padding: 0;
+        width: 100%;
+        /*margin-right: 2%;
+        padding: 2%;*/
       }
     </style>
   </head>
@@ -88,8 +89,20 @@
   </td>
   </tr>
   </table>
-  <div id="map"></div>
-  <div id="places"></div>
+  <table style="width:100%;height:100%">
+    <tr style="width:100%;height:100%">
+      <td style="width:60%;height:60%">
+        <div id="map"></div>
+      </td>
+      <td>
+        <div id="demographyDiv">
+          <table id="demography">
+          </table>
+        </div>
+        <div id="places"></div>
+      </td>
+    </tr>
+  </table>
   <script>
       var map;
       var placesService;
@@ -99,6 +112,145 @@
       var radius_miles = 10;
       var circleRCEvent;
       var circleCCEvent;
+      
+      function getInfoFromrevGC(revGCRes, typeLevel){
+        var acArr = revGCRes.address_components;
+        for(i = 0; i < acArr.length; i++){
+          var ac = acArr[i];
+          if(ac.types.includes(typeLevel))
+            return ac.long_name;
+        }
+        return '-';
+      }
+
+      function fetchDemographyData(stateStr){
+        var stateIdMap = {
+        'Alabama':1,
+        'Alaska':2,
+        'American Samoa':3,
+        'Arizona':4,
+        'Arkansas':5,
+        'California':6,
+        'Colorado':7,
+        'Connecticut':8,
+        'Delaware':9,
+        'District of Columbia':10,
+        'Florida':11,
+        'Georgia':12,
+        'Guam':13,
+        'Hawaii':14,
+        'Idaho':15,
+        'Illinois':16,
+        'Indiana':17,
+        'Iowa':18,
+        'Kansas':19,
+        'Kentucky':20,
+        'Louisiana':21,
+        'Maine':22,
+        'Maryland':23,
+        'Massachusetts':24,
+        'Michigan':25,
+        'Minnesota':26,
+        'Mississippi':27,
+        'Missouri':28,
+        'Montana':29,
+        'Nebraska':30,
+        'Nevada':31,
+        'New Hampshire':32,
+        'New Jersey':33,
+        'New Mexico':34,
+        'New York':35,
+        'North Carolina':36,
+        'North Dakota':37,
+        'Northern Mariana Islands':38,
+        'Ohio':39,
+        'Oklahoma':40,
+        'Oregon':41,
+        'Pennsylvania':42,
+        'Puerto Rico':43,
+        'Rhode Island':44,
+        'South Carolina':45,
+        'South Dakota':46,
+        'Tennessee':47,
+        'Texas':48,
+        'U.S. Minor Outlying Islands':49,
+        'Utah':50,
+        'Vermont':51,
+        'Virgin Islands (U.S.)':52,
+        'Virginia':53,
+        'Washington':54,
+        'West Virginia':55,
+        'Wisconsin':56,
+        'Wyoming':57
+        };
+        var state = stateIdMap[stateStr];
+        var query2016 = 'https://api.census.gov/data/2016/acs/acs1?get=B06011_001E,B01003_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
+        var result_string2016 = js_http(query2016);
+	      console.log("2016 : " + result_string2016);
+        var result2016 = JSON.parse(result_string2016);
+        
+        var query2017 = 'https://api.census.gov/data/2017/acs/acs1?get=B06011_001E,B01003_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
+        var result_string2017 = js_http(query2017);
+	      console.log("2016 : " + result_string2017);
+        var result2017 = JSON.parse(result_string2017);
+        
+        return [result2016, result2017];
+      }
+      
+      function showDemography(demArray2){
+        var numPlaces = demArray2[0].length;
+        var placesList = document.getElementById('demography');
+        for(i = 1; i < numPlaces; i++){
+          var tr = document.createElement('tr');
+          
+          var td0 = document.createElement('td');
+          td0.textContent = demArray2[0][i][2];
+          
+          var td1 = document.createElement('td');
+          td1.textContent = demArray2[0][i][0];
+          
+          var td2 = document.createElement('td');
+          td2.textContent = demArray2[0][i][1];
+          
+          tr.appendChild(td0);
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          
+          placesList.appendChild(tr);
+        }
+      }
+      
+      function getDemography(){
+        // get Map center or circle center
+        var center = map.getCenter();
+        if(circle != null && circle != undefined)
+          center = circle.getCenter();
+        // get reverse geocoding - using latlng of center and get location address components
+        var revGC = new google.maps.Geocoder();
+        var latlng = {lat: center.lat(),
+                      lng: center.lng()
+                     };
+        revGC.geocode({ location: latlng}, function(results, status) {
+            if (status === 'OK') {
+              if (results[0]) {
+                // get State and then state number from mapping
+                var stateStr = getInfoFromrevGC(results[0], 'administrative_area_level_1');
+                // get city name
+                var city = getInfoFromrevGC(results[0], 'locality');
+                // get 2016 & 2017 record of demography for all places in State
+                var dem2Arr = fetchDemographyData(stateStr);
+                //// get record of this city if it is in demography record
+                
+                // print 4 numbers and trend on right panel space
+                showDemography(dem2Arr);
+              } else {
+                window.alert('No results found');
+              }
+            } else {
+              window.alert('Reverse Geocoder failed due to: ' + status);
+            }
+        });
+      }
       
       function cMile(r_m){
         radius_miles = r_m;
@@ -370,6 +522,7 @@
         bounds = new google.maps.LatLngBounds();
         drawPlaces(lat, lng);
         fetchAADT();
+        getDemography();
       }
 
   </script>
