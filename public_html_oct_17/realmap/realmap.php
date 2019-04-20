@@ -91,12 +91,29 @@
   </table>
   <table style="width:100%;height:100%">
     <tr style="width:100%;height:100%">
-      <td style="width:60%;height:60%">
-        <div id="map"></div>
+      <td style="width:60%;height:40%">
+        <table style="width:100%;height:100%">
+          <tr style="width:100%;height:100%">
+            <td style="width:100%;height:100%">
+              <div id="map"></div>
+            </td>
+          </tr>
+        </table>
       </td>
-      <td>
+      <td style="width:50%;height:50%">
         <div id="demographyDiv">
-          <table id="demography">
+          <table id="demography" style="border: 1px solid black; border-radius:4px; font-size: .9em;margin-bottom: 5px;margin-left: 75px;width:80%;box-shadow: 5px 5px 5px #888888;">
+            <tr>
+              <td>
+                <b>Locality</b>
+              </td>
+              <td>
+                <b>Population(2017)</b>
+              </td>
+              <td>
+                <b>Median income(2017)</b>
+              </td>
+            </tr>
           </table>
         </div>
         <div id="places"></div>
@@ -112,7 +129,7 @@
       var radius_miles = 10;
       var circleRCEvent;
       var circleCCEvent;
-      
+
       function getInfoFromrevGC(revGCRes, typeLevel){
         var acArr = revGCRes.address_components;
         for(i = 0; i < acArr.length; i++){
@@ -127,74 +144,84 @@
         var stateIdMap = {
         'Alabama':1,
         'Alaska':2,
-        'American Samoa':3,
+        //'American Samoa':4,
         'Arizona':4,
         'Arkansas':5,
         'California':6,
-        'Colorado':7,
-        'Connecticut':8,
-        'Delaware':9,
-        'District of Columbia':10,
-        'Florida':11,
-        'Georgia':12,
-        'Guam':13,
-        'Hawaii':14,
-        'Idaho':15,
-        'Illinois':16,
-        'Indiana':17,
-        'Iowa':18,
-        'Kansas':19,
-        'Kentucky':20,
-        'Louisiana':21,
-        'Maine':22,
-        'Maryland':23,
-        'Massachusetts':24,
-        'Michigan':25,
-        'Minnesota':26,
-        'Mississippi':27,
-        'Missouri':28,
-        'Montana':29,
-        'Nebraska':30,
-        'Nevada':31,
-        'New Hampshire':32,
-        'New Jersey':33,
-        'New Mexico':34,
-        'New York':35,
-        'North Carolina':36,
-        'North Dakota':37,
-        'Northern Mariana Islands':38,
+        'Colorado':8,
+        'Connecticut':9,
+        'Delaware':10,
+        'District of Columbia':11,
+        'Florida':12,
+        'Georgia':13,
+        //'Guam':14,
+        'Hawaii':15,
+        'Idaho':16,
+        'Illinois':17,
+        'Indiana':18,
+        'Iowa':19,
+        'Kansas':20,
+        'Kentucky':21,
+        'Louisiana':22,
+        'Maine':23,
+        'Maryland':24,
+        'Massachusetts':25,
+        'Michigan':26,
+        'Minnesota':27,
+        'Mississippi':28,
+        'Missouri':29,
+        'Montana':30,
+        'Nebraska':31,
+        'Nevada':32,
+        'New Hampshire':33,
+        'New Jersey':34,
+        'New Mexico':35,
+        'New York':36,
+        'North Carolina':37,
+        'North Dakota':38,
+        //'Northern Mariana Islands':39,
         'Ohio':39,
         'Oklahoma':40,
         'Oregon':41,
         'Pennsylvania':42,
-        'Puerto Rico':43,
+        //'Puerto Rico':43,
         'Rhode Island':44,
         'South Carolina':45,
         'South Dakota':46,
         'Tennessee':47,
         'Texas':48,
-        'U.S. Minor Outlying Islands':49,
-        'Utah':50,
-        'Vermont':51,
-        'Virgin Islands (U.S.)':52,
-        'Virginia':53,
-        'Washington':54,
-        'West Virginia':55,
-        'Wisconsin':56,
-        'Wyoming':57
+        //'U.S. Minor Outlying Islands':49,
+        'Utah':49,
+        //'Vermont':50,
+        //'Virgin Islands (U.S.)':52,
+        'Virginia':51,
+        //'Washington':54,
+        //'West Virginia':55,
+        'Wisconsin':55,
+        //'Wyoming':57
         };
         var state = stateIdMap[stateStr];
-        var query2016 = 'https://api.census.gov/data/2016/acs/acs1?get=B06011_001E,B01003_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
+        if(state < 10)
+          state = '0' + state;
+        var query2016 = 'https://api.census.gov/data/2016/acs/acs1?get=B01003_001E,B06011_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
         var result_string2016 = js_http(query2016);
-	      console.log("2016 : " + result_string2016);
-        var result2016 = JSON.parse(result_string2016);
-        
-        var query2017 = 'https://api.census.gov/data/2017/acs/acs1?get=B06011_001E,B01003_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
+	      //console.log("2016 :" + result_string2016 + ":");
+        var result2016 = [[]];
+        if(result_string2016.length > 0)
+          result2016 = JSON.parse(result_string2016);
+
+        var query2017 = 'https://api.census.gov/data/2017/acs/acs1?get=B01003_001E,B06011_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
         var result_string2017 = js_http(query2017);
-	      console.log("2016 : " + result_string2017);
-        var result2017 = JSON.parse(result_string2017);
+	      //console.log("2017 :" + result_string2017 + ":");
+        var result2017 = [[]];
+        if(result_string2017.length > 0)
+          result2017 = JSON.parse(result_string2017);
         
         return [result2016, result2017];
+      }
+      
+      function sanitizeCity(city){
+        
       }
       
       function showDemography(demArray2){
@@ -204,13 +231,13 @@
           var tr = document.createElement('tr');
           
           var td0 = document.createElement('td');
-          td0.textContent = demArray2[0][i][2];
+          td0.textContent = demArray2[1][i][2];
           
           var td1 = document.createElement('td');
-          td1.textContent = demArray2[0][i][0];
+          td1.textContent = demArray2[1][i][0];
           
           var td2 = document.createElement('td');
-          td2.textContent = demArray2[0][i][1];
+          td2.textContent = '$ ' + demArray2[1][i][1];
           
           tr.appendChild(td0);
           tr.appendChild(td1);
@@ -219,7 +246,7 @@
           placesList.appendChild(tr);
         }
       }
-      
+
       function getDemography(){
         // get Map center or circle center
         var center = map.getCenter();
