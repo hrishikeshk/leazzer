@@ -89,20 +89,15 @@
   </td>
   </tr>
   </table>
-  <table style="width:100%;height:100%">
+  <table style="width:100%;height:200px" style="table-layout: fixed;">
     <tr style="width:100%;height:100%">
-      <td style="width:60%;height:40%">
-        <table style="width:100%;height:100%">
-          <tr style="width:100%;height:100%">
-            <td style="width:100%;height:100%">
-              <div id="map"></div>
-            </td>
-          </tr>
-        </table>
+      <td style="width:250px;height:200px">
+        <div id="map"></div>
       </td>
-      <td style="width:50%;height:50%">
+      <td style="width:150px;height:100px;overflow-y:auto">
         <div id="demographyDiv">
-          <table id="demography" style="border: 1px solid black; border-radius:4px; font-size: .9em;margin-bottom: 5px;margin-left: 75px;width:80%;box-shadow: 5px 5px 5px #888888;">
+          <div style="text-align:center">Demography and Incomes of prominent localities</div>
+          <table id="demography" style="border: 1px solid black; border-radius:4px; font-size: .9em;margin-bottom: 5px;margin-left: 75px;width:80%;box-shadow: 5px 5px 5px #888888;overflow-y:auto">
             <tr>
               <td>
                 <b>Locality</b>
@@ -111,7 +106,10 @@
                 <b>Population(2017)</b>
               </td>
               <td>
-                <b>Median income(2017)</b>
+                <b>Median Income(2017)</b>
+              </td>
+              <td>
+                <b>Income Trend</b>
               </td>
             </tr>
           </table>
@@ -239,9 +237,16 @@
           var td2 = document.createElement('td');
           td2.textContent = '$ ' + demArray2[1][i][1];
           
+          var td3 = document.createElement('td');
+          if(demArray2[1][i][1] >= demArray2[0][i][1])
+            td3.innerHTML = '<img src="images/aadt_up.png" style="display:inline;width:10px;height:10px;" alt="increased : 2016 income: ' + demArray2[0][i][1] + '" />';
+          else
+            td3.innerHTML = '<img src="images/aadt_down.png" style="display:inline;width:10px;height:10px;" alt="reduced : 2016 income: ' + demArray2[0][i][1] + '" />';
+          
           tr.appendChild(td0);
           tr.appendChild(td1);
           tr.appendChild(td2);
+          tr.appendChild(td3);
           
           placesList.appendChild(tr);
         }
