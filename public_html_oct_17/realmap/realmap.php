@@ -1,19 +1,9 @@
 <?php
   $lat_lng = array();
   $address = '';
-  $city = '';
-  $zip = '';
   if(isset($_POST['address']) && strlen($_POST['address']) > 0){
     $address = $_POST['address'];
     $lat_lng = get_lat_lng($address);
-  }
-  else if(isset($_POST['city']) && strlen($_POST['city']) > 0){
-    $city = $_POST['city'];
-    $lat_lng = get_lat_lng($city);
-  }
-  else if(isset($_POST['zip']) && strlen($_POST['zip']) > 0){
-    $zip = $_POST['zip'];
-    $lat_lng = get_lat_lng($zip);
   }
 
   function file_get_contents_curl($url){
@@ -57,44 +47,37 @@
     </style>
   </head>
   <body>
+  
   <table>
-  <tr>
-  <td>
-  <form action="realmap.php" method="post">
-    <table>
     <tr>
-      <td>Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" /> -- OR -- </td>
-      <td>City: <input type="text" id="city" name="city" value="<?php echo $city; ?>" /> -- OR -- </td>
-      <td>Zip: <input type="text" id="zip" name="zip" value="<?php echo $zip; ?>" /></td>
-      <td><input type="submit" value="View Location" /></td>
+      <td>
+        <form action="realmap.php" method="post">
+          <table>
+            <tr>
+              <td>Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" /></td>
+              <td><input type="submit" value="View Location" /></td>
+            </tr>
+          </table>
+        </form>
+        <br/>
+        <form>
+          Draw circular region to drill down: 
+          <input type="checkbox" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
+          <input type="checkbox" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
+          <input type="checkbox" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
+          <input type="button" value="Clear Circles" onclick="javascript:clearCircles();" />
+        </form>
+        <br />
+      </td>
     </tr>
-    </table>
-  </form>
-  <br/>
-  <form>
-    Draw circular region to drill down: 
-    <input type="radio" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
-    <input type="radio" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
-    <input type="radio" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
-    <input type="button" value="Clear Circle" onclick="javascript:clearCircle();" />
-  </form>
-  <br />
-  </td>
-  <td>
-  <!-- Legend: <br />
-  <img src="/realmap/images/wm_l.jpg" height="10px" width="10px" /> - Walmart <br />
-  <img src="/realmap/images/wg_l.png" height="10px" width="10px" /> - Walgreens <br />
-  <img src="/realmap/images/cvs_l.png" height="10px" width="10px" /> - CVS <br />
-  <img src="/realmap/images/md_l.png" height="10px" width="10px" /> - McDonalds -->
-  </td>
-  </tr>
   </table>
-  <table style="width:100%;height:200px" style="table-layout: fixed;">
+  
+  <table style="width:100%;height:100%" style="table-layout: fixed;">
     <tr style="width:100%;height:100%">
-      <td style="width:250px;height:200px">
+      <td style="width:100%;height:100%">
         <div id="map"></div>
       </td>
-      <td style="width:150px;height:100px;overflow-y:auto">
+      <!--td style="width:150px;height:100px;overflow-y:auto">
         <div id="demographyDiv">
           <div style="text-align:center">Demography and Incomes of prominent localities</div>
           <table id="demography" style="border: 1px solid black; border-radius:4px; font-size: .9em;margin-bottom: 5px;margin-left: 75px;width:80%;box-shadow: 5px 5px 5px #888888;overflow-y:auto">
@@ -115,7 +98,7 @@
           </table>
         </div>
         <div id="places"></div>
-      </td>
+      </td-->
     </tr>
   </table>
   <script>
@@ -123,10 +106,10 @@
       var placesService;
       var numPlaces = 0;
       var bounds;
-      var circle;
+      var circles = [null, null, null];
       var radius_miles = 10;
-      var circleRCEvent;
-      var circleCCEvent;
+      ////var circleRCEvent;
+      ////var circleCCEvent;
 
       function getInfoFromrevGC(revGCRes, typeLevel){
         var acArr = revGCRes.address_components;
@@ -255,8 +238,12 @@
       function getDemography(){
         // get Map center or circle center
         var center = map.getCenter();
-        if(circle != null && circle != undefined)
-          center = circle.getCenter();
+        /*if(circle1 != null && circle1 != undefined)
+          center = circle1.getCenter();
+        if(circle3 != null && circle3 != undefined)
+          center = circle3.getCenter();
+        if(circle5 != null && circle5 != undefined)
+          center = circle5.getCenter();*/
         // get reverse geocoding - using latlng of center and get location address components
         var revGC = new google.maps.Geocoder();
         var latlng = {lat: center.lat(),
@@ -284,14 +271,36 @@
         });
       }
       
+      function rad_idx(r){
+        if(r == 1)
+          return 0;
+        if(r == 3)
+          return 1;
+        return 2;
+      }
+      
       function cMile(r_m){
+        var idx = rad_idx(r_m);
+        var lrs = ['onemile', 'threemile', 'fivemile'];
+        var show = document.getElementById(lrs[idx]).checked;
+        if(show == true){
+          cMileI(r_m)
+        }
+        else{
+          circles[idx].setVisible(false);
+          circles[idx] = null;
+        }
+      }
+      
+      function cMileI(r_m){
         radius_miles = r_m;
+        var circle = circles[rad_idx(r_m)];
         if(circle != undefined && circle != null){
           circle.setRadius(radius_miles * 1.6 * 1000);
           circle.setVisible(true);
         }
         else{
-          circle = new google.maps.Circle({
+          circles[rad_idx(r_m)] = new google.maps.Circle({
             center: map.getCenter(),
             editable: true,
             fillColor: 'grey',
@@ -299,23 +308,18 @@
             map: map,
             radius: radius_miles * 1.6 * 1000
           });
-          circleRCEvent = new google.maps.event.addListener(circle, 'radius_changed', function() {
+          var circle = circles[rad_idx(r_m)];
+          var circleRCEvent = new google.maps.event.addListener(circle, 'radius_changed', function() {
             var mapCenter = circle.getCenter();
             drawPlaces(mapCenter.lat(), mapCenter.lng());
             fetchAADT();
           });
-          circleCCEvent = new google.maps.event.addListener(circle, 'center_changed', function() {
+          var circleCCEvent = new google.maps.event.addListener(circle, 'center_changed', function() {
             var mapCenter = circle.getCenter();
             drawPlaces(mapCenter.lat(), mapCenter.lng());
             fetchAADT();
           });
         }
-        if(radius_miles != 1)
-          document.getElementById('onemile').checked = false;
-        if(radius_miles != 3)
-          document.getElementById('threemile').checked = false;
-        if(radius_miles != 5)
-          document.getElementById('fivemile').checked = false;
         
         var mapCenter = circle.getCenter();
         
@@ -324,12 +328,21 @@
         fetchAADT();
       }
 
-      function clearCircle(){
-        circle.setVisible(false);
+      function clearCircles(){
+        /*circle.setVisible(false);
         document.getElementById('onemile').checked = false;
         document.getElementById('threemile').checked = false;
         document.getElementById('fivemile').checked = false;
         circle = null;
+        (*/
+        for(var i = 0; i < 3; i++){
+          if(circles[i] != null)
+            circles[i].setVisible(false);
+        }
+        document.getElementById('onemile').checked = false;
+        document.getElementById('threemile').checked = false;
+        document.getElementById('fivemile').checked = false;
+        circles = [null, null, null];
       }
 
       function addInfoWindow(marker, contentString){
@@ -386,8 +399,20 @@
 
       function fetchAADT(){
         var c = map.getCenter();
-        if(circle != null && circle != undefined)
-          c = circle.getCenter();
+        var circleDrawn = false;
+        for(var i = 0; i < 3; ++i){
+          var circle = circles[i];
+          if(circle != null && circle != undefined){
+            c = circle.getCenter();
+            fetchAADTI(c);
+            circleDrawn = true;
+          }
+        }
+        if(circleDrawn == false)
+          fetchAADTI(c);
+      }
+
+      function fetchAADTI(c){
         var lat = c.lat();
         var lng = c.lng();
         var nwlat = lat - 0.2;
@@ -464,12 +489,22 @@
         var r_m = radius_miles * 1.6 * 1000;
         var lat = lt;
         var lng = lg;
-        if(circle != null && circle != undefined){
-          r_m = circle.getRadius();
-          lat = circle.getCenter().lat();
-          lng = circle.getCenter().lng();
+        for(var i = 0; i < 3; i++){
+          var circle = circles[i];
+          if(circle != null && circle != undefined){
+            r_m = circle.getRadius();
+            lat = circle.getCenter().lat();
+            lng = circle.getCenter().lng();
+            getPlacesI(place, icon, lt, lg, r_m, lat, lng);
+          }
         }
-////console.log('Places data: ' + lat + ' : ' + lng + ' : ' + r_m + ' : ' + place);
+      }
+
+      function getPlacesI(place, icon, lt, lg, r_m, lat, lng){
+        var r_m = radius_miles * 1.6 * 1000;
+        var lat = lt;
+        var lng = lg;
+
         var request = {
           query: place,
           fields: ['name', 'geometry'],
@@ -497,9 +532,16 @@
 
       function getTextPlaces(place, icon, lat, lng){
         var r_m = radius_miles * 1.6 * 1000;
-        if(circle != null && circle != undefined)
-          r_m = circle.getRadius();
-//console.log('TEXT Places data: ' + lat + ' : ' + lng + ' : ' + r_m + ' : ' + place);
+        for(var i = 0; i < 3; i++){
+          var circle = circles[i];
+          if(circle != null && circle != undefined){
+            r_m = circle.getRadius();
+            getTextPlacesI(place, icon, lat, lng, r_m);
+          }
+        }
+      }
+
+      function getTextPlacesI(place, icon, lat, lng, r_m){
         var request = {
           query: place,
           fields: ['name', 'geometry'],
@@ -521,10 +563,6 @@
       }
 
       function drawPlaces(lat, lng){
-        /* getPlaces('Walmart', '/realmap/images/wm_l.jpg', lat, lng);
-        getPlaces('Walgreens', '/realmap/images/wg_l.png', lat, lng);
-        getPlaces('CVS', '/realmap/images/cvs_l.png', lat, lng);
-        getPlaces('McDonalds', '/realmap/images/md_l.png', lat, lng);*/
         numPlaces = 0;
         getTextPlaces('Walmart', '/realmap/images/wm_l.jpg', lat, lng);
         getTextPlaces('Walgreens', '/realmap/images/wg_l.png', lat, lng);
@@ -554,7 +592,7 @@
         bounds = new google.maps.LatLngBounds();
         drawPlaces(lat, lng);
         fetchAADT();
-        getDemography();
+        ////getDemography();
       }
 
   </script>
