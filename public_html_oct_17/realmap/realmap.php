@@ -72,7 +72,7 @@
     </tr>
   </table>
   
-  <table style="width:100%;height:100%" style="table-layout: fixed;">
+  <table style="width:100%;height:80%" style="table-layout: fixed;">
     <tr style="width:100%;height:100%">
       <td style="width:100%;height:100%">
         <div id="map"></div>
@@ -108,8 +108,80 @@
       var bounds;
       var circles = [null, null, null];
       var radius_miles = 10;
-      ////var circleRCEvent;
-      ////var circleCCEvent;
+      
+      var overlay;
+      
+      ////
+      function USGSOverlay(map) {
+
+        // Initialize all properties.
+        this.map_ = map;
+
+        this.div_ = null;
+
+        this.setMap(map);
+      }
+
+      USGSOverlay.prototype.onAdd = function() {
+
+        var div = document.createElement('div');
+        div.style.borderStyle = 'none';
+        div.style.borderWidth = '0px';
+        div.style.position = 'absolute';
+        div.html('Some text overlay... TODO');
+        /*<table>
+    <tr>
+      <td>
+        <form action="realmap.php" method="post">
+          <table>
+            <tr>
+              <td>Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" /></td>
+              <td><input type="submit" value="View Location" /></td>
+            </tr>
+          </table>
+        </form>
+        <br/>
+        <form>
+          Draw circular region to drill down: 
+          <input type="checkbox" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
+          <input type="checkbox" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
+          <input type="checkbox" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
+          <input type="button" value="Clear Circles" onclick="javascript:clearCircles();" />
+        </form>
+        <br />
+      </td>
+    </tr>
+  </table>*/
+                
+        ////div.appendChild(img);
+
+        this.div_ = div;
+
+        // Add the element to the "overlayLayer" pane.
+        var panes = this.getPanes();
+        panes.overlayLayer.appendChild(div);
+      };
+
+      USGSOverlay.prototype.draw = function() {
+        /*
+        var overlayProjection = this.getProjection();
+
+        var sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
+        var ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
+
+        var div = this.div_;
+        div.style.left = sw.x + 'px';
+        div.style.top = ne.y + 'px';
+        div.style.width = (ne.x - sw.x) + 'px';
+        div.style.height = (sw.y - ne.y) + 'px';
+        */
+      };
+
+      USGSOverlay.prototype.onRemove = function() {
+        this.div_.parentNode.removeChild(this.div_);
+        this.div_ = null;
+      };
+      ////
 
       function getInfoFromrevGC(revGCRes, typeLevel){
         var acArr = revGCRes.address_components;
@@ -186,14 +258,12 @@
           state = '0' + state;
         var query2016 = 'https://api.census.gov/data/2016/acs/acs1?get=B01003_001E,B06011_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
         var result_string2016 = js_http(query2016);
-	      //console.log("2016 :" + result_string2016 + ":");
         var result2016 = [[]];
         if(result_string2016.length > 0)
           result2016 = JSON.parse(result_string2016);
 
         var query2017 = 'https://api.census.gov/data/2017/acs/acs1?get=B01003_001E,B06011_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
         var result_string2017 = js_http(query2017);
-	      //console.log("2017 :" + result_string2017 + ":");
         var result2017 = [[]];
         if(result_string2017.length > 0)
           result2017 = JSON.parse(result_string2017);
@@ -357,8 +427,10 @@
       function createAADTMarkers(places){
         for (var i = 0, place; place = places[i]; i++) {
            var iconAADT = '/realmap/images/aadt_up.png';
-          if(place.aadt_2017 < place.aadt_2016)
-            iconAADT = '/realmap/images/aadt_down.png';
+          if(place.aadt_2017 < place.aadt_2016){
+            //iconAADT = '/realmap/images/aadt_down.png';
+            iconAADT = '/realmap/images/aadtdown.gif';
+          }
           var image = {
                         url: iconAADT,
                         size: new google.maps.Size(71, 71),
@@ -396,6 +468,32 @@
         xmlHttp.send( null );
         return xmlHttp.responseText;
       }
+      
+      function js_http_a0(url){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onload = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            ////document.getElementById("demo").innerHTML = this.responseText;
+            var result = JSON.parse(this.responseText);
+
+            var trafficPlaces = [];
+            var features = result.features;
+            for(i = 0; i < features.length; i++){
+              trafficPlaces.push({ lat: features[i].geometry.y, 
+                               lng: features[i].geometry.x, 
+                               aadt_2016: features[i].attributes.AADT_2016,
+                               aadt_2017: features[i].attributes.AADT_2017
+                             });
+            }
+            createAADTMarkers(trafficPlaces);
+          }
+          else
+            console.log('Not drawn: ' + this.readyState + " : " + this.status);
+        };
+        xmlHttp.open( "GET", url, true );
+        xmlHttp.send( null );
+        
+      }
 
       function fetchAADT(){
         var c = map.getCenter();
@@ -422,8 +520,8 @@
 
         var query = 'https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_AADT_Annuals/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID,DIST_NM,CNTY_NM,T_FLAG,AADT_2017,AADT_2016,ZLEVEL,GlobalID&geometry=' + nwlng + '%2C' + nwlat + '%2C' + selng + '%2C3' + selat + '&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnDistinctValues=true&outSR=4326&f=json';
 
+        /*
         var result_string = js_http(query);
-	      //console.log(result_string);
         var result = JSON.parse(result_string);
 
         var trafficPlaces = [];
@@ -436,6 +534,8 @@
                              });
         }
         createAADTMarkers(trafficPlaces);
+        */
+        js_http_a0(query);
       }
       
       function createMarkers(places, icon){
@@ -589,7 +689,10 @@
           },
           zoom: 16
         });
-        bounds = new google.maps.LatLngBounds();
+        //bounds = new google.maps.LatLngBounds();
+        USGSOverlay.prototype = new google.maps.OverlayView();
+        overlay = new USGSOverlay(map);
+        
         drawPlaces(lat, lng);
         fetchAADT();
         ////getDemography();
