@@ -69,6 +69,11 @@
         </form>
         <br />
       </td>
+      <td>
+        <input type="button" value="New Polygon" onclick="javascript:newPolygon();" />
+        <input type="button" value="Clear Current Polygon" onclick="javascript:clearCurrentPolygon();" />
+        <input type="button" value="Clear All Polygons" onclick="javascript:clearAllPolygons();" />
+      </td>
     </tr>
   </table>
   
@@ -108,7 +113,45 @@
       var bounds;
       var circles = [null, null, null];
       var radius_miles = 10;
+
+      var polygonPathsArr = [];
+      var currentPolygon = 0;
+      var polygonArr = [];
       
+      function clearAllPolygons(){
+        for(var i = 0; i < polygonArr.length; i++){
+          if(polygonArr[i] != null && polygonArr[i] != undefined){
+            polygonArr[i].setVisible(false);
+            polygonArr[i] = null;
+          }
+          if(polygonPathsArr[i] != null && polygonPathsArr[i] != undefined){
+            polygonArr[i] = null;
+          }
+        }
+        currentPolygon = 0;
+      }
+      
+      function clearCurrentPolygon(){
+          if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
+            polygonArr[currentPolygon].setVisible(false);
+            polygonArr[currentPolygon] = null;
+          }
+          if(polygonPathsArr[currentPolygon] != null && polygonPathsArr[currentPolygon] != undefined){
+            polygonPathsArr[currentPolygon].setVisible(false);
+            polygonPathsArr[currentPolygon] = null;
+          }
+          currentPolygon--;
+      }
+      
+      function newPolygon(){
+        if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
+          currentPolygon++;
+        }
+        polygonArr[currentPolygon] = null;
+        polygonPathsArr[currentPolygon] = null;
+      }
+      
+      /*      
       var overlay;
       
       ////
@@ -129,29 +172,6 @@
         div.style.borderWidth = '0px';
         div.style.position = 'absolute';
         div.html('Some text overlay... TODO');
-        /*<table>
-    <tr>
-      <td>
-        <form action="realmap.php" method="post">
-          <table>
-            <tr>
-              <td>Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" /></td>
-              <td><input type="submit" value="View Location" /></td>
-            </tr>
-          </table>
-        </form>
-        <br/>
-        <form>
-          Draw circular region to drill down: 
-          <input type="checkbox" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
-          <input type="checkbox" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
-          <input type="checkbox" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
-          <input type="button" value="Clear Circles" onclick="javascript:clearCircles();" />
-        </form>
-        <br />
-      </td>
-    </tr>
-  </table>*/
                 
         ////div.appendChild(img);
 
@@ -163,7 +183,7 @@
       };
 
       USGSOverlay.prototype.draw = function() {
-        /*
+        
         var overlayProjection = this.getProjection();
 
         var sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
@@ -174,13 +194,14 @@
         div.style.top = ne.y + 'px';
         div.style.width = (ne.x - sw.x) + 'px';
         div.style.height = (sw.y - ne.y) + 'px';
-        */
+        
       };
 
       USGSOverlay.prototype.onRemove = function() {
         this.div_.parentNode.removeChild(this.div_);
         this.div_ = null;
       };
+      */
       ////
 
       function getInfoFromrevGC(revGCRes, typeLevel){
@@ -399,12 +420,6 @@
       }
 
       function clearCircles(){
-        /*circle.setVisible(false);
-        document.getElementById('onemile').checked = false;
-        document.getElementById('threemile').checked = false;
-        document.getElementById('fivemile').checked = false;
-        circle = null;
-        (*/
         for(var i = 0; i < 3; i++){
           if(circles[i] != null)
             circles[i].setVisible(false);
@@ -621,10 +636,6 @@
           if (status === google.maps.places.PlacesServiceStatus.OK) {
             console.log('num results for ' + place + ': ' + results.length);
             createMarkers(results, icon);
-            //for (var i = 0; i < results.length; i++) {
-              //createMarker(results[i]);
-            //}
-            //map.setCenter(results[0].geometry.location);
           }
           else console.log('failed places status for ' + place + ': ' + status);
         });
@@ -632,12 +643,17 @@
 
       function getTextPlaces(place, icon, lat, lng){
         var r_m = radius_miles * 1.6 * 1000;
+        var hasCircle = false;
         for(var i = 0; i < 3; i++){
           var circle = circles[i];
           if(circle != null && circle != undefined){
             r_m = circle.getRadius();
             getTextPlacesI(place, icon, lat, lng, r_m);
+            hasCircle = true;
           }
+        }
+        if(hasCircle == false){
+          getTextPlacesI(place, icon, lat, lng, r_m);
         }
       }
 
@@ -689,13 +705,38 @@
           },
           zoom: 16
         });
-        //bounds = new google.maps.LatLngBounds();
-        USGSOverlay.prototype = new google.maps.OverlayView();
-        overlay = new USGSOverlay(map);
+        bounds = new google.maps.LatLngBounds();
+        //USGSOverlay.prototype = new google.maps.OverlayView();
+        //overlay = new USGSOverlay(map);
         
         drawPlaces(lat, lng);
         fetchAADT();
         ////getDemography();
+        
+        var mapClickEvent = google.maps.event.addListener(map, 'click', function(me) {
+            //console.log("Clicked : " + me.latLng.lat() + " : " +  me.latLng.lng());
+            if(polygonPathsArr.length <= currentPolygon){
+              polygonPathsArr.push([]);
+              polygonArr.push(null);
+            }
+            polygonPathsArr[currentPolygon].push(me.latLng);
+            if(polygonPathsArr[currentPolygon].length >= 3){
+              if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
+                polygonArr[currentPolygon].setVisible(false);
+                polygonArr[currentPolygon] = null;
+              }
+              polygonArr[currentPolygon] = new google.maps.Polygon({
+                paths: polygonPathsArr[currentPolygon],
+                strokeColor: '#FF0000',
+                strokeOpacity: 0.8,
+                strokeWeight: 3,
+                fillColor: '#FF0000',
+                fillOpacity: 0.35
+              });
+              polygonArr[currentPolygon].setMap(map);
+            }
+            console.log('In event  function... ');
+        });
       }
 
   </script>
