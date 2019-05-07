@@ -50,7 +50,7 @@
   
   <table>
     <tr>
-      <td>
+      <td style="background:#C2FF9E;border-radius: 10px;">
         <form action="realmap.php" method="post">
           <table>
             <tr>
@@ -69,10 +69,54 @@
         </form>
         <br />
       </td>
-      <td>
+      <td style="background:#C2FF9E;border-radius: 10px;">
         <input type="button" value="New Polygon" onclick="javascript:newPolygon();" />
         <input type="button" value="Clear Current Polygon" onclick="javascript:clearCurrentPolygon();" />
         <input type="button" value="Clear All Polygons" onclick="javascript:clearAllPolygons();" />
+      </td>
+      <td style="background:#C2FF9E;border-radius: 10px;">
+        <table>
+          <tr>
+            <td>
+              <img src="images/aadt_up.png" style="display:inline;width:10px;height:10px;" />
+            </td>
+            <td>
+              Traffic Trend Up
+            </td>
+            <td>
+              <img src="images/aadtdown.gif" style="display:inline;width:10px;height:10px;" />
+            </td>
+            <td>
+              Traffic Trend Down
+            </td>
+            <td>
+              <img src="images/wm_l.jpg" style="display:inline;width:10px;height:10px;" />
+            </td>
+            <td>
+              Walmart
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <img src="images/wg_l.png" style="display:inline;width:10px;height:10px;" />
+            </td>
+            <td>
+              Walgreens
+            </td>
+            <td>
+              <img src="images/cvs_l.png" style="display:inline;width:10px;height:10px;" />
+            </td>
+            <td>
+              CVS
+            </td>
+            <td>
+              <img src="images/md_l.png" style="display:inline;width:10px;height:10px;" />
+            </td>
+            <td>
+              McDonalds
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
   </table>
@@ -115,34 +159,37 @@
       var radius_miles = 10;
 
       var polygonPathsArr = [];
-      var currentPolygon = 0;
+      var currentPolygon = -1;
       var polygonArr = [];
       
       function clearAllPolygons(){
-        for(var i = 0; i < polygonArr.length; i++){
+        for(var i = 0; i <= currentPolygon; i++){
           if(polygonArr[i] != null && polygonArr[i] != undefined){
             polygonArr[i].setVisible(false);
+            polygonArr[i].setMap(null);
             polygonArr[i] = null;
           }
           if(polygonPathsArr[i] != null && polygonPathsArr[i] != undefined){
-            polygonArr[i] = null;
+            polygonPathsArr[i] = null;
           }
         }
-        currentPolygon = 0;
+        currentPolygon = -1;
       }
-      
+
       function clearCurrentPolygon(){
+          if(currentPolygon < 0)
+            return;
           if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
             polygonArr[currentPolygon].setVisible(false);
+            polygonArr[currentPolygon].setMap(null);
             polygonArr[currentPolygon] = null;
           }
           if(polygonPathsArr[currentPolygon] != null && polygonPathsArr[currentPolygon] != undefined){
-            polygonPathsArr[currentPolygon].setVisible(false);
             polygonPathsArr[currentPolygon] = null;
           }
           currentPolygon--;
       }
-      
+
       function newPolygon(){
         if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
           currentPolygon++;
@@ -714,28 +761,30 @@
         ////getDemography();
         
         var mapClickEvent = google.maps.event.addListener(map, 'click', function(me) {
-            //console.log("Clicked : " + me.latLng.lat() + " : " +  me.latLng.lng());
-            if(polygonPathsArr.length <= currentPolygon){
-              polygonPathsArr.push([]);
-              polygonArr.push(null);
+            if(currentPolygon < 0)
+              currentPolygon = 0;
+            if(polygonPathsArr[currentPolygon] == null || polygonPathsArr[currentPolygon] == undefined){
+              polygonPathsArr[currentPolygon] = [];
+              polygonArr[currentPolygon] = null;
             }
             polygonPathsArr[currentPolygon].push(me.latLng);
             if(polygonPathsArr[currentPolygon].length >= 3){
               if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
                 polygonArr[currentPolygon].setVisible(false);
+                polygonArr[currentPolygon].setMap(null);
                 polygonArr[currentPolygon] = null;
               }
               polygonArr[currentPolygon] = new google.maps.Polygon({
                 paths: polygonPathsArr[currentPolygon],
                 strokeColor: '#FF0000',
-                strokeOpacity: 0.8,
-                strokeWeight: 3,
+                strokeOpacity: 0.4,
+                strokeWeight: 2,
                 fillColor: '#FF0000',
-                fillOpacity: 0.35
+                fillOpacity: 0.1
               });
               polygonArr[currentPolygon].setMap(map);
             }
-            console.log('In event  function... ');
+            ////console.log('In event  function... ');
         });
       }
 
