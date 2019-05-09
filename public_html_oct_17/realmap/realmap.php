@@ -197,7 +197,58 @@
         polygonArr[currentPolygon] = null;
         polygonPathsArr[currentPolygon] = null;
       }
-      
+    
+      function rayCrossesSegment(point, a, b) {
+        var px = point.lng(),
+            py = point.lat(),
+            ax = a.lng(),
+            ay = a.lat(),
+            bx = b.lng(),
+            by = b.lat();
+        if (ay > by) {
+            ax = b.lng();
+            ay = b.lat();
+            bx = a.lng();
+            by = a.lat();
+        }
+        // alter longitude to cater for 180 degree crossings
+        if (px < 0) {
+            px += 360;
+        }
+        if (ax < 0) {
+            ax += 360;
+        }
+        if (bx < 0) {
+            bx += 360;
+        }
+
+        if (py == ay || py == by) py += 0.00000001;
+        if ((py > by || py < ay) || (px > Math.max(ax, bx))) return false;
+        if (px < Math.min(ax, bx)) return true;
+
+        var red = (ax != bx) ? ((by - ay) / (bx - ax)) : Infinity;
+        var blue = (ax != px) ? ((py - ay) / (px - ax)) : Infinity;
+        return (blue >= red);
+
+      }
+
+      function insidePolygon(point, path) {
+        var crossings = 0;
+
+        for (var i = 0; i < path.length; i++) {
+          var a = path[i],
+            j = i + 1;
+          if (j >= path.length) {
+              j = 0;
+          }
+          var b = path[j];
+          if (rayCrossesSegment(point, a, b)) {
+              crossings++;
+          }
+        }
+  
+        return (crossings % 2 == 1);
+      };
       /*      
       var overlay;
       
@@ -486,9 +537,11 @@
         infowindow.open(map, marker);
       }
 
-      function createAADTMarkers(places){
+      function createAADTMarkers(places, polyCheck){
         for (var i = 0, place; place = places[i]; i++) {
-           var iconAADT = '/realmap/images/aadt_up.png';
+          if(polyCheck === true && !insidePolygon(new google.maps.LatLng(place.lat, place.lng), polygonPathsArr[currentPolygon]))
+            continue;
+          var iconAADT = '/realmap/images/aadt_up.png';
           if(place.aadt_2017 < place.aadt_2016){
             //iconAADT = '/realmap/images/aadt_down.png';
             iconAADT = '/realmap/images/aadtdown.gif';
@@ -531,11 +584,10 @@
         return xmlHttp.responseText;
       }
       
-      function js_http_a0(url){
+      function js_http_a0(url, polyCheck){
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onload = function() {
           if (this.readyState == 4 && this.status == 200) {
-            ////document.getElementById("demo").innerHTML = this.responseText;
             var result = JSON.parse(this.responseText);
 
             var trafficPlaces = [];
@@ -547,14 +599,13 @@
                                aadt_2017: features[i].attributes.AADT_2017
                              });
             }
-            createAADTMarkers(trafficPlaces);
+            createAADTMarkers(trafficPlaces, polyCheck);
           }
           else
             console.log('Not drawn: ' + this.readyState + " : " + this.status);
         };
         xmlHttp.open( "GET", url, true );
         xmlHttp.send( null );
-        
       }
 
       function fetchAADT(){
@@ -564,21 +615,21 @@
           var circle = circles[i];
           if(circle != null && circle != undefined){
             c = circle.getCenter();
-            fetchAADTI(c);
+            fetchAADTI(c, false);
             circleDrawn = true;
           }
         }
         if(circleDrawn == false)
-          fetchAADTI(c);
+          fetchAADTI(c, false);
       }
 
-      function fetchAADTI(c){
+      function fetchAADTI(c, polyCheck){
         var lat = c.lat();
         var lng = c.lng();
-        var nwlat = lat - 0.2;
-        var nwlng = lng + 0.2;
-        var selat = lat + 0.2;
-        var selng = lng - 0.2;
+        var nwlat = lat - 0.01;
+        var nwlng = lng + 0.01;
+        var selat = lat + 0.01;
+        var selng = lng - 0.01;
 
         var query = 'https://services.arcgis.com/KTcxiTD9dsQw4r7Z/arcgis/rest/services/TxDOT_AADT_Annuals/FeatureServer/0/query?where=1%3D1&outFields=OBJECTID,DIST_NM,CNTY_NM,T_FLAG,AADT_2017,AADT_2016,ZLEVEL,GlobalID&geometry=' + nwlng + '%2C' + nwlat + '%2C' + selng + '%2C3' + selat + '&geometryType=esriGeometryEnvelope&inSR=4326&spatialRel=esriSpatialRelIntersects&returnDistinctValues=true&outSR=4326&f=json';
 
@@ -597,9 +648,9 @@
         }
         createAADTMarkers(trafficPlaces);
         */
-        js_http_a0(query);
+        js_http_a0(query, polyCheck);
       }
-      
+
       function createMarkers(places, icon){
         //var placesList = document.getElementById('places');
 
@@ -733,6 +784,63 @@
         getTextPlaces('McDonalds', '/realmap/images/md_l.png', lat, lng);
       }
 
+      ////
+      function createMarkersPolygon(places, icon){
+        for (var i = 0, place; place = places[i]; i++) {
+          if(place.name.includes('Walmart') && !place.name.includes('Walmart Supercenter'))
+            continue;
+          if(!place.name.includes('Walmart') && icon.includes('wm_l'))
+            continue;
+          if(!insidePolygon(place.geometry.location, polygonPathsArr[currentPolygon]))
+            continue;
+          var image = {
+                        url: icon,
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(25, 25)
+          };
+
+          var marker = new google.maps.Marker({
+                                  map: map,
+                                  icon: image,
+                                  title: place.name,
+                                  position: place.geometry.location
+                      });
+          marker.setAnimation(google.maps.Animation.DROP);
+          bounds.extend(place.geometry.location);
+        }
+      }
+
+      function getTextPlacesPolygon(place, icon, lat, lng){
+        var r_m = 10 * 1.6 * 1000;
+        getTextPlacesIPolygon(place, icon, lat, lng, r_m);
+      }
+
+      function getTextPlacesIPolygon(place, icon, lat, lng, r_m){
+        var request = {
+          query: place,
+          fields: ['name', 'geometry'],
+          location: new google.maps.LatLng(lat, lng),
+          radius: r_m
+        };
+        var placesService = new google.maps.places.PlacesService(map);
+        placesService.textSearch(request, function(results, status) {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            createMarkersPolygon(results, icon);
+          }
+          else console.log('failed Polygon: TEXT places status for ' + place + ': ' + status);
+        });
+      }
+
+      function drawPlacesPolygon(lat, lng){
+        getTextPlacesPolygon('Walmart', '/realmap/images/wm_l.jpg', lat, lng);
+        getTextPlacesPolygon('Walgreens', '/realmap/images/wg_l.png', lat, lng);
+        getTextPlacesPolygon('CVS', '/realmap/images/cvs_l.png', lat, lng);
+        getTextPlacesPolygon('McDonalds', '/realmap/images/md_l.png', lat, lng);
+      }
+      ////
+
       function initMap(){
         <?php
           if(count($lat_lng) > 0){
@@ -783,6 +891,21 @@
                 fillOpacity: 0.1
               });
               polygonArr[currentPolygon].setMap(map);
+              var polyLat = polygonPathsArr[currentPolygon][0].lat();
+              var polyLng = polygonPathsArr[currentPolygon][0].lng();
+              for(i = 1; i < polygonPathsArr[currentPolygon].length; i++){
+                polyLat += polygonPathsArr[currentPolygon][i].lat();
+                polyLng += polygonPathsArr[currentPolygon][i].lng();
+              }
+              polyLat /= polygonPathsArr[currentPolygon].length;
+              polyLng /= polygonPathsArr[currentPolygon].length;
+              
+              drawPlacesPolygon(polyLat, polyLng);
+              fetchAADTI(new google.maps.LatLng(polyLat, polyLng), true);
+              ////
+              var point = polygonPathsArr[currentPolygon];
+              
+              ////
             }
             ////console.log('In event  function... ');
         });
