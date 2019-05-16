@@ -44,6 +44,9 @@
         /*margin-right: 2%;
         padding: 2%;*/
       }
+      body {
+        
+      }
     </style>
   </head>
   <body>
@@ -55,17 +58,16 @@
           <table>
             <tr>
               <td>Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" /></td>
-              <td><input type="submit" value="View Location" /></td>
+              <td><input type="submit" value="Search" /></td>
             </tr>
           </table>
         </form>
         <br/>
         <form>
-          Draw circular region to drill down: 
           <input type="checkbox" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
           <input type="checkbox" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
           <input type="checkbox" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
-          <input type="button" value="Clear Circles" onclick="javascript:clearCircles();" />
+          <input type="button" value="Clear" onclick="javascript:clearCircles();" />
         </form>
         <br />
       </td>
@@ -73,50 +75,6 @@
         <input type="button" value="New Polygon" onclick="javascript:newPolygon();" />
         <input type="button" value="Clear Current Polygon" onclick="javascript:clearCurrentPolygon();" />
         <input type="button" value="Clear All Polygons" onclick="javascript:clearAllPolygons();" />
-      </td>
-      <td style="background:#C2FF9E;border-radius: 10px;">
-        <table>
-          <tr>
-            <td>
-              <img src="images/aadt_up.png" style="display:inline;width:10px;height:10px;" />
-            </td>
-            <td>
-              Traffic Trend Up
-            </td>
-            <td>
-              <img src="images/aadtdown.gif" style="display:inline;width:10px;height:10px;" />
-            </td>
-            <td>
-              Traffic Trend Down
-            </td>
-            <td>
-              <img src="images/wm_l.jpg" style="display:inline;width:10px;height:10px;" />
-            </td>
-            <td>
-              Walmart
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <img src="images/wg_l.png" style="display:inline;width:10px;height:10px;" />
-            </td>
-            <td>
-              Walgreens
-            </td>
-            <td>
-              <img src="images/cvs_l.png" style="display:inline;width:10px;height:10px;" />
-            </td>
-            <td>
-              CVS
-            </td>
-            <td>
-              <img src="images/md_l.png" style="display:inline;width:10px;height:10px;" />
-            </td>
-            <td>
-              McDonalds
-            </td>
-          </tr>
-        </table>
       </td>
     </tr>
   </table>
@@ -660,6 +618,8 @@
             continue;
           if(!place.name.includes('Walmart') && icon.includes('wm_l'))
             continue;
+          if(place.name.includes('Kroger') && place.name != 'Kroger')
+            continue;
           var image = {
                         url: icon,
                         size: new google.maps.Size(71, 71),
@@ -782,6 +742,10 @@
         getTextPlaces('Walgreens', '/realmap/images/wg_l.png', lat, lng);
         getTextPlaces('CVS', '/realmap/images/cvs_l.png', lat, lng);
         getTextPlaces('McDonalds', '/realmap/images/md_l.png', lat, lng);
+        
+        getTextPlaces('Kroger', '/realmap/images/kroger_l.png', lat, lng);
+        getTextPlaces('Target', '/realmap/images/target_l.png', lat, lng);
+        getTextPlaces('Olive Garden', '/realmap/images/og_l.png', lat, lng);
       }
 
       ////
@@ -790,6 +754,8 @@
           if(place.name.includes('Walmart') && !place.name.includes('Walmart Supercenter'))
             continue;
           if(!place.name.includes('Walmart') && icon.includes('wm_l'))
+            continue;
+          if(place.name.includes('Kroger') && place.name != 'Kroger')
             continue;
           if(!insidePolygon(place.geometry.location, polygonPathsArr[currentPolygon]))
             continue;
@@ -838,6 +804,10 @@
         getTextPlacesPolygon('Walgreens', '/realmap/images/wg_l.png', lat, lng);
         getTextPlacesPolygon('CVS', '/realmap/images/cvs_l.png', lat, lng);
         getTextPlacesPolygon('McDonalds', '/realmap/images/md_l.png', lat, lng);
+        
+        getTextPlacesPolygon('Kroger', '/realmap/images/kroger_l.png', lat, lng);
+        getTextPlacesPolygon('Target', '/realmap/images/target_l.png', lat, lng);
+        getTextPlacesPolygon('Olive Garden', '/realmap/images/og_l.png', lat, lng);
       }
       ////
 
