@@ -56,29 +56,28 @@
   
   <table>
     <tr>
-      <td style="background:#C2FF9E;border-radius: 10px;">
+      <td style="background:#C2FF9E;border-radius: 10px;width:80%;">
         <form action="realmap.php" method="post">
-          <table>
+          <table style="width:100%">
             <tr>
-              <td>Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" /></td>
+              <td style="width:90%">Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" style="width:90%" /></td>
               <td><input type="submit" value="Search" /></td>
             </tr>
           </table>
         </form>
+      </td>
+      <td style="background:#C2FF9E;border-radius: 10px;">
+        <img src = "images/tools.png" height="40px" width="40px" />
+          <a onclick="javascript:newPolygon();" style="cursor:pointer"><img src="images/newpoly.png" height="40px" width="40px" /></a>
+          <a onclick="javascript:clearAllPolygons();" style="cursor:pointer"><img src="images/eraser.png" height="40px" width="40px" /></a>
         <br/>
         <form>
           <input type="checkbox" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
           <input type="checkbox" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
           <input type="checkbox" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
           <!-- input type="button" value="Clear" onclick="javascript:clearCircles();" / -->
-          <a onclick="javascript:clearCircles();" /><img src="images/eraser.png" height="40px" width="40px" /></a>
+          <a onclick="javascript:clearCircles();" style="cursor:pointer" /><img src="images/eraser.png" height="40px" width="40px" /></a>
         </form>
-        <br />
-      </td>
-      <td style="background:#C2FF9E;border-radius: 10px;">
-        <a onclick="javascript:newPolygon();"><img src="images/newpoly.png" height="40px" width="40px" /></a>
-        <!-- input type="button" value="Clear" onclick="javascript:clearAllPolygons();" / -->
-        <a onclick="javascript:clearAllPolygons();"><img src="images/eraser.png" height="40px" width="40px" /></a>
       </td>
     </tr>
   </table>
@@ -163,7 +162,7 @@
       function showError(error){
 	  
       }
-      
+
       function clearAllPolygons(){
         for(var i = 0; i <= currentPolygon; i++){
           if(polygonArr[i] != null && polygonArr[i] != undefined){
@@ -199,7 +198,6 @@
       }
 
       function newPolygon(){
-        console.log('called new poly');
         if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
           currentPolygon++;
         }
@@ -864,7 +862,7 @@
       ////
 
       function smallDiffLocation(i, j){
-        var smallDiff = 0.01;
+        var smallDiff = 0.001;
         if(i >= j){
           if(i - j <= smallDiff)
             return true;
@@ -882,48 +880,44 @@
           polygonMarkersArr[currentPolygon] = [];
           polygonArr[currentPolygon] = null;
         }
-        var found = false;
-        for(var i = 0; i < polygonPathsArr[currentPolygon].length - 1; i++){
-          if(smallDiffLocation(polygonPathsArr[currentPolygon][i].lat(), latLng.lat()) === true && 
-              smallDiffLocation(polygonPathsArr[currentPolygon][i].lng(), latLng.lng()) === true){
-            found = true;
-            break;    
-          }
-        }
-        if(found === false){
-          var marker = new google.maps.Marker({
+        var marker = new google.maps.Marker({
                                   map: map,
                                   position: latLng
           });
-          polygonMarkersArr[currentPolygon].push(marker);
-        }
-        else if(polygonPathsArr[currentPolygon].length >= 3){
-          if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
-            polygonArr[currentPolygon].setVisible(false);
-            polygonArr[currentPolygon].setMap(null);
-            polygonArr[currentPolygon] = null;
-          }
-          polygonArr[currentPolygon] = new google.maps.Polygon({
-            paths: polygonPathsArr[currentPolygon],
-            strokeColor: '#FF0000',
-            strokeOpacity: 0.4,
-            strokeWeight: 2,
-            fillColor: '#FF0000',
-            fillOpacity: 0.1
-          });
-          polygonArr[currentPolygon].setMap(map);
-          var polyLat = polygonPathsArr[currentPolygon][0].lat();
-          var polyLng = polygonPathsArr[currentPolygon][0].lng();
-          for(i = 1; i < polygonPathsArr[currentPolygon].length; i++){
-            polyLat += polygonPathsArr[currentPolygon][i].lat();
-            polyLng += polygonPathsArr[currentPolygon][i].lng();
-          }
-          polyLat /= polygonPathsArr[currentPolygon].length;
-          polyLng /= polygonPathsArr[currentPolygon].length;
+          if(polygonMarkersArr[currentPolygon].length > 0)
+            marker.setClickable(false);
+          else{
+             var markerClickEvent = google.maps.event.addListener(marker, 'click', function(event) {
+                if(polygonPathsArr[currentPolygon].length >= 3){
+                  if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
+                    polygonArr[currentPolygon].setVisible(false);
+                    polygonArr[currentPolygon].setMap(null);
+                    polygonArr[currentPolygon] = null;
+                  }
+                  polygonArr[currentPolygon] = new google.maps.Polygon({
+                    paths: polygonPathsArr[currentPolygon],
+                    strokeColor: '#FF0000',
+                    strokeOpacity: 0.4,
+                    strokeWeight: 2,
+                    fillColor: '#FF0000',
+                    fillOpacity: 0.1
+                  });
+                  polygonArr[currentPolygon].setMap(map);
+                  var polyLat = polygonPathsArr[currentPolygon][0].lat();
+                  var polyLng = polygonPathsArr[currentPolygon][0].lng();
+                  for(i = 1; i < polygonPathsArr[currentPolygon].length; i++){
+                    polyLat += polygonPathsArr[currentPolygon][i].lat();
+                    polyLng += polygonPathsArr[currentPolygon][i].lng();
+                  }
+                  polyLat /= polygonPathsArr[currentPolygon].length;
+                  polyLng /= polygonPathsArr[currentPolygon].length;
               
-          drawPlacesPolygon(polyLat, polyLng);
-          fetchAADTI(new google.maps.LatLng(polyLat, polyLng), true);
-        }
+                  drawPlacesPolygon(polyLat, polyLng);
+                  fetchAADTI(new google.maps.LatLng(polyLat, polyLng), true);
+                }
+             });          
+          }
+          polygonMarkersArr[currentPolygon].push(marker);
       }
 
       function drawOnMap(lat, lng){        
@@ -939,6 +933,8 @@
               polygonMarkersArr[currentPolygon] = [];
               polygonArr[currentPolygon] = null;
             }
+            if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined)
+              return;
             polygonPathsArr[currentPolygon].push(me.latLng);
             polygonMarker(me.latLng);
         });
