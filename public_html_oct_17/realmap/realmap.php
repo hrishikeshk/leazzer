@@ -5,6 +5,9 @@
     $address = $_POST['address'];
     $lat_lng = get_lat_lng($address);
   }
+  else if(isset($_GET['auto_latlng']) && strlen($_GET['auto_latlng']) > 0){
+    $lat_lng = json_decode($_GET['auto_latlng'], true);
+  }
 
   function file_get_contents_curl($url){
     $ch = curl_init();
@@ -45,7 +48,7 @@
         padding: 2%;*/
       }
       body {
-        
+        font-family:'Century Gothic', CenturyGothic, 'Futura',sans-serif, Verdana;
       }
     </style>
   </head>
@@ -67,18 +70,19 @@
           <input type="checkbox" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
           <input type="checkbox" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
           <input type="checkbox" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
-          <input type="button" value="Clear" onclick="javascript:clearCircles();" />
+          <!-- input type="button" value="Clear" onclick="javascript:clearCircles();" / -->
+          <a onclick="javascript:clearCircles();" /><img src="images/eraser.png" height="40px" width="40px" /></a>
         </form>
         <br />
       </td>
       <td style="background:#C2FF9E;border-radius: 10px;">
-        <input type="button" value="New Polygon" onclick="javascript:newPolygon();" />
-        <input type="button" value="Clear Current Polygon" onclick="javascript:clearCurrentPolygon();" />
-        <input type="button" value="Clear All Polygons" onclick="javascript:clearAllPolygons();" />
+        <a onclick="javascript:newPolygon();"><img src="images/newpoly.png" height="40px" width="40px" /></a>
+        <!-- input type="button" value="Clear" onclick="javascript:clearAllPolygons();" / -->
+        <a onclick="javascript:clearAllPolygons();"><img src="images/eraser.png" height="40px" width="40px" /></a>
       </td>
     </tr>
   </table>
-  
+
   <table style="width:100%;height:80%" style="table-layout: fixed;">
     <tr style="width:100%;height:100%">
       <td style="width:100%;height:100%">
@@ -119,6 +123,45 @@
       var polygonPathsArr = [];
       var currentPolygon = -1;
       var polygonArr = [];
+
+      var auto_lat = -1;
+      var auto_lng = -1;
+
+      <?php
+        if(count($lat_lng) > 0)
+          echo 'var lat_lng_set = true;';
+        else
+          echo 'var lat_lng_set = false;';
+      ?>
+      
+      window.onload = function(){
+      	if (lat_lng_set === false && navigator.geolocation){
+        	navigator.geolocation.getCurrentPosition(showPosition, showError);
+        }
+        else{
+          <?php
+          if(count($lat_lng) > 0){
+            echo 'auto_lat = '.$lat_lng[0].';';
+            echo 'auto_lng = '.$lat_lng[1].';';
+          }
+        ?>
+        }
+      };
+      
+      function showPosition(position){
+        /*auto_lat = position.coords.latitude;
+        auto_lng = position.coords.longitude;
+        map.setCenter(new google.maps.LatLng(auto_lat, auto_lng));
+        drawPlaces(auto_lat, auto_lng);
+        fetchAADT();*/
+        auto_lat = position.coords.latitude;
+        auto_lng = position.coords.longitude;
+        window.location.href='realmap.php?auto_latlng=' + '[' + auto_lat + ', ' + auto_lng + ']';
+      }
+
+      function showError(error){
+	  
+      }
       
       function clearAllPolygons(){
         for(var i = 0; i <= currentPolygon; i++){
@@ -149,6 +192,7 @@
       }
 
       function newPolygon(){
+        console.log('called new poly');
         if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
           currentPolygon++;
         }
@@ -811,29 +855,7 @@
       }
       ////
 
-      function initMap(){
-        <?php
-          if(count($lat_lng) > 0){
-            echo 'var lat = '.$lat_lng[0].';';
-            echo 'var lng = '.$lat_lng[1].';';
-          }
-          else{
-            echo 'var lat = 40.397;';
-            echo 'var lng = -101.644;';
-          }
-          
-        ?>
-        map = new google.maps.Map(document.getElementById('map'), {
-          center: {
-            lat: lat, 
-            lng: lng
-          },
-          zoom: 16
-        });
-        bounds = new google.maps.LatLngBounds();
-        //USGSOverlay.prototype = new google.maps.OverlayView();
-        //overlay = new USGSOverlay(map);
-        
+      function drawOnMap(lat, lng){        
         drawPlaces(lat, lng);
         fetchAADT();
         ////getDemography();
@@ -874,11 +896,34 @@
               fetchAADTI(new google.maps.LatLng(polyLat, polyLng), true);
               ////
               var point = polygonPathsArr[currentPolygon];
-              
               ////
             }
-            ////console.log('In event  function... ');
         });
+      }
+
+      function initMap(){
+        <?php
+          if(count($lat_lng) > 0){
+            echo 'var lat = '.$lat_lng[0].';';
+            echo 'var lng = '.$lat_lng[1].';';
+          }
+          else{
+            echo 'var lat = 40.397;';
+            echo 'var lng = -101.644;';
+          }
+        ?>
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {
+            lat: lat, 
+            lng: lng
+          },
+          zoom: 16
+        });
+        bounds = new google.maps.LatLngBounds();
+        //USGSOverlay.prototype = new google.maps.OverlayView();
+        //overlay = new USGSOverlay(map);
+        
+        drawOnMap(lat, lng);
       }
 
   </script>
