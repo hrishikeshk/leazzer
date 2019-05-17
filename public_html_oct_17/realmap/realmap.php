@@ -121,6 +121,7 @@
       var radius_miles = 10;
 
       var polygonPathsArr = [];
+      var polygonMarkersArr = [];
       var currentPolygon = -1;
       var polygonArr = [];
 
@@ -173,6 +174,12 @@
           if(polygonPathsArr[i] != null && polygonPathsArr[i] != undefined){
             polygonPathsArr[i] = null;
           }
+          if(polygonMarkersArr[i] != null && polygonMarkersArr[i] != undefined){
+            for(var m = 0; m < polygonMarkersArr[i].length; ++m){
+              polygonMarkersArr[i][m].setMap(null);
+            }
+            polygonMarkersArr[i] = null;
+          }
         }
         currentPolygon = -1;
       }
@@ -198,6 +205,7 @@
         }
         polygonArr[currentPolygon] = null;
         polygonPathsArr[currentPolygon] = null;
+        polygonMarkersArr[currentPolygon] = null;
       }
     
       function rayCrossesSegment(point, a, b) {
@@ -855,6 +863,69 @@
       }
       ////
 
+      function smallDiffLocation(i, j){
+        var smallDiff = 0.01;
+        if(i >= j){
+          if(i - j <= smallDiff)
+            return true;
+        }
+        else if(j - i <= smallDiff)
+          return true;
+        return false;
+      }
+
+      function polygonMarker(latLng){
+        if(currentPolygon < 0)
+              currentPolygon = 0;
+        if(polygonPathsArr[currentPolygon] == null || polygonPathsArr[currentPolygon] == undefined){
+          polygonPathsArr[currentPolygon] = [];
+          polygonMarkersArr[currentPolygon] = [];
+          polygonArr[currentPolygon] = null;
+        }
+        var found = false;
+        for(var i = 0; i < polygonPathsArr[currentPolygon].length - 1; i++){
+          if(smallDiffLocation(polygonPathsArr[currentPolygon][i].lat(), latLng.lat()) === true && 
+              smallDiffLocation(polygonPathsArr[currentPolygon][i].lng(), latLng.lng()) === true){
+            found = true;
+            break;    
+          }
+        }
+        if(found === false){
+          var marker = new google.maps.Marker({
+                                  map: map,
+                                  position: latLng
+          });
+          polygonMarkersArr[currentPolygon].push(marker);
+        }
+        else if(polygonPathsArr[currentPolygon].length >= 3){
+          if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
+            polygonArr[currentPolygon].setVisible(false);
+            polygonArr[currentPolygon].setMap(null);
+            polygonArr[currentPolygon] = null;
+          }
+          polygonArr[currentPolygon] = new google.maps.Polygon({
+            paths: polygonPathsArr[currentPolygon],
+            strokeColor: '#FF0000',
+            strokeOpacity: 0.4,
+            strokeWeight: 2,
+            fillColor: '#FF0000',
+            fillOpacity: 0.1
+          });
+          polygonArr[currentPolygon].setMap(map);
+          var polyLat = polygonPathsArr[currentPolygon][0].lat();
+          var polyLng = polygonPathsArr[currentPolygon][0].lng();
+          for(i = 1; i < polygonPathsArr[currentPolygon].length; i++){
+            polyLat += polygonPathsArr[currentPolygon][i].lat();
+            polyLng += polygonPathsArr[currentPolygon][i].lng();
+          }
+          polyLat /= polygonPathsArr[currentPolygon].length;
+          polyLng /= polygonPathsArr[currentPolygon].length;
+              
+          drawPlacesPolygon(polyLat, polyLng);
+          fetchAADTI(new google.maps.LatLng(polyLat, polyLng), true);
+        }
+      }
+
       function drawOnMap(lat, lng){        
         drawPlaces(lat, lng);
         fetchAADT();
@@ -865,39 +936,11 @@
               currentPolygon = 0;
             if(polygonPathsArr[currentPolygon] == null || polygonPathsArr[currentPolygon] == undefined){
               polygonPathsArr[currentPolygon] = [];
+              polygonMarkersArr[currentPolygon] = [];
               polygonArr[currentPolygon] = null;
             }
             polygonPathsArr[currentPolygon].push(me.latLng);
-            if(polygonPathsArr[currentPolygon].length >= 3){
-              if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
-                polygonArr[currentPolygon].setVisible(false);
-                polygonArr[currentPolygon].setMap(null);
-                polygonArr[currentPolygon] = null;
-              }
-              polygonArr[currentPolygon] = new google.maps.Polygon({
-                paths: polygonPathsArr[currentPolygon],
-                strokeColor: '#FF0000',
-                strokeOpacity: 0.4,
-                strokeWeight: 2,
-                fillColor: '#FF0000',
-                fillOpacity: 0.1
-              });
-              polygonArr[currentPolygon].setMap(map);
-              var polyLat = polygonPathsArr[currentPolygon][0].lat();
-              var polyLng = polygonPathsArr[currentPolygon][0].lng();
-              for(i = 1; i < polygonPathsArr[currentPolygon].length; i++){
-                polyLat += polygonPathsArr[currentPolygon][i].lat();
-                polyLng += polygonPathsArr[currentPolygon][i].lng();
-              }
-              polyLat /= polygonPathsArr[currentPolygon].length;
-              polyLng /= polygonPathsArr[currentPolygon].length;
-              
-              drawPlacesPolygon(polyLat, polyLng);
-              fetchAADTI(new google.maps.LatLng(polyLat, polyLng), true);
-              ////
-              var point = polygonPathsArr[currentPolygon];
-              ////
-            }
+            polygonMarker(me.latLng);
         });
       }
 
