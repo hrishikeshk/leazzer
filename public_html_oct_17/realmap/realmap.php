@@ -56,17 +56,17 @@
   
   <table>
     <tr>
-      <td style="background:#C2FF9E;border-radius: 10px;width:80%;">
+      <td style="background:#F5FCFF;border-radius: 10px;width:80%;">
         <form action="realmap.php" method="post">
           <table style="width:100%">
             <tr>
-              <td style="width:90%">Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" style="width:90%" /></td>
+              <td style="width:90%;border-radius: 10px;">Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" style="width:90%" /></td>
               <td><input type="submit" value="Search" /></td>
             </tr>
           </table>
         </form>
       </td>
-      <td style="background:#C2FF9E;border-radius: 10px;">
+      <td style="background:#F5FCFF;border-radius: 10px;">
         <img src = "images/tools.png" height="40px" width="40px" />
           <a onclick="javascript:newPolygon();" style="cursor:pointer"><img src="images/newpoly.png" height="40px" width="40px" /></a>
           <a onclick="javascript:clearAllPolygons();" style="cursor:pointer"><img src="images/eraser.png" height="40px" width="40px" /></a>
@@ -880,29 +880,57 @@
           polygonMarkersArr[currentPolygon] = [];
           polygonArr[currentPolygon] = null;
         }
+
+        var image = {
+                        url: '/realmap/images/vertex.png',
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(25, 25)
+        };
         var marker = new google.maps.Marker({
                                   map: map,
+                                  icon: image,
                                   position: latLng
-          });
-          if(polygonMarkersArr[currentPolygon].length > 0)
-            marker.setClickable(false);
+        });
+          ////
+          if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
+            /*polygonArr[currentPolygon].setVisible(false);
+            polygonArr[currentPolygon].setMap(null);
+            polygonArr[currentPolygon] = null;
+            */
+            polygonArr[currentPolygon].setPath(polygonPathsArr[currentPolygon]);
+          }
           else{
-             var markerClickEvent = google.maps.event.addListener(marker, 'click', function(event) {
-                if(polygonPathsArr[currentPolygon].length >= 3){
-                  if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
-                    polygonArr[currentPolygon].setVisible(false);
-                    polygonArr[currentPolygon].setMap(null);
-                    polygonArr[currentPolygon] = null;
-                  }
-                  polygonArr[currentPolygon] = new google.maps.Polygon({
+            polygonArr[currentPolygon] = new google.maps.Polyline({
+              path: polygonPathsArr[currentPolygon],
+              strokeColor: '#FF0000',
+              strokeOpacity: 0.4,
+              strokeWeight: 2,
+              fillColor: '#FF0000',
+              fillOpacity: 0.1,
+              clickable: false
+            });
+            polygonArr[currentPolygon].setMap(map);
+          }
+            
+                  /*polygonArr[currentPolygon] = new google.maps.Polygon({
                     paths: polygonPathsArr[currentPolygon],
                     strokeColor: '#FF0000',
                     strokeOpacity: 0.4,
                     strokeWeight: 2,
                     fillColor: '#FF0000',
                     fillOpacity: 0.1
-                  });
-                  polygonArr[currentPolygon].setMap(map);
+                  });*/
+          ////
+          if(polygonMarkersArr[currentPolygon].length > 0)
+            marker.setClickable(false);
+          else{
+             var markerClickEvent = google.maps.event.addListener(marker, 'click', function(event) {
+                if(polygonPathsArr[currentPolygon].length >= 3){
+                  var lastPath = polygonPathsArr[currentPolygon];
+                  lastPath.push(latLng);
+                  polygonArr[currentPolygon].setPath(lastPath);
                   var polyLat = polygonPathsArr[currentPolygon][0].lat();
                   var polyLng = polygonPathsArr[currentPolygon][0].lng();
                   for(i = 1; i < polygonPathsArr[currentPolygon].length; i++){
@@ -933,8 +961,8 @@
               polygonMarkersArr[currentPolygon] = [];
               polygonArr[currentPolygon] = null;
             }
-            if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined)
-              return;
+            //if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined)
+              //return;
             polygonPathsArr[currentPolygon].push(me.latLng);
             polygonMarker(me.latLng);
         });
