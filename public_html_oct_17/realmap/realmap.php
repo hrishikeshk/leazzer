@@ -53,7 +53,7 @@
     </style>
   </head>
   <body>
-  
+
   <table>
     <tr>
       <td style="background:#F5FCFF;border-radius: 10px;width:80%;">
@@ -75,7 +75,6 @@
           <input type="checkbox" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
           <input type="checkbox" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
           <input type="checkbox" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
-          <!-- input type="button" value="Clear" onclick="javascript:clearCircles();" / -->
           <a onclick="javascript:clearCircles();" style="cursor:pointer" /><img src="images/eraser.png" height="40px" width="40px" /></a>
         </form>
       </td>
@@ -147,7 +146,7 @@
         ?>
         }
       };
-      
+
       function showPosition(position){
         /*auto_lat = position.coords.latitude;
         auto_lng = position.coords.longitude;
@@ -257,28 +256,21 @@
   
         return (crossings % 2 == 1);
       };
-      /*      
-      var overlay;
       
       ////
+
+      var overlay;
+
       function USGSOverlay(map) {
-
-        // Initialize all properties.
         this.map_ = map;
-
         this.div_ = null;
-
         this.setMap(map);
       }
 
       USGSOverlay.prototype.onAdd = function() {
-
         var div = document.createElement('div');
-        div.style.borderStyle = 'none';
-        div.style.borderWidth = '0px';
         div.style.position = 'absolute';
-        div.html('Some text overlay... TODO');
-                
+        div.innerHTML('<h4><b>Some text overlay... TODO</b></h4>');
         ////div.appendChild(img);
 
         this.div_ = div;
@@ -295,6 +287,7 @@
         var sw = overlayProjection.fromLatLngToDivPixel(this.bounds_.getSouthWest());
         var ne = overlayProjection.fromLatLngToDivPixel(this.bounds_.getNorthEast());
 
+        //this.onAdd();
         var div = this.div_;
         div.style.left = sw.x + 'px';
         div.style.top = ne.y + 'px';
@@ -307,7 +300,19 @@
         this.div_.parentNode.removeChild(this.div_);
         this.div_ = null;
       };
-      */
+      
+      USGSOverlay.prototype.remove = function() {
+        this.div_.parentNode.removeChild(this.div_);
+        this.div_ = null;
+      };
+
+      USGSOverlay.prototype.getPosition = function(){
+        return this.latlng;
+      }
+
+      USGSOverlay.prototype.getDraggable = function(){
+        return false;
+      }
       ////
 
       function getInfoFromrevGC(revGCRes, typeLevel){
@@ -987,8 +992,9 @@
           zoom: 16
         });
         bounds = new google.maps.LatLngBounds();
-        //USGSOverlay.prototype = new google.maps.OverlayView();
-        //overlay = new USGSOverlay(map);
+        
+        USGSOverlay.prototype = new google.maps.OverlayView();
+        overlay = new USGSOverlay(map);
         
         drawOnMap(lat, lng);
       }
