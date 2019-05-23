@@ -107,13 +107,13 @@
       <td style="background:#F5FCFF;border-radius: 10px;">
         <img src = "images/tools.png" height="40px" width="40px" />
           <a onclick="javascript:newPolygon();" style="cursor:pointer"><img src="images/newpoly.png" height="40px" width="40px" /></a>
-          <a onclick="javascript:clearAllPolygons();" style="cursor:pointer"><img src="images/eraser.png" height="40px" width="40px" /></a>
+          <a onclick="javascript:clearAllPolygons();" style="cursor:pointer"><img src="images/eraser3.png" height="40px" width="40px" /></a>
         <br/>
         <form>
           <input type="checkbox" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
           <input type="checkbox" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
           <input type="checkbox" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
-          <a onclick="javascript:clearCircles();" style="cursor:pointer" /><img src="images/eraser.png" height="40px" width="40px" /></a>
+          <a onclick="javascript:clearCircles();" style="cursor:pointer" /><img src="images/eraser3.png" height="40px" width="40px" /></a>
         </form>
       </td>
       <td style="background:#F5FCFF;border-radius: 10px;">
