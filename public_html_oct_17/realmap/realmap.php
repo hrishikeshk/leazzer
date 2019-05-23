@@ -98,7 +98,7 @@
         <form action="realmap.php" method="post">
           <table style="width:100%">
             <tr>
-              <td style="width:90%;">Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" style="width:90%;border-radius: 10px;" /></td>
+              <td style="width:90%;">Address <input type="text" id="address" name="address" value="<?php echo $address; ?>" style="width:90%;border-radius: 10px;" /></td>
               <td><input type="submit" value="Search" /></td>
             </tr>
           </table>
@@ -974,7 +974,7 @@
                         url: '/realmap/images/vertex.png',
                         size: new google.maps.Size(71, 71),
                         origin: new google.maps.Point(0, 0),
-                        anchor: new google.maps.Point(17, 34),
+                        anchor: new google.maps.Point(10, 25),
                         scaledSize: new google.maps.Size(25, 25)
         };
         var marker = new google.maps.Marker({
