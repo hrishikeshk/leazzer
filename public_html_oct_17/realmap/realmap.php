@@ -50,17 +50,55 @@
       body {
         font-family:'Century Gothic', CenturyGothic, 'Futura',sans-serif, Verdana;
       }
+      /* The Modal (background) */
+      .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+      }
+
+      /* Modal Content/Box */
+      .modal-content {
+        background-color: #F5FCFF;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%; /* Could be more or less, depending on screen size */
+        border-radius: 20px;
+      }
+
+      /* The Close Button */
+      .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body>
 
   <table>
     <tr>
-      <td style="background:#F5FCFF;border-radius: 10px;width:80%;">
+      <td style="background:#F5FCFF;border-radius: 10px;width:70%;">
         <form action="realmap.php" method="post">
           <table style="width:100%">
             <tr>
-              <td style="width:90%;border-radius: 10px;">Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" style="width:90%" /></td>
+              <td style="width:90%;">Address: <input type="text" id="address" name="address" value="<?php echo $address; ?>" style="width:90%;border-radius: 10px;" /></td>
               <td><input type="submit" value="Search" /></td>
             </tr>
           </table>
@@ -77,6 +115,35 @@
           <input type="checkbox" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
           <a onclick="javascript:clearCircles();" style="cursor:pointer" /><img src="images/eraser.png" height="40px" width="40px" /></a>
         </form>
+      </td>
+      <td style="background:#F5FCFF;border-radius: 10px;">
+        <form>
+          <a onclick="javascript:getDemography();" style="cursor:pointer" /><img src="images/di.png" height="80px" width="120px" /></a>
+        </form>
+        <div id="demographyDiv" class="modal" style="display:none;border-radius: 15px;">
+          <div class="modal-content">
+            <span class="close">&times;</span>
+            <div style="text-align:center">
+              Demography and Incomes of prominent localities
+            </div>
+            <table id="demography" style="border: 1px solid black; border-radius:10px; font-size: .9em;margin-bottom: 5px;margin-left: 75px;width:80%;box-shadow: 5px 5px 5px #888888;overflow-y:auto">
+              <tr>
+                <td>
+                  <b>Locality</b>
+                </td>
+                <td>
+                  <b>Population(2017)</b>
+                </td>
+                <td>
+                  <b>Median Income(2017)</b>
+                </td>
+                <td>
+                  <b>Income Trend</b>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
       </td>
     </tr>
   </table>
@@ -407,7 +474,24 @@
         
       }
       
+      var span = document.getElementsByClassName("close")[0];
+      span.onclick = function() {
+        var modal = document.getElementById("demographyDiv");
+        modal.style.display = "none";
+      }
+
+      window.onclick = function(event) {
+        var modal = document.getElementById("demographyDiv");
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+
       function showDemography(demArray2){
+        //// **** ////
+        var modal = document.getElementById("demographyDiv");
+        modal.style.display = "block";
+        
         var numPlaces = demArray2[0].length;
         var placesList = document.getElementById('demography');
         for(i = 1; i < numPlaces; i++){
