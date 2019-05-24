@@ -20,9 +20,10 @@
   }
 
   function get_lat_lng($loc){
-    $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".urlencode(trim($loc))."&sensor=false";
+    $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&address=".urlencode(trim($loc))."&sensor=false";
+    ////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".urlencode(trim($loc))."&sensor=false";
 	  $result_string = file_get_contents_curl($url);
-	  ////error_log($result_string);
+	  //error_log($result_string);
     $result = json_decode($result_string, true);
     $lat = $result['results'][0]['geometry']['location']['lat'];
     $lng = $result['results'][0]['geometry']['location']['lng'];
@@ -1084,12 +1085,15 @@
       }
 
   </script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&callback=initMap&libraries=places,drawing"
-    async defer></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&callback=initMap&libraries=places,drawing" async defer></script>
+    <!-- script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&callback=initMap&libraries=places,drawing"
+    async defer></script -->
   <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&callback=initMap"
     async defer></script> -->
     <!-- script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
-        async defer></script -->
+        async defer></script 
+        AIzaSyCTwmgoHKWkBx0uZf3rfblMArH64Pdl_jI - kv.h May_24_2019
+        -->
   </body>
 </html>
 
