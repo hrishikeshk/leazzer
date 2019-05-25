@@ -456,13 +456,13 @@
         var state = stateIdMap[stateStr];
         if(state < 10)
           state = '0' + state;
-        var query2016 = 'https://api.census.gov/data/2016/acs/acs1?get=B01003_001E,B06011_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
+        var query2016 = 'https://api.census.gov/data/2016/acs/acs5?get=B01003_001E,B06011_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
         var result_string2016 = js_http(query2016);
         var result2016 = [[]];
         if(result_string2016.length > 0)
           result2016 = JSON.parse(result_string2016);
 
-        var query2017 = 'https://api.census.gov/data/2017/acs/acs1?get=B01003_001E,B06011_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
+        var query2017 = 'https://api.census.gov/data/2017/acs/acs5?get=B01003_001E,B06011_001E,NAME&for=place:*&in=state:' + state + '&key=7f6d9735efdc792ffebf89bc316f4afe3b29795f';
         var result_string2017 = js_http(query2017);
         var result2017 = [[]];
         if(result_string2017.length > 0)
@@ -495,7 +495,12 @@
         
         var numPlaces = demArray2[0].length;
         var placesList = document.getElementById('demography');
+        while (placesList.childElementCount > 1) {
+          placesList.removeChild(placesList.lastChild);
+        }
         for(i = 1; i < numPlaces; i++){
+          if(demArray2[1][i][1] <= 0)
+            continue;
           var tr = document.createElement('tr');
           
           var td0 = document.createElement('td');
