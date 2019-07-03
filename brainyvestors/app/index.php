@@ -1,5 +1,5 @@
-
 <?php
+header("Location: ../index.php");
 /*
 if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
 {
@@ -10,6 +10,7 @@ if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
 */
 
 ?>
+<!-- 
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,4 +28,5 @@ Keywords - Feasibility study, Commercial Real Estate, Multifamily, Self Storage,
 
 </body>
 </html>
+-->
 
