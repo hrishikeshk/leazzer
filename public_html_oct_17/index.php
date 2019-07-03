@@ -1,5 +1,5 @@
-
 <?php
+session_start();
 /*
 if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
 {
@@ -8,7 +8,7 @@ if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
 	exit;
 }
 */
-session_start();
+
 if(isset($_GET['action']) && ($_GET['action'] == "logout")){
 	if(isset($_SESSION['lfdata']))
 		unset($_SESSION['lfdata']);

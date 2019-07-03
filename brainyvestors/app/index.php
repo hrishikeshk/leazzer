@@ -20,7 +20,10 @@ if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
 </head>
 <body>
 
-Site under construction. Coming soon !
+We, at brainyvestors, provide quick feasibility for Commercial Real Estate such as Multifamily, Self Storage, Retail and/or Office Buildings.
+
+
+Keywords - Feasibility study, Commercial Real Estate, Multifamily, Self Storage, Office, Retail complex
 
 </body>
 </html>
