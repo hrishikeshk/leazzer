@@ -902,6 +902,10 @@
             continue;
           if(place.name.includes('Kroger') && place.name != 'Kroger')
             continue;
+          if(place.name.includes('Walgreens') && place.name != 'Walgreens')
+            continue;
+          if(place.name.includes('Target') && place.name != 'Target')
+            continue;
           if(!insidePolygon(place.geometry.location, polygonPathsArr[currentPolygon]))
             continue;
           var image = {
