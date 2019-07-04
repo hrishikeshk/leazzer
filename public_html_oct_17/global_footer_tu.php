@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -30,7 +33,6 @@
 
 <div class="container">
 <?php
-session_start();
 include('sql.php');
 
 function fetch_footer(){

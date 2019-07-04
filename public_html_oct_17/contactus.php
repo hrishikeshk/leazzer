@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <html>
 <head>
 <title>Leazzer</title>
@@ -28,7 +31,6 @@
 
 <div class="container">
 <?php
-session_start();
 include('sql.php');
 
 ?>

@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -169,7 +172,6 @@ function showSlides(n) {
 </div>
 
 <?php
-session_start();
 include('sql.php');
 
 if(isset($_GET['facility_id'])){

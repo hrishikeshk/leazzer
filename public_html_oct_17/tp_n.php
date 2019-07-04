@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -6,7 +9,6 @@
 <body id="innerBody">
 
 <?php
-  session_start();
   include('sql.php');
 
   function extract_image_name($ss_path){
