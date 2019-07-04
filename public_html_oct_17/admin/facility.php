@@ -1,4 +1,5 @@
 <?php
+include('header.php');
 include('../sql.php');
 if(isset($_GET['action'])){
 		if($_GET['action'] == "export"){
@@ -63,7 +64,6 @@ function updateOpt($facility_id){
 	return $opt;
 }
 
-include('header.php');
 if(isset($_GET['action'])){
 		if($_GET['action'] == "delete"){
 		    mysqli_query($conn, "delete from facility_amenity where facility_id=".$_GET['id']) or die('Failed to delete facility amenity: '.mysqli_error($conn));

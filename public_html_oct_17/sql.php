@@ -5,4 +5,3 @@ $conn = mysqli_connect("localhost", "saketsw_leazzer", "saketsw_leazzer", "saket
 mysqli_query($conn,"SET CHARACTER SET utf8");
 
 ?>
-

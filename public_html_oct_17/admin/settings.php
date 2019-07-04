@@ -44,21 +44,22 @@ function update_tu(){
 	$GError= "Terms of use updated successfully.";
 }
 
-if(isset($_POST['submit']))
-{
-	if($_POST['submit'] == "Change Password")
-	{
+function update_bv_app_url(){
+  global $conn;		
+	mysqli_query($conn,"update admin_configuration set data_value='".$_POST['bv_app_url']."' where name='bv_app_url'");
+	$GError= "bv_app_url updated successfully.";
+}
+
+if(isset($_POST['submit'])){
+	if($_POST['submit'] == "Change Password"){
 		if($_POST['newpwd'] != $_POST['conpwd'])
 			$GError= "New password and confirm password mismatch.";		
-		else
-		{
+		else{
 			$results = mysqli_query($conn,"select * from admin where id=".$_SESSION['ladata']['id']." and password='".$_POST['curpwd']."'");	
-			if(mysqli_num_rows($results) == 0)
-			{
+			if(mysqli_num_rows($results) == 0){
 				$GError= "Wrong current password.";		
 			}
-			else
-			{
+			else{
 				$GError= "Password updated successfully.";		
 				mysqli_query($conn,"update admin set password='".$_POST['newpwd']."' where id='".$_SESSION['ladata']['id']."'");
 				$_SESSION['ladata']['password'] = $_POST['newpwd'];
@@ -70,6 +71,9 @@ if(isset($_POST['submit']))
   }
   else if($_POST['submit'] == "settu"){
     update_pp();
+  }
+  else if($_POST['submit'] == "bv_app_url"){
+    update_bv_app_url();
   }
 }
 ?>
@@ -128,6 +132,21 @@ if(isset($_POST['submit']))
 					</form>
 					<b>-- OR -- </b>
 					<br /> <a href="tu_upload.php">Upload a .pdf file as Terms Of Use Policy</a>
+				</center>
+    	</div>
+    	
+    	<div class="blankpage-main">
+    		<center>
+    			<hr>
+					<?php
+					if($GError!=""){
+						echo "<div class=\"alert alert-info\" role=\"alert\">".$GError."</div>";
+					}
+					?>	
+					<form name="bv_app_url" id="bv_app_url" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+							<input class="form-control" placeholder="bv_app_url" type="textarea" name="bv_app_url" id="bv_app_url_in" style="width:90%;" value=""><br />
+			    		<button class="btn btn-success" name="submit" value="bv_app_url" style="background:#68AE00;border-color:#68AE00;">bv_app_url</button>
+					</form>
 				</center>
     	</div>
     </div>

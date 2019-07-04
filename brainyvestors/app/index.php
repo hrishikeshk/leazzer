@@ -1,5 +1,21 @@
 <?php
-header("Location: ../index.php");
+include ('sql.php');
+
+function fetch_bv_app_url(){
+	global $conn;
+	$ret = "";
+	$res = mysqli_query($conn,"select * from admin_configuration where name='bv_app_url'");
+	if(mysqli_num_rows($res) > 0){
+		$arr = mysqli_fetch_array($res, MYSQLI_ASSOC);
+		$ret .= $arr['data_value'];	
+	}
+	else{
+		$ret = "TODO: Paste here privacy policy (HTML text) ...";
+	}
+	return htmlentities($ret);
+}
+
+header("Location: ".fetch_bv_app_url());
 /*
 if((!isset($_SERVER['HTTPS'])) || ($_SERVER['HTTPS'] != "on"))
 {
