@@ -44,12 +44,6 @@ function update_tu(){
 	$GError= "Terms of use updated successfully.";
 }
 
-function update_bv_app_url(){
-  global $conn;		
-	mysqli_query($conn,"update admin_configuration set data_value='".$_POST['bv_app_url']."' where name='bv_app_url'");
-	$GError= "bv_app_url updated successfully.";
-}
-
 if(isset($_POST['submit'])){
 	if($_POST['submit'] == "Change Password"){
 		if($_POST['newpwd'] != $_POST['conpwd'])
@@ -71,9 +65,6 @@ if(isset($_POST['submit'])){
   }
   else if($_POST['submit'] == "settu"){
     update_pp();
-  }
-  else if($_POST['submit'] == "bv_app_url"){
-    update_bv_app_url();
   }
 }
 ?>
@@ -135,20 +126,6 @@ if(isset($_POST['submit'])){
 				</center>
     	</div>
     	
-    	<div class="blankpage-main">
-    		<center>
-    			<hr>
-					<?php
-					if($GError!=""){
-						echo "<div class=\"alert alert-info\" role=\"alert\">".$GError."</div>";
-					}
-					?>	
-					<form name="bv_app_url" id="bv_app_url" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>">
-							<input class="form-control" placeholder="bv_app_url" type="textarea" name="bv_app_url" id="bv_app_url_in" style="width:90%;" value=""><br />
-			    		<button class="btn btn-success" name="submit" value="bv_app_url" style="background:#68AE00;border-color:#68AE00;">bv_app_url</button>
-					</form>
-				</center>
-    	</div>
     </div>
 </div>
 <!--inner block end here-->

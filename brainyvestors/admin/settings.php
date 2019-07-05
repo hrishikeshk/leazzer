@@ -81,6 +81,7 @@ if(isset($_POST['submit'])){
 <div class="inner-block">
     <div class="blank">
     	<h2>Settings</h2>
+    	<!--
     	<div class="blankpage-main">
     		<center>
     			<h4>Change Password</h4>
@@ -134,7 +135,7 @@ if(isset($_POST['submit'])){
 					<br /> <a href="tu_upload.php">Upload a .pdf file as Terms Of Use Policy</a>
 				</center>
     	</div>
-    	
+    	-->
     	<div class="blankpage-main">
     		<center>
     			<hr>

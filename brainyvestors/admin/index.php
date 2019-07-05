@@ -20,7 +20,7 @@ if(isset($_POST['action']))
 					$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
 					$GError = "Logged in successfully.";
 					$_SESSION['ladata']	= $arr;
-					header("Location: facility.php");
+					header("Location: settings.php");
 			}	
 			else 
 				$GError = "Userid and/or Password may be incorrect";
@@ -31,7 +31,7 @@ mysqli_close($conn);
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Leazzer</title>
+<title>Brainyvestors</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="Leazzer" />
@@ -46,7 +46,7 @@ mysqli_close($conn);
 <div class="login-page" style="min-height: 700px;background:none;">
     <div class="login-main">  	
 			<div class="login-block">
-				<center><h1>Leazzer Admin</h1></center>
+				<center><h1>Brainyvestors Admin</h1></center>
 				<hr>
 				<?php 
 				if($GError!="")

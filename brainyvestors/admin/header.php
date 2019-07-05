@@ -10,10 +10,10 @@ $GError = "";
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Leazzer</title>
+<title>Brainyvestors</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="keywords" content="Leazzer" />
+<meta name="keywords" content="Brainyvestors" />
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
@@ -42,7 +42,7 @@ $GError = "";
 				<div class="header-main">
 					<div class="header-left">
 							<div class="logo-name">
-									 <a href="facility.php"> <img id="logo" src="../images/llogo.png" width=40px alt="Logo"/> 
+									 <a href="settings.php"> <img id="logo" src="../images/llogo.png" width=40px alt="Logo"/> 
 								  </a> 								
 							</div>
 							<div class="clearfix"> </div>
@@ -61,13 +61,7 @@ $GError = "";
 											</div>	
 										</a>
 										<ul class="dropdown-menu drp-mnu">
-											<li> <a href="facility.php"><i class="fa fa-th"></i> Facility</a> </li> 
-											<li> <a href="customer.php"><i class="fa fa-user"></i> Customer</a> </li> 
-											<li> <a href="units.php"><i class="fa fa-cube"></i> Units</a> </li> 
-											<li> <a href="options.php"><i class="fa fa-eye"></i> Options</a> </li> 
-											<!--<li> <a href="button.php"><i class="fa fa-comments"></i> Button</a> </li>-->
 											<li> <a href="settings.php"><i class="fa fa-cog"></i> Settings</a> </li>
-											<li> <a href="reports.php"><i class="fa fa-cog"></i> Reports</a> </li> 
 											<li> <a href="index.php?action=logout"><i class="fa fa-sign-out"></i> Logout</a> </li>
 										</ul>
 									</li>

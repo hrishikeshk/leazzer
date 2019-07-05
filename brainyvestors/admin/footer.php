@@ -1,6 +1,6 @@
 <!--copy rights start here-->
 <div class="copyrights">
-	 <p>© <?php echo date('Y',time());?> Leazzer, All Rights Reserved.</p>
+	 <p>© <?php echo date('Y',time());?> Brainyvestors, All Rights Reserved.</p>
 </div>	
 <!--COPY rights end here-->
 </div>
