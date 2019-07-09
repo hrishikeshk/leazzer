@@ -644,10 +644,10 @@
         for (var i = 0, place; place = places[i]; i++) {
           if(polyCheck === true && !insidePolygon(new google.maps.LatLng(place.lat, place.lng), polygonPathsArr[currentPolygon]))
             continue;
-          var iconAADT = '/realmap/images/aadt_up.png';
+          var iconAADT = '/images/aadt_up.png';
           if(place.aadt_2017 < place.aadt_2016){
-            //iconAADT = '/realmap/images/aadt_down.png';
-            iconAADT = '/realmap/images/aadtdown.gif';
+            //iconAADT = '/images/aadt_down.png';
+            iconAADT = '/images/aadtdown.gif';
           }
           var image = {
                         url: iconAADT,
@@ -686,7 +686,7 @@
         xmlHttp.send( null );
         return xmlHttp.responseText;
       }
-      
+
       function js_http_a0(url, polyCheck){
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onload = function() {
@@ -695,7 +695,7 @@
 
             var trafficPlaces = [];
             var features = result.features;
-            for(i = 0; i < features.length; i++){
+            for(i = 0; (features != null && features != undefined) && i < features.length; i++){
               trafficPlaces.push({ lat: features[i].geometry.y, 
                                lng: features[i].geometry.x, 
                                aadt_2016: features[i].attributes.AADT_2016,
@@ -764,6 +764,10 @@
           if(!place.name.includes('Walmart') && icon.includes('wm_l'))
             continue;
           if(place.name.includes('Kroger') && place.name != 'Kroger')
+            continue;
+          if(place.name.includes('Walgreens') && place.name != 'Walgreens')
+            continue;
+          if(place.name.includes('Target') && place.name != 'Target')
             continue;
           var image = {
                         url: icon,
@@ -883,14 +887,14 @@
 
       function drawPlaces(lat, lng){
         numPlaces = 0;
-        getTextPlaces('Walmart', '/realmap/images/wm_l.jpg', lat, lng);
-        getTextPlaces('Walgreens', '/realmap/images/wg_l.png', lat, lng);
-        getTextPlaces('CVS', '/realmap/images/cvs_l.png', lat, lng);
-        getTextPlaces('McDonalds', '/realmap/images/md_l.png', lat, lng);
+        getTextPlaces('Walmart', '/images/wm_l.jpg', lat, lng);
+        getTextPlaces('Walgreens', '/images/wg_l.png', lat, lng);
+        getTextPlaces('CVS', '/images/cvs_l.png', lat, lng);
+        getTextPlaces('McDonalds', '/images/md_l.png', lat, lng);
         
-        getTextPlaces('Kroger', '/realmap/images/kroger_l.png', lat, lng);
-        getTextPlaces('Target', '/realmap/images/target_l.png', lat, lng);
-        getTextPlaces('Olive Garden', '/realmap/images/og_l.png', lat, lng);
+        getTextPlaces('Kroger', '/images/kroger_l.png', lat, lng);
+        getTextPlaces('Target', '/images/target_l.png', lat, lng);
+        getTextPlaces('Olive Garden', '/images/og_l.png', lat, lng);
       }
 
       ////
@@ -949,14 +953,14 @@
       }
 
       function drawPlacesPolygon(lat, lng){
-        getTextPlacesPolygon('Walmart', '/realmap/images/wm_l.jpg', lat, lng);
-        getTextPlacesPolygon('Walgreens', '/realmap/images/wg_l.png', lat, lng);
-        getTextPlacesPolygon('CVS', '/realmap/images/cvs_l.png', lat, lng);
-        getTextPlacesPolygon('McDonalds', '/realmap/images/md_l.png', lat, lng);
+        getTextPlacesPolygon('Walmart', '/images/wm_l.jpg', lat, lng);
+        getTextPlacesPolygon('Walgreens', '/images/wg_l.png', lat, lng);
+        getTextPlacesPolygon('CVS', '/images/cvs_l.png', lat, lng);
+        getTextPlacesPolygon('McDonalds', '/images/md_l.png', lat, lng);
         
-        getTextPlacesPolygon('Kroger', '/realmap/images/kroger_l.png', lat, lng);
-        getTextPlacesPolygon('Target', '/realmap/images/target_l.png', lat, lng);
-        getTextPlacesPolygon('Olive Garden', '/realmap/images/og_l.png', lat, lng);
+        getTextPlacesPolygon('Kroger', '/images/kroger_l.png', lat, lng);
+        getTextPlacesPolygon('Target', '/images/target_l.png', lat, lng);
+        getTextPlacesPolygon('Olive Garden', '/images/og_l.png', lat, lng);
       }
       ////
 
@@ -981,7 +985,7 @@
         }
 
         var image = {
-                        url: '/realmap/images/vertex.png',
+                        url: '/images/vertex.png',
                         size: new google.maps.Size(71, 71),
                         origin: new google.maps.Point(0, 0),
                         anchor: new google.maps.Point(10, 25),
