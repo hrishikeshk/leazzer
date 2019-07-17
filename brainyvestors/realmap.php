@@ -35,6 +35,7 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <link rel="icon" href="https://www.brainyvestors.com/images/llogo.png" type="image/png">
     <title>Real Estate Mapper</title>
     <meta charset="utf-8">
     <style>
@@ -93,33 +94,33 @@
   </head>
   <body>
 
-  <table>
+  <table style="height:10%">
     <tr>
       <td style="background:#F5FCFF;border-radius: 10px;width:70%;">
         <form action="realmap.php" method="post">
           <table style="width:100%">
             <tr>
-              <td style="width:90%;">Address <input type="text" id="address" name="address" value="<?php echo $address; ?>" style="width:90%;border-radius: 10px;" /></td>
+              <td style="font-size: .7em; width:90%;">Address <input type="text" id="address" name="address" value="<?php echo $address; ?>" style="width:90%;border-radius: 10px;" /></td>
               <td><input type="submit" value="Search" /></td>
             </tr>
           </table>
         </form>
       </td>
       <td style="background:#F5FCFF;border-radius: 10px;">
-        <img src = "images/tools.png" height="40px" width="40px" />
-          <a onclick="javascript:newPolygon();" style="cursor:pointer"><img src="images/newpoly.png" height="40px" width="40px" /></a>
-          <a onclick="javascript:clearAllPolygons();" style="cursor:pointer"><img src="images/eraser3.png" height="40px" width="40px" /></a>
+        <!--img src = "images/tools.png" height="20px" width="20px" / -->
+          <a onclick="javascript:newPolygon();" style="cursor:pointer"><img src="images/newpoly.png" height="15px" width="15px" /></a>
+          <a onclick="javascript:clearAllPolygons();" style="cursor:pointer"><img src="images/eraser3.png" height="15px" width="15px" /></a>
         <br/>
-        <form>
+        <form style="font-size: .7em;">
           <input type="checkbox" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
           <input type="checkbox" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
           <input type="checkbox" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
-          <a onclick="javascript:clearCircles();" style="cursor:pointer" /><img src="images/eraser3.png" height="40px" width="40px" /></a>
+          <!-- a onclick="javascript:clearCircles();" style="cursor:pointer" /><img src="images/eraser3.png" height="15px" width="15px" /></a -->
         </form>
       </td>
       <td style="background:#F5FCFF;border-radius: 10px;">
         <form>
-          <a onclick="javascript:getDemography();" style="cursor:pointer" /><img src="images/di.png" height="80px" width="120px" /></a>
+          <a onclick="javascript:getDemography();" style="cursor:pointer" /><img src="images/di.png" height="40px" width="40px" /></a>
         </form>
         <div id="demographyDiv" class="modal" style="display:none;border-radius: 15px;">
           <div class="modal-content">
@@ -149,7 +150,7 @@
     </tr>
   </table>
 
-  <table style="width:100%;height:80%" style="table-layout: fixed;">
+  <table style="width:100%;height:80%;table-layout: fixed";">
     <tr style="width:100%;height:100%">
       <td style="width:100%;height:100%">
         <div id="map"></div>
@@ -1078,8 +1079,8 @@
             echo 'var lng = '.$lat_lng[1].';';
           }
           else{
-            echo 'var lat = 40.397;';
-            echo 'var lng = -101.644;';
+            echo 'var lat = 32.9312;';
+            echo 'var lng = -96.4597;';
           }
         ?>
         map = new google.maps.Map(document.getElementById('map'), {
