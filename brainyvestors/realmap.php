@@ -1070,6 +1070,11 @@
             polygonPathsArr[currentPolygon].push(me.latLng);
             polygonMarker(me.latLng);
         });
+        
+        var marker = new google.maps.Marker({
+                                  map: map,
+                                  position: new google.maps.LatLng(lat, lng)
+        });
       }
 
       function initMap(){
