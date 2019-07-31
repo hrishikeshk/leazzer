@@ -1,0 +1,28 @@
+<?php
+
+function file_get_contents_curl($url){
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_HEADER, 0);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); //Set curl to return the data instead of printing it to the browser.
+    curl_setopt($ch, CURLOPT_URL, $url);
+    $data = curl_exec($ch);
+    curl_close($ch);
+    return $data;
+}
+
+function get_lat_lng($loc){
+    $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&address=".urlencode(trim($loc))."&sensor=false";
+    ////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".urlencode(trim($loc))."&sensor=false";
+	  $result_string = file_get_contents_curl($url);
+
+    return $result_string;
+}
+
+if(isset($_GET['aadtproxy']) && strlen($_GET['aadtproxy']) > 0){
+  $address = $_GET['aadtproxy'];
+  $aadts = file_get_contents_curl($address);
+  echo $aadts;
+}
+
+?>
+

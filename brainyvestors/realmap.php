@@ -605,12 +605,12 @@
           var circleRCEvent = new google.maps.event.addListener(circle, 'radius_changed', function() {
             var mapCenter = circle.getCenter();
             drawPlaces(mapCenter.lat(), mapCenter.lng());
-            fetchAADT();
+            ////fetchAADT();
           });
           var circleCCEvent = new google.maps.event.addListener(circle, 'center_changed', function() {
             var mapCenter = circle.getCenter();
             drawPlaces(mapCenter.lat(), mapCenter.lng());
-            fetchAADT();
+            ////fetchAADT();
           });
         }
         
@@ -618,7 +618,7 @@
         
         drawPlaces(mapCenter.lat(), mapCenter.lng());
         map.setCenter(circle.getCenter());
-        fetchAADT();
+        ////fetchAADT();
       }
 
       function clearCircles(){
@@ -752,7 +752,6 @@
         }
         createAADTMarkers(trafficPlaces);
         */
-        js_http_a0(query, polyCheck);
       }
 
       function createMarkers(places, icon){
@@ -1045,7 +1044,7 @@
                   polyLng /= polygonPathsArr[currentPolygon].length;
               
                   drawPlacesPolygon(polyLat, polyLng);
-                  fetchAADTI(new google.maps.LatLng(polyLat, polyLng), true);
+                  ////fetchAADTI(new google.maps.LatLng(polyLat, polyLng), true);
                 }
              });          
           }
@@ -1054,7 +1053,7 @@
 
       function drawOnMap(lat, lng){        
         drawPlaces(lat, lng);
-        fetchAADT();
+        ////fetchAADT();
         ////getDemography();
         
         var mapClickEvent = google.maps.event.addListener(map, 'click', function(me) {
@@ -1077,6 +1076,167 @@
         });
       }
 
+      function js_http_aadt(url){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onload = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //var result = JSON.parse(this.responseText);
+            var lines = this.responseText.split('\n');
+            
+            var trafficPlaces = [];
+            for(var line = 1; line < lines.length; ++line){
+              var fields = lines[line].split(',');
+              trafficPlaces.push({location: fields[0],
+                                  date: fields[1],
+                                  count: fields[3],
+                                  roadway: fields[4],
+                                  direction: fields[5],
+                                  from: fields[6],
+                                  to: fields[7],
+                                  city: fields[8],
+                                  county: fields[9]
+                                });
+            }
+            refreshAADTMarkers(trafficPlaces);
+          }
+          else
+            console.log('Not drawn new AADT source data : ' + this.readyState + " : " + this.status);
+        };
+        xmlHttp.open( "GET", url, true );
+        ////xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xmlHttp.setRequestHeader('Accept', '*/*');
+        xmlHttp.send( null );
+      }
+
+      function parseForLatLng(responseText){
+        var lines = responseText.split('\n');
+        var latlng = {};
+        for(var i = 0; i < lines.length; ++i){
+          if(lines[i].includes('Longitude')){
+            var scIndx = lines[i].indexOf(";");
+            var tdEnd = lines[i].indexOf("</td>");
+            var lng = lines[i].substring(scIndx + 1, tdEnd - 2);
+            latlng['lng'] = parseFloat(lng.trim());
+          }
+          if(lines[i].includes('Latitude')){
+            var scIndx = lines[i].indexOf(";");
+            var tdEnd = lines[i].indexOf("</td>");
+            var lng = lines[i].substring(scIndx + 1, tdEnd - 2);
+            latlng['lat'] = parseFloat(lng.trim());
+          }
+        }
+        return latlng;
+      }
+
+      function addInfoWindowAADT(marker, contentString){
+        var infowindow = new google.maps.InfoWindow({
+              content: contentString
+            });
+        //infowindow.setContent(contentString);
+        infowindow.setContent(marker.aadt);
+        infowindow.open(map, marker);
+      }
+      
+      function js_http_aadt_inner(place, url){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onload = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            {
+              var latlng = parseForLatLng(this.responseText);
+              var image = {
+                        url: '/images/addr_icon.png',
+                        size: new google.maps.Size(71, 71),
+                        origin: new google.maps.Point(0, 0),
+                        anchor: new google.maps.Point(17, 34),
+                        scaledSize: new google.maps.Size(20, 20)
+              };
+              var marker = new google.maps.Marker({
+                                  map: map,
+                                  icon: image,
+                                  title: 'Traffic (2017): ' + place.count,
+                                  position: {lat: latlng.lat, lng: latlng.lng}
+                      });
+              marker.setAnimation(google.maps.Animation.DROP);
+
+              marker['aadt'] = '<b>Traffic Average: </b>' + place.count + ' vehicles/day<br />'+
+                                '<b>Roadway: </b>' + place.roadway + ', <b>Direction: </b>' + place.direction + '<br />' +
+                                '<b>From: </b>' + place.from + ', <b>To: </b>' + place.to + '<br />' +
+                                '<b>City: </b>' + place.city + ', <b>County: </b>' + place.county + '<br />' +
+                                '<a href = "https://www.brainyvestors.com/aadt_hist.php?loc=' + place.location +'">Historical Data</a>';
+              var aadtFlagClickEvent = new google.maps.event.addListener(marker, 'click', function() {
+
+                var contentString = '<b>(lat,lng): </b>' + '(' + latlng.lat + ', ' + latlng.lng + ')' + '<br />';
+                addInfoWindowAADT(this, contentString);
+              });
+            }
+          }
+          else
+            console.log('Not drawn new AADT source data : ' + this.readyState + " : " + this.status);
+        };
+        xmlHttp.open( "GET", url, true );
+        xmlHttp.setRequestHeader('Accept', '*/*');
+        xmlHttp.send( null );
+      }
+
+      function refreshAADTMarkers(places){
+        for(var p = 0; p < places.length; ++p){
+          js_http_aadt_inner(places[p], 'https://www.brainyvestors.com/aadtproxy.php?aadtproxy=' + encodeURI('https://resources.nctcog.org/trans/data/trafficcounts/LocsData.asp?id_loc=' + places[p].location) );
+        }
+      }
+/*
+//// https://resources.nctcog.org/trans/data/trafficcounts/LocsData.asp?id_loc=50875
+
+<head>
+<link rel="stylesheet" type="text/css" href="TrafficGraphs.css" />
+<link href='https://resources.nctcog.org/style-sheets/hide.css' rel='stylesheet' type='text/css' /></head>
+
+	
+	
+<table>
+             
+            <tr class="style5">
+                <td><b>Location ID:</b>&nbsp;50875&nbsp;</td>
+				<td>&nbsp;</td>
+				<td><b>Longitude:</b>&nbsp;-97.030562 </td>
+				<td>&nbsp;</td>
+                <td><b>Latitude:</b>&nbsp;32.837007 </td>
+                
+            </tr>
+            <tr class="style5">
+                <td><b>Roadway:</b>&nbsp;SH183 WB</td>
+				<td>&nbsp;</td>
+				<td><b>Between:</b>&nbsp;SH183 ONRAMP WB </td>
+				<td>&nbsp;</td>
+                <td><b>And:</b>&nbsp;SH183 ONRAMP WB </td>
+				<td>&nbsp;</td>
+				<td><b>City:</b>&nbsp;Irving </td>
+				<td>&nbsp;</td>
+                <td><b>County:</b>&nbsp;Dallas </td>
+            </tr>
+
+            
+</table>
+
+https://resources.nctcog.org/trans/data/trafficcounts/HistoricTrafficCounts_Report2.asp?id_loc=50875&unhide=1
+
+https://www.nctcog.org/trans/data/info/traffic-count-information-systems/traffic-count-abbreviations
+
+*/
+
+
+      function refreshAADTS(){
+        bounds = map.getBounds();
+        var ne = bounds.getNorthEast();
+        var sw = bounds.getSouthWest();
+        var left = sw.lng();
+        var right = ne.lng();
+        var top = ne.lat();
+        var bottom = sw.lat();
+        // https://resources.nctcog.org/trans/data/trafficcounts/createexcel.asp?left=-96.49558378085032&right=-96.44576376005546&top=32.94681392860088&bottom=32.92376227328064
+        var url = "https://www.brainyvestors.com/aadtproxy.php?aadtproxy=" + "https://resources.nctcog.org/trans/data/trafficcounts/createexcel.asp?left=" + left + "&right=" + right + "&top=" + top + "&bottom=" + bottom;
+        js_http_aadt(encodeURI(url) );
+      }
+
       function initMap(){
         <?php
           if(count($lat_lng) > 0){
@@ -1096,11 +1256,24 @@
           zoom: 16
         });
         bounds = new google.maps.LatLngBounds();
-        
+        //bounds.extend(map.getCenter());
         USGSOverlay.prototype = new google.maps.OverlayView();
         overlay = new USGSOverlay(map);
         
         drawOnMap(lat, lng);
+        
+        google.maps.event.addListener(map, 'center_changed', function() {
+          refreshAADTS();
+        });
+        /*
+        google.maps.event.addListener(map, 'bounds_changed', function() {
+          refreshAADTS();
+        });
+        google.maps.event.addListener(map, 'zoom_changed', function() {
+          refreshAADTS();
+        });
+        */
+        //refreshAADTS();
       }
 
   </script>
