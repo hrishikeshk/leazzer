@@ -35,7 +35,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="icon" href="https://www.brainyvestors.com/images/llogo.png" type="image/png">
+    <link rel="icon" href="https://www.brainyvestors.com/images/llogo.jpg" type="image/jpg">
     <title>Real Estate Mapper</title>
     <meta charset="utf-8">
     <style>
@@ -606,11 +606,13 @@
             var mapCenter = circle.getCenter();
             drawPlaces(mapCenter.lat(), mapCenter.lng());
             ////fetchAADT();
+            refreshAADTS();
           });
           var circleCCEvent = new google.maps.event.addListener(circle, 'center_changed', function() {
             var mapCenter = circle.getCenter();
             drawPlaces(mapCenter.lat(), mapCenter.lng());
             ////fetchAADT();
+            refreshAADTS();
           });
         }
         
@@ -619,6 +621,7 @@
         drawPlaces(mapCenter.lat(), mapCenter.lng());
         map.setCenter(circle.getCenter());
         ////fetchAADT();
+        refreshAADTS();
       }
 
       function clearCircles(){
@@ -1045,6 +1048,7 @@
               
                   drawPlacesPolygon(polyLat, polyLng);
                   ////fetchAADTI(new google.maps.LatLng(polyLat, polyLng), true);
+                  refreshAADTS();
                 }
              });          
           }
@@ -1076,6 +1080,40 @@
         });
       }
 
+      function fixAADTColumns(firstLine){
+        var fieldNames = new Array('Location ID','Date','Source','Count','Roadway','Direction','From','To','City','County');
+        var columnIdxs = {};
+        var fields = firstLine.split(',');
+        for(var x = 0; x < fields.length; ++x){
+          for(var y = 0; y < fieldNames.length; ++y){
+            if(fields[x] == fieldNames[y]){
+              columnIdxs[fieldNames[y]] = x;
+              break;
+            }
+          }
+        }
+        return columnIdxs;
+      }
+
+      function parseAADTLine(columnIdxs, line){
+        var idx = 0;
+        var z = 0;
+        var fieldNames = new Array('Location ID','Date','Source','Count','Roadway','Direction','From','To','City','County');
+        var fields = new Array('Location ID','Date','Source','Count','Roadway','Direction','From','To','City','County');
+        while(idx < line.length){
+          var idx_s = line.indexOf('"', idx);
+          if(idx_s == -1)
+            return fields;
+          var idx_e = line.indexOf('"', idx_s + 1);
+          if(idx_e == -1)
+            return fields;
+          fields[columnIdxs[fieldNames[z]]] = line.substring(idx_s + 1, idx_e);
+          ++z;
+          idx = idx_e + 1;
+        }
+        return fields;
+      }
+
       function js_http_aadt(url){
         var xmlHttp = new XMLHttpRequest();
         xmlHttp.onload = function() {
@@ -1084,8 +1122,12 @@
             var lines = this.responseText.split('\n');
             
             var trafficPlaces = [];
+            var columnIdxs = fixAADTColumns(lines[0]);
             for(var line = 1; line < lines.length; ++line){
-              var fields = lines[line].split(',');
+              //var fields = lines[line].replace(/"/g, '').split(',');
+              if(lines[line].length < 1)
+                continue;
+              var fields = parseAADTLine(columnIdxs, lines[line]);
               trafficPlaces.push({location: fields[0],
                                   date: fields[1],
                                   count: fields[3],
@@ -1097,7 +1139,7 @@
                                   county: fields[9]
                                 });
             }
-            refreshAADTMarkers(trafficPlaces);
+            refreshAADTMarkers(trafficPlaces, 0);
           }
           else
             console.log('Not drawn new AADT source data : ' + this.readyState + " : " + this.status);
@@ -1153,7 +1195,7 @@
               var marker = new google.maps.Marker({
                                   map: map,
                                   icon: image,
-                                  title: 'Traffic (2017): ' + place.count,
+                                  title: 'Traffic (' +  place.date + '): ' + place.count,
                                   position: {lat: latlng.lat, lng: latlng.lng}
                       });
               marker.setAnimation(google.maps.Animation.DROP);
@@ -1162,7 +1204,7 @@
                                 '<b>Roadway: </b>' + place.roadway + ', <b>Direction: </b>' + place.direction + '<br />' +
                                 '<b>From: </b>' + place.from + ', <b>To: </b>' + place.to + '<br />' +
                                 '<b>City: </b>' + place.city + ', <b>County: </b>' + place.county + '<br />' +
-                                '<a href = "https://www.brainyvestors.com/aadt_hist.php?loc=' + place.location +'">Historical Data</a>';
+                                '<a target="_new" href = "https://www.brainyvestors.com/aadt_hist.php?loc=' + place.location +'">Trend Graph</a>';
               var aadtFlagClickEvent = new google.maps.event.addListener(marker, 'click', function() {
 
                 var contentString = '<b>(lat,lng): </b>' + '(' + latlng.lat + ', ' + latlng.lng + ')' + '<br />';
@@ -1174,17 +1216,24 @@
             console.log('Not drawn new AADT source data : ' + this.readyState + " : " + this.status);
         };
         xmlHttp.open( "GET", url, true );
-        xmlHttp.setRequestHeader('Accept', '*/*');
+        ////xmlHttp.setRequestHeader('Accept', '*/*');
         xmlHttp.send( null );
       }
 
-      function refreshAADTMarkers(places){
-        for(var p = 0; p < places.length; ++p){
-          js_http_aadt_inner(places[p], 'https://www.brainyvestors.com/aadtproxy.php?aadtproxy=' + encodeURI('https://resources.nctcog.org/trans/data/trafficcounts/LocsData.asp?id_loc=' + places[p].location) );
+      function refreshAADTMarkers(places, startIdx){
+        var z = 0;
+        var p = startIdx;
+        for(; (p < places.length && z < 10); ++p){
+          ++z;
+          js_http_aadt_inner(places[p], 'aadtproxy.php?aadtproxy=' + encodeURI('LocsData.asp?id_loc=' + places[p].location) );
+          ////js_http_aadt_inner(places[p], 'aadtproxy.php?aadtproxy=' + encodeURI('https://resources.nctcog.org/trans/data/trafficcounts/LocsData.asp?id_loc=' + places[p].location) );
         }
+        if(p < places.length)
+          setTimeout(refreshAADTMarkers, 1000, places, p);
       }
 /*
 //// https://resources.nctcog.org/trans/data/trafficcounts/LocsData.asp?id_loc=50875
+     https://resources.nctcog.org/trans/data/trafficcounts/createexcel.asp
 
 <head>
 <link rel="stylesheet" type="text/css" href="TrafficGraphs.css" />
@@ -1233,8 +1282,9 @@ https://www.nctcog.org/trans/data/info/traffic-count-information-systems/traffic
         var top = ne.lat();
         var bottom = sw.lat();
         // https://resources.nctcog.org/trans/data/trafficcounts/createexcel.asp?left=-96.49558378085032&right=-96.44576376005546&top=32.94681392860088&bottom=32.92376227328064
-        var url = "https://www.brainyvestors.com/aadtproxy.php?aadtproxy=" + "https://resources.nctcog.org/trans/data/trafficcounts/createexcel.asp?left=" + left + "&right=" + right + "&top=" + top + "&bottom=" + bottom;
-        js_http_aadt(encodeURI(url) );
+        ////var url = "aadtproxy.php?aadtproxy=" + encodeURI("https://resources.nctcog.org/trans/data/trafficcounts/createexcel.asp?left=" + left + "&right=" + right + "&top=" + top + "&bottom=" + bottom);
+        var url = "aadtproxy.php?aadtproxy=" + encodeURI("createexcel.asp?left=" + left + ";right=" + right + ";top=" + top + ";bottom=" + bottom);
+        js_http_aadt(url );
       }
 
       function initMap(){
@@ -1262,10 +1312,10 @@ https://www.nctcog.org/trans/data/info/traffic-count-information-systems/traffic
         
         drawOnMap(lat, lng);
         
-        google.maps.event.addListener(map, 'center_changed', function() {
+        /*google.maps.event.addListener(map, 'center_changed', function() {
           refreshAADTS();
         });
-        /*
+        
         google.maps.event.addListener(map, 'bounds_changed', function() {
           refreshAADTS();
         });
@@ -1273,7 +1323,8 @@ https://www.nctcog.org/trans/data/info/traffic-count-information-systems/traffic
           refreshAADTS();
         });
         */
-        //refreshAADTS();
+        setTimeout(refreshAADTS, 2000);
+        
       }
 
   </script>
