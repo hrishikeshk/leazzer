@@ -107,16 +107,17 @@
         </form>
       </td>
       <td style="background:#F5FCFF;border-radius: 10px;">
-        <!--img src = "images/tools.png" height="20px" width="20px" / -->
-          <a onclick="javascript:newPolygon();" style="cursor:pointer"><img src="images/newpoly.png" height="15px" width="15px" /></a>
-          <a onclick="javascript:clearAllPolygons();" style="cursor:pointer"><img src="images/eraser3.png" height="15px" width="15px" /></a>
-        <br/>
         <form style="font-size: .7em;">
           <input type="checkbox" id="onemile" onclick="javascript:cMile(1);" >1 Mile</input>
           <input type="checkbox" id="threemile" onclick="javascript:cMile(3);" >3 Mile</input>
           <input type="checkbox" id="fivemile" onclick="javascript:cMile(5);" >5 Mile</input>
           <!-- a onclick="javascript:clearCircles();" style="cursor:pointer" /><img src="images/eraser3.png" height="15px" width="15px" /></a -->
         </form>
+      </td>
+      <td style="background:#F5FCFF;border-radius: 10px;">
+        <!--img src = "images/tools.png" height="20px" width="20px" / -->
+          <a onclick="javascript:newPolygonF();" style="cursor:pointer"><img src="images/newpoly.png" height="40px" width="40px" /></a>
+          <a onclick="javascript:clearAllPolygons();" style="cursor:pointer"><img src="images/eraser3.png" height="40px" width="40px" /></a>
       </td>
       <td style="background:#F5FCFF;border-radius: 10px;">
         <form>
@@ -187,6 +188,7 @@
       var circles = [null, null, null];
       var radius_miles = 10;
 
+      var pencilPoly = false;
       var polygonPathsArr = [];
       var polygonMarkersArr = [];
       var currentPolygon = -1;
@@ -249,6 +251,7 @@
           }
         }
         currentPolygon = -1;
+        pencilPoly = false;
       }
 
       function clearCurrentPolygon(){
@@ -263,15 +266,17 @@
             polygonPathsArr[currentPolygon] = null;
           }
           currentPolygon--;
+          pencilPoly = false;
       }
 
-      function newPolygon(){
+      function newPolygonF(){
         if(polygonArr[currentPolygon] != null && polygonArr[currentPolygon] != undefined){
           currentPolygon++;
         }
         polygonArr[currentPolygon] = null;
         polygonPathsArr[currentPolygon] = null;
         polygonMarkersArr[currentPolygon] = null;
+        pencilPoly = true;
       }
     
       function rayCrossesSegment(point, a, b) {
@@ -1034,6 +1039,7 @@
           else{
              var markerClickEvent = google.maps.event.addListener(marker, 'click', function(event) {
                 if(polygonPathsArr[currentPolygon].length >= 3){
+                  pencilPoly = false;
                   var lastPath = polygonPathsArr[currentPolygon];
                   lastPath.push(latLng);
                   polygonArr[currentPolygon].setPath(lastPath);
@@ -1061,6 +1067,7 @@
         ////getDemography();
         
         var mapClickEvent = google.maps.event.addListener(map, 'click', function(me) {
+          if(pencilPoly === true){
             if(currentPolygon < 0)
               currentPolygon = 0;
             if(polygonPathsArr[currentPolygon] == null || polygonPathsArr[currentPolygon] == undefined){
@@ -1072,6 +1079,7 @@
               //return;
             polygonPathsArr[currentPolygon].push(me.latLng);
             polygonMarker(me.latLng);
+          }
         });
         
         var marker = new google.maps.Marker({
@@ -1187,10 +1195,10 @@
               var latlng = parseForLatLng(this.responseText);
               var image = {
                         url: '/images/addr_icon.png',
-                        size: new google.maps.Size(71, 71),
+                        size: new google.maps.Size(120, 120),
                         origin: new google.maps.Point(0, 0),
                         anchor: new google.maps.Point(17, 34),
-                        scaledSize: new google.maps.Size(20, 20)
+                        scaledSize: new google.maps.Size(25, 25)
               };
               var marker = new google.maps.Marker({
                                   map: map,
