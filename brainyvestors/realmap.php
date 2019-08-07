@@ -188,6 +188,8 @@
       var circles = [null, null, null];
       var radius_miles = 10;
 
+      var lastInfoWindow = null;
+
       var pencilPoly = false;
       var polygonPathsArr = [];
       var polygonMarkersArr = [];
@@ -1067,6 +1069,9 @@
         ////getDemography();
         
         var mapClickEvent = google.maps.event.addListener(map, 'click', function(me) {
+          if(lastInfoWindow !== null && lastInfoWindow !== undefined)
+            lastInfoWindow.close();
+            
           if(pencilPoly === true){
             if(currentPolygon < 0)
               currentPolygon = 0;
@@ -1182,9 +1187,13 @@
         var infowindow = new google.maps.InfoWindow({
               content: contentString
             });
+        if(lastInfoWindow !== null && lastInfoWindow !== undefined){
+          lastInfoWindow.close();
+        }
         //infowindow.setContent(contentString);
         infowindow.setContent(marker.aadt);
         infowindow.open(map, marker);
+        lastInfoWindow = infowindow;
       }
       
       function js_http_aadt_inner(place, url){
