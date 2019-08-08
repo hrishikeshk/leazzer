@@ -32,7 +32,7 @@ if(isset($_POST['action'])){
 	  if(isset($_POST['g-recaptcha-response']) === true){
 	    
 	    $url = 'https://www.google.com/recaptcha/api/siteverify';
-      $posts = array('secret' => '6LcbcowUAAAAAIlUzgvL4xiWAQoKfRRRcA7ROJo3',
+      $posts = array('secret' => '6Ld5ErIUAAAAABzmur2ytqT0vEMGnwbI20HJ3FQS',
                      'response' => $_POST['g-recaptcha-response'],
                );
       $ret = recaptcha_curl($url, $posts);
@@ -106,6 +106,7 @@ mysqli_close($conn);
 <html>
 <head>
 <title>Brainyvestors</title>
+<link rel="icon" href="https://www.brainyvestors.com/images/llogo.jpg" type="image/jpg">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="Brainyvestors" />
@@ -134,7 +135,7 @@ mysqli_close($conn);
 					<input type="text" name="phone" placeholder="Phone" required>
 					<input type="text" name="emailid" placeholder="Email" required>
 					<input type="text" name="password" class="lock" placeholder="Password" required>
-					<div class="g-recaptcha" data-sitekey="6LcbcowUAAAAADTDD3oHPsYDcKHAS471UMEIo4V0"></div>
+					<div class="g-recaptcha" data-sitekey="6Ld5ErIUAAAAAGrVWYWmafa38XxWwtfJA-GiBZVC"></div>
 					<input type="submit" name="action" value="Register">
 					<h3>Already a member?<a href="index.php"> Login</a></h3>				
 				</form>

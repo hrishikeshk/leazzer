@@ -67,7 +67,7 @@ function processLogin($res){
 <script>
 	window.fbAsyncInit = function(){
     FB.init({
-      appId      : '347743159096213',
+      appId      : '935664850126751',
       cookie     : true,  
       xfbml      : true,  
       version    : 'v2.8'
@@ -160,7 +160,7 @@ window.onbeforeunload = function(e){
   gapi.auth2.getAuthInstance().signOut();
 };
 </script>
-
+<link rel="icon" href="https://www.brainyvestors.com/images/llogo.jpg" type="image/jpg">
 </head>
 <body>	
 <body><a href="../index.php"><img id="logo" src="../images/llogo.jpg" style="width:40px;margin:20px;" alt="Logo"/></a>
