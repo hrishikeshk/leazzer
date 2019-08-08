@@ -10,7 +10,6 @@ $GError = "";
 if(isset($_GET['action'])){
 	if($_GET['action'] == "logout"){
 		unset($_SESSION['lcdata']);
-		//session_destroy();
 	}
 }
 if(isset($_POST['action'])){
@@ -45,32 +44,17 @@ function processLogin($res){
 	$GError = "Logged in successfully.";
 	$_SESSION['lcdata']	= $arr;
 	
-	$reserve = "";
-	if(isset($_SESSION['res_fid'])){
-		$reserve = "&fid=".$_SESSION['res_fid'].
-							"&cid=".$_SESSION['lcdata']['id'].
-							"&rdays=".$_SESSION['res_rdays'].
-							"&rdate=".$_SESSION['res_rdate'].
-							"&unit=".$_SESSION['res_unit'].
-							"&price=".$_SESSION['res_price'];
-	}
-
-	if(isset($_GET["action"]) && ($_GET["action"] == "search"))
-		header("Location: ../thankyou_n.php?ref=index".$reserve);
-	else if(isset($_POST["reffer"]) && (strpos($_POST["reffer"],"search.php")!==false))
-		header("Location: ../thankyou_n.php?ref=search".$reserve);
-	else
-		header("Location: dashboard.php");
+	header("Location: ../index.php");
 }
 
 ?>
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Leazzer</title>
+<title>Brainyvestors</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="keywords" content="Leazzer" />
+<meta name="keywords" content="Brainyvestors" />
 <meta name="google-signin-client_id" content="437321147965-9c30s89biesj0e5sm45r56ahkpkcgn29.apps.googleusercontent.com">
 <meta charset="UTF-8">
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
@@ -88,13 +72,6 @@ function processLogin($res){
       xfbml      : true,  
       version    : 'v2.8'
     });
-    /*FB.getLoginStatus(function(response)
-    {
-    	if(response.status == 'connected')
-    	{
-    		getFBUserData();
-    	}
-    });*/
   };
   // Load the SDK asynchronously
   (function(d, s, id){
@@ -186,11 +163,11 @@ window.onbeforeunload = function(e){
 
 </head>
 <body>	
-<body><a href="../index.php"><img id="logo" src="../images/llogo.png" style="width:40px;margin:20px;" alt="Logo"/></a>
+<body><a href="../index.php"><img id="logo" src="../images/llogo.jpg" style="width:40px;margin:20px;" alt="Logo"/></a>
 <div class="login-page"  style="background:none;padding:0;">
     <div class="login-main">  	
 			<div class="login-block">
-				<center><h1>Leazzer Sign In</h1></center>
+				<center><h1>Brainyvestors Sign In</h1></center>
 				<hr>
 				<?php 
 				if($GError!="")
@@ -222,28 +199,12 @@ window.onbeforeunload = function(e){
 					<input type="hidden" name="reffer" value="<?php echo (isset($_POST["reffer"])?$_POST["reffer"]:$_SERVER["HTTP_REFERER"]);?>">	
 					<h3>Not a member?<a href="register.php"> Register now</a></h3>				
 				</form>
-				<?php
-				if(isset($_SERVER["HTTP_REFERER"]) && (strpos($_SERVER["HTTP_REFERER"],"search.php")!==false))
-					echo '<h5><a href="../search.php">Go Back Search</a></h5>';
-				else{
-					if(isset($_POST["reffer"]) && (strpos($_POST["reffer"],"search.php")!==false))
-						echo '<h5><a href="../search.php">Go Back Search</a></h5>';
-					else
-						echo '<h5><a href="../index.php">Go Back Home</a></h5>';
-				}
-				?>
 				
 			</div>
       </div>
 </div>
 <!--inner block end here-->
 
-<!--copy rights start here-->
-<div class="copyright" style="background-color:#000000;text-align:center;display:block;color:#fff">
-		<p>© <?php echo date("Y",time());?> Leazzer. All rights reserved | <a href="../global_footer.php">Privacy Policy</a> | <a href="../global_footer_tu.php">Terms of use</a>
-    </p>
-</div>	
-<!--COPY rights end here-->
 
 <!--scrolling js-->
 		<script src="js/jquery.nicescroll.js"></script>

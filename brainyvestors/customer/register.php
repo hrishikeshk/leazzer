@@ -73,16 +73,16 @@ function register(){
 	$message .= '<br><br><b>Our warm welcome to Leazzer family, your UserID is '.$_POST['emailid'].'</b><br>';
 	$message .= '</td></tr>';
 	$message .= '<tr><td><br><br>';
-	$message .= 'Thank you,<br>&mdash; Leazzer';
+	$message .= 'Thank you,<br>&mdash; Brainyvestors';
 	$message .= '</td></tr>';
 	$message .= '</table>';
 
 	$mail = new PHPMailer(); // defaults to using php "mail()"
 	$mail->CharSet = 'UTF-8';
-	$mail->AddReplyTo($fromemail,"Leazzer Registration"); 
-	$mail->SetFrom($fromemail, "Leazzer Registration");
+	$mail->AddReplyTo($fromemail,"Brainyvestors Registration"); 
+	$mail->SetFrom($fromemail, "Brainyvestors Registration");
 	$mail->AddAddress($toemail, substr($toemail,0,strpos($toemail,"@")));
-	$mail->Subject    = "Leazzer Registration";
+	$mail->Subject    = "Brainyvestors Registration";
 	$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; 
 	$mail->MsgHTML($message);
 	$mail->isHTML(true);
@@ -96,8 +96,8 @@ function register(){
 											mysqli_real_escape_string($conn, $_POST['password'])."','Enabled','normal')");
 	$resEU = mysqli_query($conn,"select * from customer where emailid='".mysqli_real_escape_string($conn, $_POST['emailid'])."'");
 	$_SESSION['lcdata'] = mysqli_fetch_array($resEU,MYSQLI_ASSOC);
-	header("Location: dashboard.php");
-	return "Thanks for registering, please update your profile.";								
+	header("Location: index.php");
+	return "Thanks for registering.";								
 }
 
 mysqli_close($conn);
@@ -105,10 +105,10 @@ mysqli_close($conn);
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Leazzer</title>
+<title>Brainyvestors</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="keywords" content="Leazzer" />
+<meta name="keywords" content="Brainyvestors" />
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
@@ -117,12 +117,12 @@ mysqli_close($conn);
 <link href='fonts/fonts.css' rel='stylesheet' type='text/css'>
 <script src='https://www.google.com/recaptcha/api.js'></script>
 </head>
-<body>	
-<body><a href="../index.php"><img id="logo" src="../images/llogo.png" style="width:40px;margin:20px;" alt="Logo"/></a>
+<body>
+<body><a href="../index.php"><img id="logo" src="../images/llogo.jpg" style="width:40px;margin:20px;" alt="Logo"/></a>
 <div class="login-page"  style="background:none;padding:0;">
     <div class="login-main">  	
 			<div class="login-block">
-				<center><h1>Leazzer Register</h1></center>
+				<center><h1>Brainyvestors Register</h1></center>
 				<hr>
 				<?php 
 				if($GError!="")

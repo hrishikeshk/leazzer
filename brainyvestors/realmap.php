@@ -1,4 +1,10 @@
 <?php
+session_start();
+if(isset($_GET['action']) && ($_GET['action'] == "logout")){
+	if(isset($_SESSION['lcdata']))
+		unset($_SESSION['lcdata']);
+		session_destroy();
+}
   $lat_lng = array();
   $address = '';
   if(isset($_POST['address']) && strlen($_POST['address']) > 0){
@@ -121,7 +127,7 @@
       </td>
       <td style="background:#F5FCFF;border-radius: 10px;">
         <form>
-          <a onclick="javascript:getDemography();" style="cursor:pointer" /><img src="images/di.png" height="40px" width="40px" /></a>
+          <a onclick="javascript:getDemography();" style="cursor:pointer" /><img src="images/di.png" height="40px" width="70px" /></a>
         </form>
         <div id="demographyDiv" class="modal" style="display:none;border-radius: 15px;">
           <div class="modal-content">
@@ -147,6 +153,16 @@
             </table>
           </div>
         </div>
+      </td>
+      <td style="background:#F5FCFF;border-radius: 10px;">
+        <?php
+        if(isset($_SESSION['lcdata'])){
+          echo 'Hello '.$_SESSION['lcdata']['firstname'].'    '.'<a href="index.php?action=logout">Logout</a>';
+        }
+        else{
+          echo '<a href="customer/index.php">Login</a>';
+        }
+        ?>
       </td>
     </tr>
   </table>
