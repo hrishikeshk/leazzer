@@ -61,7 +61,10 @@ function processLogin($res){
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
 <script src="js/jquery-2.1.1.min.js"></script> 
+<!-- 
 <script src="https://apis.google.com/js/client:platform.js?onload=renderButton" async defer></script>
+-->
+
 <link href="css/font-awesome.css" rel="stylesheet"> 
 <link href='fonts/fonts.css' rel='stylesheet' type='text/css'>
 <script>
@@ -151,8 +154,6 @@ function renderButton(){
 function signOut(){
     var auth2 = gapi.auth2.getAuthInstance();
     auth2.signOut().then(function () {
-        //$('.userContent').html('');
-        //$('#gSignIn').slideDown('slow');
     });
 }
 
@@ -194,7 +195,9 @@ window.onbeforeunload = function(e){
 					<center>
 					<hr style="margin:10px;">
 					<a href="#" onclick="onFBLogin();" style="display: inline-flex;"><img src="../images/fbimg.png" border="0" alt="" style="width:250px;height:50px;margin-top:10px"></a><br>
+					<!--
 					<div id="gSignIn" style="width:250px;height:50px;margin:10px"></div>
+					-->
 					</center>
 					<input type="hidden" name="reffer" value="<?php echo (isset($_POST["reffer"])?$_POST["reffer"]:$_SERVER["HTTP_REFERER"]);?>">	
 					<h3>Not a member?<a href="register.php"> Register now</a></h3>				
@@ -207,8 +210,11 @@ window.onbeforeunload = function(e){
 
 
 <!--scrolling js-->
+    <!-- 
 		<script src="js/jquery.nicescroll.js"></script>
-		<script src="js/scripts.js"></script>
+		-->
+		
+		<!-- script src="js/scripts.js"></script -->
 		<!--//scrolling js-->
 <script src="js/bootstrap.js"> </script>
 <!-- mother grid end here-->

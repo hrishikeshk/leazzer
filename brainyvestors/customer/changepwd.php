@@ -31,10 +31,11 @@ if(isset($_POST['action'])){
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Leazzer</title>
+<link rel="icon" href="https://www.brainyvestors.com/images/llogo.jpg" type="image/jpg">
+<title>Brainyvestors</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="keywords" content="Leazzer" />
+<meta name="keywords" content="Brainyvestors" />
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 <link href="css/bootstrap.css" rel="stylesheet" type="text/css" media="all">
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
@@ -68,8 +69,10 @@ if(isset($_POST['action'])){
 </div>
 <!--inner block end here-->
 <!--scrolling js-->
+<!-- 
 		<script src="js/jquery.nicescroll.js"></script>
 		<script src="js/scripts.js"></script>
+		-->
 		<!--//scrolling js-->
 <script src="js/bootstrap.js"> </script>
 <!-- mother grid end here-->

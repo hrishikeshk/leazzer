@@ -29,10 +29,11 @@ function recaptcha_curl($url, $posts){
 
 if(isset($_POST['action'])){
 	if($_POST['action'] == "Register"){
+	  /*
 	  if(isset($_POST['g-recaptcha-response']) === true){
 	    
 	    $url = 'https://www.google.com/recaptcha/api/siteverify';
-      $posts = array('secret' => '6Ld5ErIUAAAAABzmur2ytqT0vEMGnwbI20HJ3FQS',
+      $posts = array('secret' => '6LfGOrIUAAAAAMCpWUKOnTv1SvtdiByC1lE73C6W',
                      'response' => $_POST['g-recaptcha-response'],
                );
       $ret = recaptcha_curl($url, $posts);
@@ -59,18 +60,31 @@ if(isset($_POST['action'])){
 		else{
 		  $GError = "Un-attempted CAPTCHA. Please try again.";
 		}
+		*/
+		////
+		$res = mysqli_query($conn,"select * from customer where emailid='".mysqli_real_escape_string($conn, $_POST['emailid'])."'");
+    		if(mysqli_num_rows($res) > 0){
+		    	$arr = mysqli_fetch_array($res,MYSQLI_ASSOC);
+		    	if($arr['status'] == "PENDING")
+		    		$GError = register();
+		    	else			
+		    		$GError = "This emailid already registered. please login";
+		    }
+		    else
+		    		$GError = register();
+		////
 	}
 }
 
 function register(){
 	global $conn,$GError;
-	$fromemail="no-reply@leazzer.com"; 
+	$fromemail="no-reply@Brainyvestors.com"; 
 	$toemail=$_POST['emailid']; 
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
-	$message .= '<center><img src="leazzer.com/images/llogo.png" height="120px"><hr style="width:100%;margin-top:10px;margin-bottom:10px;border-top: 2px solid #30B242;"></center><br>';
+	$message .= '<center><img src="Brainyvestors.com/images/llogo.png" height="120px"><hr style="width:100%;margin-top:10px;margin-bottom:10px;border-top: 2px solid #30B242;"></center><br>';
 	$message .= 'Hello <b>'.$_POST['fname'].' '.$_POST['lname'].',';
-	$message .= '<br><br><b>Our warm welcome to Leazzer family, your UserID is '.$_POST['emailid'].'</b><br>';
+	$message .= '<br><br><b>Our warm welcome to Brainyvestors family, your UserID is '.$_POST['emailid'].'</b><br>';
 	$message .= '</td></tr>';
 	$message .= '<tr><td><br><br>';
 	$message .= 'Thank you,<br>&mdash; Brainyvestors';
@@ -135,7 +149,9 @@ mysqli_close($conn);
 					<input type="text" name="phone" placeholder="Phone" required>
 					<input type="text" name="emailid" placeholder="Email" required>
 					<input type="text" name="password" class="lock" placeholder="Password" required>
-					<div class="g-recaptcha" data-sitekey="6Ld5ErIUAAAAAGrVWYWmafa38XxWwtfJA-GiBZVC"></div>
+					<!-- 
+					<div class="g-recaptcha" data-sitekey="6Ld5ErIUAAAAABzmur2ytqT0vEMGnwbI20HJ3FQS"></div>
+					-->
 					<input type="submit" name="action" value="Register">
 					<h3>Already a member?<a href="index.php"> Login</a></h3>				
 				</form>
@@ -145,8 +161,11 @@ mysqli_close($conn);
 </div>
 <!--inner block end here-->
 <!--scrolling js-->
+		<!-- 
 		<script src="js/jquery.nicescroll.js"></script>
+		
 		<script src="js/scripts.js"></script>
+		-->
 		<!--//scrolling js-->
 <script src="js/bootstrap.js"> </script>
 <!-- mother grid end here-->
