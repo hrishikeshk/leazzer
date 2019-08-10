@@ -82,7 +82,7 @@ function register(){
 	$toemail=$_POST['emailid']; 
 	$message = '<table width="100%" cellpadding="0" cellspacing="0">';
 	$message .= '<tr><td>';
-	$message .= '<center><img src="Brainyvestors.com/images/llogo.png" height="120px"><hr style="width:100%;margin-top:10px;margin-bottom:10px;border-top: 2px solid #30B242;"></center><br>';
+	$message .= '<center><img src="Brainyvestors.com/images/llogo.jpg" height="120px"><hr style="width:100%;margin-top:10px;margin-bottom:10px;border-top: 2px solid #30B242;"></center><br>';
 	$message .= 'Hello <b>'.$_POST['fname'].' '.$_POST['lname'].',';
 	$message .= '<br><br><b>Our warm welcome to Brainyvestors family, your UserID is '.$_POST['emailid'].'</b><br>';
 	$message .= '</td></tr>';

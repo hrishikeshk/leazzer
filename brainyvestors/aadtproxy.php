@@ -1,4 +1,5 @@
 <?php
+session_start();
 function file_get_contents_curl($url){
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -13,18 +14,20 @@ function get_lat_lng($loc){
     $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&address=".urlencode(trim($loc))."&sensor=false";
     ////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".urlencode(trim($loc))."&sensor=false";
     
-    $result_string = error_log('CURL call: '.$url);
+    ////$result_string = error_log('CURL call: '.$url);
 	  ////$result_string = file_get_contents_curl($url);
     return '';
     ////return $result_string;
 }
 
-if(isset($_GET['aadtproxy']) && strlen($_GET['aadtproxy']) > 0){
-  $address = $_GET['aadtproxy'];
-  $address = str_replace(';', '&', $address);
-  $aadts = error_log('CURL Call: '.$address);
-  $aadts = file_get_contents_curl('https://resources.nctcog.org/trans/data/trafficcounts/'.$address);
-  echo $aadts;
+if(isset($_SESSION['lcdata'])){
+  if(isset($_GET['aadtproxy']) && strlen($_GET['aadtproxy']) > 0){
+    $address = $_GET['aadtproxy'];
+    $address = str_replace(';', '&', $address);
+    ////$aadts = error_log('CURL Call: '.$address);
+    $aadts = file_get_contents_curl('https://resources.nctcog.org/trans/data/trafficcounts/'.$address);
+    echo $aadts;
+  }
 }
 
 ?>

@@ -98,11 +98,11 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout")){
       }
     </style>
   </head>
-  <body>
-
-  <table style="height:10%">
+  <body id="body_capture">
+    
+  <table style="height:10%;width:100%">
     <tr>
-      <td style="background:#F5FCFF;border-radius: 10px;width:70%;">
+      <td style="background:#F5FCFF;border-radius: 10px;width:60%;">
         <form action="realmap.php" method="post">
           <table style="width:100%">
             <tr>
@@ -157,7 +157,8 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout")){
       <td style="background:#F5FCFF;border-radius: 10px;">
         <?php
         if(isset($_SESSION['lcdata'])){
-          echo 'Hello '.$_SESSION['lcdata']['firstname'].'    '.'<a href="index.php?action=logout">Logout</a>';
+          echo 'Hello '.$_SESSION['lcdata']['firstname'].'    '.'<a href="realmap.php?action=logout">Logout</a><br />';
+          echo '<button style="width:100%" type="button" onclick="take_screenshot()">Email this</button>';
         }
         else{
           echo '<a href="customer/index.php">Login</a>';
@@ -167,7 +168,7 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout")){
     </tr>
   </table>
 
-  <table style="width:100%;height:80%;table-layout: fixed";">
+  <table style="width:100%;height:90%;table-layout: fixed";">
     <tr style="width:100%;height:100%">
       <td style="width:100%;height:100%">
         <div id="map"></div>
@@ -196,7 +197,7 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout")){
       </td-->
     </tr>
   </table>
-  <script>
+    <script>
       var map;
       var placesService;
       var numPlaces = 0;
@@ -211,6 +212,8 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout")){
       var polygonMarkersArr = [];
       var currentPolygon = -1;
       var polygonArr = [];
+
+      var placesArraySS = [];
 
       var auto_lat = -1;
       var auto_lng = -1;
@@ -810,6 +813,7 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout")){
                                   position: place.geometry.location
                       });
           marker.setAnimation(google.maps.Animation.DROP);
+          placesArraySS.push({ic:icon, lat: place.geometry.location.lat(), lng: place.geometry.location.lng()});
           /*
           var marker = new google.maps.Marker({
                                   map: map,
@@ -913,6 +917,7 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout")){
 
       function drawPlaces(lat, lng){
         numPlaces = 0;
+        placesArraySS = [];
         getTextPlaces('Walmart', '/images/wm_l.jpg', lat, lng);
         getTextPlaces('Walgreens', '/images/wg_l.png', lat, lng);
         getTextPlaces('CVS', '/images/cvs_l.png', lat, lng);
@@ -979,6 +984,7 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout")){
       }
 
       function drawPlacesPolygon(lat, lng){
+        placesArraySS = [];
         getTextPlacesPolygon('Walmart', '/images/wm_l.jpg', lat, lng);
         getTextPlacesPolygon('Walgreens', '/images/wg_l.png', lat, lng);
         getTextPlacesPolygon('CVS', '/images/cvs_l.png', lat, lng);
@@ -1079,7 +1085,8 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout")){
           polygonMarkersArr[currentPolygon].push(marker);
       }
 
-      function drawOnMap(lat, lng){        
+      function drawOnMap(lat, lng){
+        placesArraySS = [];
         drawPlaces(lat, lng);
         ////fetchAADT();
         ////getDemography();
@@ -1153,6 +1160,7 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout")){
             var trafficPlaces = [];
             var columnIdxs = fixAADTColumns(lines[0]);
             for(var line = 1; line < lines.length; ++line){
+            ////for(var line = 1; line < 2; ++line){
               //var fields = lines[line].replace(/"/g, '').split(',');
               if(lines[line].length < 1)
                 continue;
@@ -1342,7 +1350,8 @@ https://www.nctcog.org/trans/data/info/traffic-count-information-systems/traffic
         //bounds.extend(map.getCenter());
         USGSOverlay.prototype = new google.maps.OverlayView();
         overlay = new USGSOverlay(map);
-        
+
+        placesArraySS = [];
         drawOnMap(lat, lng);
         
         /*google.maps.event.addListener(map, 'center_changed', function() {
@@ -1360,8 +1369,74 @@ https://www.nctcog.org/trans/data/info/traffic-count-information-systems/traffic
         
       }
 
-  </script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&callback=initMap&libraries=places,drawing" async defer></script>
+      function js_http_async_sc(url, data){
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.onload = function() {
+          if (this.readyState == 4 && this.status == 200) {
+            //alert('Captured Map location and email sent.');
+          }
+          else
+            console.log('Not captured/emailed due to: ' + this.readyState + " : " + this.status);
+        };
+        xmlHttp.open( "POST", url, true );
+        xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+        xmlHttp.send( data );
+      }
+
+      function take_screenshot(){
+        var staticMapUrl = 'https://maps.googleapis.com/maps/api/staticmap';
+        var staticMapOpts = "?center=" + map.getCenter().lat() + "," + map.getCenter().lng();
+        staticMapOpts += ";size=800x600;scale=2";
+        staticMapOpts += ";maptype=" + map.getMapTypeId();
+        staticMapOpts += ";zoom=" + map.getZoom();
+        staticMapOpts += ";markers=" + map.getCenter().lat() + "," + map.getCenter().lng();
+        for(var z = 0; z < placesArraySS.length; ++z){
+          //staticMapOpts += ";markers=icon:https://www.brainyvestors.com" + placesArraySS[z].ic + "%7C" + placesArraySS[z].lat + "," + placesArraySS[z].lng;
+        }
+        js_http_async_sc("email_ss.php", "data=" + staticMapUrl + staticMapOpts);
+        /*
+        html2canvas(document.body, {
+          onrendered: function(canvas){
+            var img = canvas.toDataURL().replace("image/png", "image/octet-stream");  // here is the most important part because if you dont replace you will get a DOM 18 exception.;
+            window.location.href=img;
+            ////js_http_async_sc("email_ss.php", {data: img});
+          }
+       });
+       */
+       /*
+       html2canvas(document.querySelector("#body_capture", {useCORS: true, allowTaint: true})).then(canvas => {
+         var img = canvas.toDataURL();
+         js_http_async_sc("email_ss.php", "data=" + img);
+       });
+       */
+       
+       /*
+       var canvas1 = document.getElementById("body_capture");        
+       if (canvas1.getContext) {
+         var ctx = canvas1.getContext("2d");                
+         var myImage = canvas1.toDataURL("image/png").replace("image/png", "image/octet-stream");  // here is the most important part because if you dont replace you will get a DOM 18 exception.
+         window.location.href=image;
+;
+       }
+       else
+         console.log('No context canvas');
+         
+         http://talkerscode.com/webtricks/take-screenshot-of-a-webpage-using-html5-and-javascript.php
+         http://html2canvas.hertzen.com/configuration
+         https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toDataURL
+         https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toDataURL
+         https://stackoverflow.com/questions/10673122/how-to-save-canvas-as-an-image-with-canvas-todataurl
+         https://turbofuture.com/computers/HTML5-Tutorial-How-To-Use-Canvas-toDataURL
+         
+         https://stackoverflow.com/questions/35997961/file-attachment-with-phpmailer
+         https://stackoverflow.com/questions/3708153/send-email-with-phpmailer-embed-image-in-body
+         https://www.php.net/manual/en/function.file-put-contents.php
+         
+       */
+     }
+
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&callback=initMap&libraries=places,drawing" async defer></script>
     <!-- script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&callback=initMap&libraries=places,drawing"
     async defer></script -->
   <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&callback=initMap"
@@ -1370,6 +1445,8 @@ https://www.nctcog.org/trans/data/info/traffic-count-information-systems/traffic
         async defer></script 
         AIzaSyCTwmgoHKWkBx0uZf3rfblMArH64Pdl_jI - kv.h May_24_2019
         -->
+    <script type="text/javascript" src="js/html2canvas.js"></script>
+
   </body>
 </html>
 
