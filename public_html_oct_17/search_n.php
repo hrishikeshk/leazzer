@@ -15,9 +15,9 @@
 <link href="css/style.css" rel="stylesheet" type="text/css" media="all"/>
 <link href="fonts/fonts.css" rel="stylesheet"-->
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&libraries=places"
+<script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"
         async defer></script>
-<!-- script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
+<!-- script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"
         async defer></script-->
 </head>
 <body>

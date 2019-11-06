@@ -611,8 +611,8 @@ function persist_unit_ud(kind){
 <?php
 include('footer.php');
 ?>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&callback=initMap"  async defer></script>
-<!--script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&callback=initMap"  async defer></script-->
+<script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"  async defer></script>
+<!--script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"  async defer></script-->
 <script type="text/javascript">
 /*
 var img_inputs = document.getElementsByClassName("upload");

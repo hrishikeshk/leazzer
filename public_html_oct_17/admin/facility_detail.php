@@ -216,8 +216,8 @@ function file_get_contents_curl($url) {
 }
 
 function get_lat_lng_from_zip($zip){
-  $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&address=".$zip."&sensor=false";
-  ////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".$zip."&sensor=false";
+  $url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".$zip."&sensor=false";
+  ////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".$zip."&sensor=false";
 	$result_string = file_get_contents_curl($url);
   $result = json_decode($result_string, true);
   

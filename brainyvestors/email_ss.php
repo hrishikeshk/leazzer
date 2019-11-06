@@ -12,6 +12,7 @@ function email_ss($target_file_url){
 	$message .= 'Hello <b>'.$_SESSION['lcdata']['firstname'].' '.$_SESSION['lcdata']['lastname'].',';
 	$message .= '<br><br><b>Emailing your screenshot below, your UserID is '.$_SESSION['lcdata']['emailid'].'</b><br>';
 	$message .= '<a href="'.$target_file_url.'">View Map</a>';
+	$message .= '<img src="'.$target_file_url.'" style="width:100%"></img>';
 	$message .= '</td></tr>';
 	$message .= '<tr><td><br><br>';
 	$message .= 'Thank you,<br>&mdash; Brainyvestors';
@@ -20,10 +21,10 @@ function email_ss($target_file_url){
 
 	$mail = new PHPMailer(); // defaults to using php "mail()"
 	$mail->CharSet = 'UTF-8';
-	$mail->AddReplyTo($fromemail,"Brainyvestors Registration"); 
-	$mail->SetFrom($fromemail, "Brainyvestors Registration");
+	$mail->AddReplyTo($fromemail,"Brainyvestors Screenshot"); 
+	$mail->SetFrom($fromemail, "Brainyvestors Screenshot");
 	$mail->AddAddress($toemail, substr($toemail,0,strpos($toemail,"@")));
-	$mail->Subject    = "Brainyvestors Registration";
+	$mail->Subject    = "Brainyvestors - Your screen record";
 	$mail->AltBody    = "To view the message, please use an HTML compatible email viewer!"; 
 	$mail->MsgHTML($message);
 	$mail->isHTML(true);
@@ -58,7 +59,7 @@ if(isset($_SESSION['lcdata'])){
   ////$address = str_replace(';', '&', $address);
     upload_file($_SESSION['lcdata']['emailid'], str_replace(';', '&', $_POST['data']), $target_file);
     //email_ss('https://www.brainyvestors.com/sandbox/'.$_SESSION['lcdata']['emailid'] . 'ss');
-    email_ss(str_replace(';', '&', $_POST['data'].'&key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE'));
+    email_ss(str_replace(';', '&', $_POST['data'].'&key='));
   }
   else{
     error_log('Failed to find data in post');

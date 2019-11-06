@@ -726,8 +726,8 @@ function file_get_contents_curl($url){
 }
 
 function get_lat_lng($loc){
-  $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&address=".urlencode(trim($loc))."&sensor=false";
-  ////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".urlencode(trim($loc))."&sensor=false";
+  $url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".urlencode(trim($loc))."&sensor=false";
+  ////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".urlencode(trim($loc))."&sensor=false";
 	$result_string = file_get_contents_curl($url);
   $result = json_decode($result_string, true);
   $lat = $result['results'][0]['geometry']['location']['lat'];
@@ -1195,10 +1195,10 @@ function calculate_distance_ll($lat, $lng, $loc){
 <!-- link rel="stylesheet" type="text/css" href="admin/css/datepicker.css" / 
 -->
 
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&libraries=places"
+<script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"
         async defer></script>
 
-<!-- script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
+<!-- script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"
         async defer></script -->
         
 <script type="text/javascript">
@@ -1741,8 +1741,8 @@ function ajaxcall_search(datastring){
   			$query = "select *,(3959 * acos(cos(radians(".mysqli_real_escape_string($conn, $_POST['slat']).")) * cos(radians(lat)) * cos(radians(lng)- radians(".mysqli_real_escape_string($conn, $_POST['slng']).")) + sin(radians(".mysqli_real_escape_string($conn, $_POST['slat']).")) * sin(radians(lat)))) as calc_distance from facility_master having calc_distance < 25 and searchable=1  and city is not null and state is not null and lat is not null and lng is not null order by calc_distance limit 10";
 			}
 			else if(is_numeric(isset($_POST['search'])?trim($_POST['search']):"")){
-				$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&address=".trim($_POST['search'])."&sensor=false";
-				////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".trim($_POST['search'])."&sensor=false";
+				$url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".trim($_POST['search'])."&sensor=false";
+				////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".trim($_POST['search'])."&sensor=false";
 				$result_string = file_get_contents_curl($url);
     		$result = json_decode($result_string, true);
     		$lat = $result['results'][0]['geometry']['location']['lat'];

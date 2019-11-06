@@ -26,8 +26,8 @@ if(isset($_GET['action']) && ($_GET['action'] == "logout")){
   }
 
   function get_lat_lng($loc){
-    $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&address=".urlencode(trim($loc))."&sensor=false";
-    ////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".urlencode(trim($loc))."&sensor=false";
+    $url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".urlencode(trim($loc))."&sensor=false";
+    ////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".urlencode(trim($loc))."&sensor=false";
 	  $result_string = file_get_contents_curl($url);
 	  //error_log($result_string);
     $result = json_decode($result_string, true);
@@ -1432,18 +1432,19 @@ https://www.nctcog.org/trans/data/info/traffic-count-information-systems/traffic
          https://stackoverflow.com/questions/3708153/send-email-with-phpmailer-embed-image-in-body
          https://www.php.net/manual/en/function.file-put-contents.php
          
+         https://stackoverflow.com/questions/16235161/save-current-google-map-as-image
+         AADT_Historic
        */
      }
 
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&callback=initMap&libraries=places,drawing" async defer></script>
-    <!-- script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&callback=initMap&libraries=places,drawing"
+    <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=places,drawing" async defer></script>
+    <!-- script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap&libraries=places,drawing"
     async defer></script -->
-  <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&callback=initMap"
+  <!-- <script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"
     async defer></script> -->
-    <!-- script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
+    <!-- script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"
         async defer></script 
-        AIzaSyCTwmgoHKWkBx0uZf3rfblMArH64Pdl_jI - kv.h May_24_2019
         -->
     <script type="text/javascript" src="js/html2canvas.js"></script>
 

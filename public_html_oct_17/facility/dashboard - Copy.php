@@ -230,7 +230,7 @@ $_SESSION['lfdata'] = $arrF;
 <?php
 include('footer.php');
 ?>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&callback=initMap"  async defer></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=&callback=initMap"  async defer></script>
 <script type="text/javascript">
 var map;
 var marker;

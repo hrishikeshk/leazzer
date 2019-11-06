@@ -474,8 +474,8 @@ function cmp($a, $b) {
 			}
 			else if(is_numeric(isset($_POST['search'])?trim($_POST['search']):"")){
 			  $ll = get_lat_lng($_POST['search']);
-				$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&address=".trim($_POST['search'])."&sensor=false";
-				////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".trim($_POST['search'])."&sensor=false";
+				$url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".trim($_POST['search'])."&sensor=false";
+				////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".trim($_POST['search'])."&sensor=false";
 				/*$result_string = file_get_contents_curl($url);
     		$result = json_decode($result_string, true);
     		$lat = $result['results'][0]['geometry']['location']['lat'];

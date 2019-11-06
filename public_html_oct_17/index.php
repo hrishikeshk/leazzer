@@ -90,9 +90,9 @@ https://github.com/stripe/elements-examples/blob/master/js/example2.js
 https://github.com/stripe/elements-examples/blob/master/js/index.js
 
 -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&libraries=places"
+<script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"
         async defer></script>
-<!-- script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&libraries=places"
+<!-- script src="https://maps.googleapis.com/maps/api/js?key=&libraries=places"
         async defer></script -->
 
 <!-- <script src="https://maps.googleapis.com/maps/api/js?sensor=false&libraries=places&language=gb"></script> -->
@@ -326,11 +326,9 @@ var autocomplete = new google.maps.places.Autocomplete(input);
 </script>
 
 <!-- <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script> 
-leazzer2018 - AIzaSyDP-JrlGW5feBEicUQUa8xhrHxRygBvsfE
 
-facilities dashboard - AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA
+facilities dashboard - 
 
-existing - AIzaSyCvc_18HEgG7qB9nWPE9KlxVOFW0r4RJPM
 
 -->
 <script type="text/javascript" src="https://my.hellobar.com/0a1f374fa79bc3ef32b08e041d0e29da4e404a80.js"></script>

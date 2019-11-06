@@ -11,8 +11,8 @@ function file_get_contents_curl($url){
 }
 
 function get_lat_lng($loc){
-    $url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyCxStea2-n4x1HIveq4FUox46I-_A1STnE&address=".urlencode(trim($loc))."&sensor=false";
-    ////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=AIzaSyATdAW-nZvscm35rSLI8Bu9eGq84odzVLA&address=".urlencode(trim($loc))."&sensor=false";
+    $url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".urlencode(trim($loc))."&sensor=false";
+    ////$url = "https://maps.googleapis.com/maps/api/geocode/json?key=&address=".urlencode(trim($loc))."&sensor=false";
     
     ////$result_string = error_log('CURL call: '.$url);
 	  ////$result_string = file_get_contents_curl($url);
